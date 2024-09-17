@@ -1,37 +1,24 @@
 version: '3.8'
 
 services:
-  api:
-    build:
-      context: ./backend  # Path to the backend directory
-    container_name: backend
+  backend:
+    build: ./backend
     ports:
-      - "8001:8001"       # Map port 8001 in the container to port 8001 on the host
+      - "8000:8000"
     volumes:
-      - ./backend:/app    # Mount the backend code directory into the container
+      - ./backend:/backend
     environment:
-      - DATABASE_URL=postgresql://goodbiuser:powerbisucks@db:5432/goodbidb
+      - PYTHONUNBUFFERED=1
 
   frontend:
-    build:
-      context: ./frontend # Path to the frontend directory
-    container_name: frontend
+    build: ./frontend
     ports:
-      - "3001:3001"       # Map port 3001 in the container to port 3001 on the host
+      - "3000:3000"
     volumes:
-      - ./frontend:/app   
-  
-  db:
-    image: postgres:15
-    container_name: db
+      - ./frontend:/frontend
+      - /frontend/node_modules
+      - /frontend/.next
     environment:
-      POSTGRES_USER: goodbiuser
-      POSTGRES_PASSWORD: powerbisucks
-      POSTGRES_DB: goodbidb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data # Persist data
-
-volumes:
-  postgres_data:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend

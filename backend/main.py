@@ -17,5 +17,5 @@ def read_root():
 
 @app.get("/health_check")
 def health_check():
-    print("Health Check Passed, API is up and running!")
+    print("Health Check Passed, API is up and running LOLLLL!")
     return {"data" : "Health Check Passed, API is up and running!"}
