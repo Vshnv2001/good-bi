@@ -9,6 +9,8 @@ services:
       - ./backend:/backend
     environment:
       - PYTHONUNBUFFERED=1
+    depends_on:
+      - db
 
   frontend:
     build: ./frontend
@@ -22,3 +24,17 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
+
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=goodbiuser
+      - POSTGRES_PASSWORD=goodbye
+      - POSTGRES_DB=goodbi-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
