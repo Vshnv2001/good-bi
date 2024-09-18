@@ -40,11 +40,10 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 
 const FormSchema = z.object({
-  email: z
+  dataset: z
     .string({
       required_error: "Please select a dataset.",
-    })
-    .email(),
+    }),
   chartType: z.string({
     required_error: "Please select a chart type.",
   }),
@@ -57,7 +56,7 @@ const FormSchema = z.object({
       required_error: "Please select a date range",
     }
   ),
-  yRange: z.number({
+  yRange: z.coerce.number({
     required_error: "Please enter a valid y range.",
   }),
   title: z.string({
@@ -79,6 +78,10 @@ export default function Dashboard() {
     resolver: zodResolver(FormSchema),
   })
 
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(JSON.stringify(data, null, 2));
+  }
+
   return (
     <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
       <NavBar />
@@ -92,10 +95,10 @@ export default function Dashboard() {
           <h1 className="text-center flex text-3xl font-normal text-gray-800">Create a new insight</h1>
           <div className="sm:px-3 pb-7 flex flex-grow w-full">
             <Form {...form}>
-              <form className="flex flex-col gap-y-5 w-full">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full">
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="dataset"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
                       <FormLabel className="font-normal text-base text-gray-800">Dataset</FormLabel>
@@ -124,7 +127,7 @@ export default function Dashboard() {
                       <Select onValueChange={field.onChange} defaultValue={field.value} >
                         <FormControl>
                           <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                            <SelectValue className="" placeholder="Select" />
+                            <SelectValue className="" placeholder="Select chart type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
