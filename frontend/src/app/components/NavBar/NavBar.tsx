@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation'
 
 import Link from "next/link"
+import Image from 'next/image';
+
 import { Menu, CircleUser } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -51,9 +53,10 @@ const NavBar = () => {
             </Sheet>
             <Link
                 href="#"
-                className="flex items-center gap-2 text-2xl text-goodbi-pri font-extrabold md:flex"
+                className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold md:flex"
             >
-                GoodBI
+                <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" width="32" height="32" />
+                 GoodBI
                 <span className="sr-only">GoodBI</span>
             </Link>
             <nav className="hidden flex-col gap-6 text-base font-normal gap-6 md:flex md:w-full md:flex-row md:items-center md:justify-center">

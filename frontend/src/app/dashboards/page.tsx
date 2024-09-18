@@ -68,7 +68,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
       <NavBar />
-      <main className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 mx-4 mt-3 rounded-2xl border border-gray-200">
+      <main className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 mx-4 mt-3 rounded-2xl border border-gray-200/70">
         <div className="mx-4 my-4 flex flex-col gap-4 md:h-10 md:flex-row md:gap-0 md:items-center md:justify-between">
           <h1 className="text-3xl font-normal text-gray-800">Dashboard</h1>
           <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -78,11 +78,11 @@ export default function Dashboard() {
                 <Input
                   type="search"
                   placeholder="Search"
-                  className="pl-10 rounded-xl text-base font-normal border border-gray-200 bg-white shadow-none md:w-56"
+                  className="pl-10 rounded-xl text-base placeholder:text-gray-500 border border-gray-200/70 bg-white shadow-none md:w-56"
                 />
               </div>
             </form>
-            <Button className="font-normal rounded-xl bg-goodbi-pri py-3 shadow-none">Create New</Button>
+            <Button className="text-base text-white rounded-xl bg-primary-700 px-4 py-2.5 shadow-none hover:bg-primary-600">Create New</Button>
           </div>
         </div>
         <div className="mx-4 pb-4 flex-grow overflow-y-auto">
@@ -95,6 +95,7 @@ export default function Dashboard() {
             margin={[16, 16]}
             rowHeight={275}
             compactType="horizontal"
+            draggableCancel=".react-resizable-handle-custom"
           >
             <DashboardCard key="a" cardTitle="Dash 1" chartConfig={chartConfig}>
               <BarChart accessibilityLayer data={chartData} margin={{
@@ -138,7 +139,7 @@ export default function Dashboard() {
                 <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
               </BarChart>
             </DashboardCard>
-            <DashboardCard key="c" cardTitle="Dash 2" chartConfig={chartConfig}>
+            <DashboardCard key="c" cardTitle="Dash 3" chartConfig={chartConfig}>
               <BarChart accessibilityLayer data={chartData} margin={{
                 left: -20,
               }}>
