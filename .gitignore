@@ -35,3 +35,5 @@
 
 /backend/venv
 /backend/__pycache__
+
+/venv
