@@ -16,7 +16,15 @@ import {
 import { Input } from "@/components/ui/input"
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 
+import { Responsive, WidthProvider } from "react-grid-layout";
+
 import { NavBar } from "../components/NavBar";
+import { DashboardCard } from "../components/DashboardCard";
+
+import '/node_modules/react-grid-layout/css/styles.css';
+import '/node_modules/react-resizable/css/styles.css';
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const chartConfig = {
   desktop: {
@@ -37,6 +45,24 @@ const chartData = [
   { month: "May", desktop: 209, mobile: 130 },
   { month: "June", desktop: 214, mobile: 140 },
 ]
+
+const layouts = {
+  sm: [
+    { i: "a", x: 0, y: 0, w: 1, h: 1, static: true },
+    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
+    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
+  ],
+  md: [
+    { i: "a", x: 0, y: 0, w: 1, h: 1, static: true },
+    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
+    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
+  ],
+  lg: [
+    { i: "a", x: 0, y: 0, w: 1, h: 1, static: true },
+    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
+    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
+  ]
+};
 
 export default function Dashboard() {
   return (
@@ -60,79 +86,80 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="mx-4 pb-4 flex-grow overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="border-0 shadow-none max-h-fit">
-              <CardHeader className="p-3">
-                <CardTitle className="text-xl text-gray-800 font-bold">Card Title</CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-3">
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                  <BarChart accessibilityLayer data={chartData} margin={{
-                    left: -20,
-                  }}>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="month"
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      tickFormatter={(value) => value.slice(0, 3)}
-                    />
-                    <YAxis
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                    />
-                    <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                    <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                  </BarChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-none max-h-fit">
-              <CardHeader className="p-3">
-                <CardTitle className="text-xl text-gray-800 font-bold">Card Title</CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-3">
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                  <AreaChart accessibilityLayer data={chartData} margin={{
-                    left: -20,
-                  }}>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="month"
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      tickFormatter={(value) => value.slice(0, 3)}
-                    />
-                    <YAxis
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                    />
-                    <Area dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                    <Area dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                  </AreaChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-none max-h-fit">
-              <CardHeader className="p-3">
-                <CardTitle className="text-xl text-gray-800 font-bold">Card Title</CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-3">
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                  <PieChart accessibilityLayer data={chartData} margin={{
-                    left: -20,
-                  }}>
-                    <Pie data={chartData} dataKey="desktop" />
-                  </PieChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-
-          </div>
+          <ResponsiveGridLayout
+            className="layout"
+            layouts={layouts}
+            breakpoints={{ sm: 640, md: 768, lg: 1024 }}
+            cols={{ sm: 1, md: 2, lg: 3 }}
+            containerPadding={[0, 0]}
+            margin={[16, 16]}
+            rowHeight={275}
+            compactType="horizontal"
+          >
+            <DashboardCard key="a" cardTitle="Dash 1" chartConfig={chartConfig}>
+              <BarChart accessibilityLayer data={chartData} margin={{
+                left: -20,
+              }}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <YAxis
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
+                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+              </BarChart>
+            </DashboardCard>
+            <DashboardCard key="b" cardTitle="Dash 2" chartConfig={chartConfig}>
+              <BarChart accessibilityLayer data={chartData} margin={{
+                left: -20,
+              }}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <YAxis
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
+                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+              </BarChart>
+            </DashboardCard>
+            <DashboardCard key="c" cardTitle="Dash 2" chartConfig={chartConfig}>
+              <BarChart accessibilityLayer data={chartData} margin={{
+                left: -20,
+              }}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <YAxis
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
+                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+              </BarChart>
+            </DashboardCard>
+          </ResponsiveGridLayout>
         </div>
       </main>
     </div>
