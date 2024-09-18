@@ -12,8 +12,32 @@ const config: Config = {
 			colors: {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				'goodbi-pri': '#FF5B4D',
-				'goodbi-sec': '#A69EFF',
+				primary: {
+					50: '#FFF1F0',
+					100: '#FFE3E0',
+					200: '#000000',
+					300: '#FFA69E',
+					400: '#FA7575',
+					500: '#FF6052',
+					600: '#E5383B',
+					700: '#DA1E37',
+					800: '#B8191D',
+					900: '#980901',
+					950: '#660708'
+				},
+				secondary: {
+					50: '#FAF0FF',
+					100: '#F2E0FF',
+					200: '#D3BDFF',
+					300: '#A69EFF',
+					400: '#7E77F8',
+					500: '#695AF2',
+					600: '#894AD4',
+					700: '#7A2ACB',
+					800: '#501FB2',
+					900: '#411881',
+					950: '#29105B'
+				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
@@ -22,14 +46,14 @@ const config: Config = {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
 				},
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
-				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
-				},
+				// primary: {
+				// 	DEFAULT: 'hsl(var(--primary))',
+				// 	foreground: 'hsl(var(--primary-foreground))'
+				// },
+				// secondary: {
+				// 	DEFAULT: 'hsl(var(--secondary))',
+				// 	foreground: 'hsl(var(--secondary-foreground))'
+				// },
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
@@ -53,11 +77,11 @@ const config: Config = {
 					'5': 'hsl(var(--chart-5))'
 				}
 			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
-			},
+			// borderRadius: {
+			// 	lg: 'var(--radius)',
+			// 	md: 'calc(var(--radius) - 2px)',
+			// 	sm: 'calc(var(--radius) - 4px)'
+			// },
 			height: {
 				'4.5': '1.125rem',
 			},
