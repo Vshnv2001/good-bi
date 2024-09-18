@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "nextjs-cors": "^2.2.0",
+    "supertokens-auth-react": "^0.47.0",
+    "supertokens-node": "^20.1.2",
+    "supertokens-web-js": "^0.13.0"
+  }
+}

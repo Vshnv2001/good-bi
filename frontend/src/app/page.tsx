@@ -1,25 +1,15 @@
 'use client'
 
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 export default function Home() {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    axios.get(`http://localhost:8000/health_check`).then((response) => {
-      setData(response.data.data);
-    });
-  });
+  const router = useRouter();
 
-  return (
-    <div className="items-center justify-items-center p-8">
-      { data && (
-        <div>
-          <h2 className="text-2xl font-bold">FastAPI Health Check Response LOL</h2>
-          <br />
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
-      )}
-    </div>
-  );
+  useEffect(() => {
+    router.push("/auth");
+  }, [router]);
+
+  return null;
 }

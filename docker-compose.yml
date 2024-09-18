@@ -11,6 +11,8 @@ services:
       - PYTHONUNBUFFERED=1
     depends_on:
       - db
+    networks:
+      - app-network
 
   frontend:
     build: ./frontend
@@ -24,17 +26,48 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
+    networks:
+      - app-network
 
   db:
     image: postgres:15
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=goodbiuser
-      - POSTGRES_PASSWORD=goodbye
-      - POSTGRES_DB=goodbi-db
+      POSTGRES_CONNECTION_URI: ${POSTGRES_CONNECTION_URI}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_CONNECTION_URI}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - app-network
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:9.2.2
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3567:3567"
+    environment:
+      POSTGRES_CONNECTION_URI: ${POSTGRES_CONNECTION_URI}
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:

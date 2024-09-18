@@ -11,8 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        'goodbi-pri': '#FFA69E',
-        'goodbi-sec': '#A69EFF',
+        'goodbi-pri': '#f95e4f',
+        'goodbi-sec': '#8A79B9',
       },
     },
   },
