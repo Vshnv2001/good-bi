@@ -4,7 +4,7 @@ import Link from "next/link"
 
 import { Search } from "lucide-react";
 
-import { Area, AreaChart, Bar, BarChart, Pie, PieChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

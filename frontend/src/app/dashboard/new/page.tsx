@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -39,7 +38,6 @@ import { NavBar } from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
-import { title } from "process";
 
 const FormSchema = z.object({
   email: z
@@ -198,6 +196,7 @@ export default function Dashboard() {
                       <Input
                         type="number"
                         className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
+                        {...field}
                       />
                       <FormMessage />
                     </FormItem>
@@ -212,6 +211,7 @@ export default function Dashboard() {
                       <Input
                         type="text"
                         className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
+                        {...field}
                       />
                       <FormMessage />
                     </FormItem>

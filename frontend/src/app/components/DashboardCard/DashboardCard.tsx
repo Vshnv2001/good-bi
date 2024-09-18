@@ -38,5 +38,6 @@ const DashboardCard = React.forwardRef<
         </Card>
     );
 });
+DashboardCard.displayName = "DashboardCard"
 
 export default DashboardCard;
