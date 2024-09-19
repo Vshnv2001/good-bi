@@ -18,6 +18,7 @@ import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
 import {AiFeature} from "@/app/components/Landing/AiFeature";
 import {ChartFeature} from "@/app/components/Landing/ChartFeature";
 import CustomisableFeature from "@/app/components/Landing/CustomisableFeature";
+import {IntegrationIconCloud} from "@/app/components/Landing/IntegrationIconCloud";
 
 export default function Home() {
   return (
@@ -116,8 +117,8 @@ export default function Home() {
         </div>
         <div className="bg-gray-100">
           <div className="px-4 py-16 max-w-7xl mx-auto">
-            <div className="bg-white rounded-2xl py-24">
-              <div className="mx-auto max-w-5xl px-4 flex gap-8">
+            <div className="bg-white rounded-2xl py-12">
+              <div className="mx-auto max-w-5xl px-4 flex items-center justify-between gap-8 flex-col md:flex-row">
                 <div className="max-w-md">
                   <span className="text-primary-500" id="integration">Integration</span>
                   <h2 className="text-4xl mt-2 sm:text-5xl">
@@ -127,9 +128,7 @@ export default function Home() {
                     Seamless integrations with your favourite business applications, from CRM tools to cloud storage.
                   </p>
                 </div>
-                <div>
-                  Hello!
-                </div>
+                <IntegrationIconCloud/>
               </div>
             </div>
           </div>
