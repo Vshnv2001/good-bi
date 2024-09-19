@@ -13,6 +13,7 @@ const config: Config = {
         marquee: "marquee var(--duration) linear infinite",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
         meteor: "meteor 5s linear infinite",
+        grid: "grid 15s linear infinite",
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -112,6 +113,10 @@ const config: Config = {
             transform: "rotate(215deg) translateX(-500px)",
             opacity: "0",
           },
+        },
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" },
         },
       }
     }

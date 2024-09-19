@@ -5,6 +5,7 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 import Meteors from "@/app/components/Landing/Meteors";
+import RetroGrid from "@/app/components/Landing/RetroGrid";
 
 export default function Home() {
   return (
@@ -77,9 +78,12 @@ export default function Home() {
                 <h3 className="text-lg font-bold">Works anywhere</h3>
                 <p className="leading-5">On any device, from mobile phones to desktops.</p>
               </div>
-              <div className="bg-white rounded-xl p-5">
-                <h3 className="text-lg font-bold">Designed for speed</h3>
-                <p className="leading-5">Generate key performance indicators in just minutes.</p>
+              <div className="relative bg-white rounded-xl overflow-hidden">
+                <RetroGrid/>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold">Designed for speed</h3>
+                  <p className="leading-5">Generate key performance indicators in just minutes.</p>
+                </div>
               </div>
             </div>
           </div>
