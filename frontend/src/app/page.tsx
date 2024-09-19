@@ -23,38 +23,40 @@ import {IntegrationIconCloud} from "@/app/components/Landing/IntegrationIconClou
 export default function Home() {
   return (
     <>
-      <nav className="max-w-7xl mx-auto flex justify-between items-center py-3 px-4">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold"
-        >
-          <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-8 w-6" width="28" height="28"/>
-          GoodBI
-          <span className="sr-only">GoodBI</span>
-        </Link>
-        <div className="flex gap-2 items-center">
-          <Button
-            className="text-base rounded-xl text-gray-800 shadow-none"
-            variant="ghost"
-            asChild
+      <header className="sticky top-0 bg-background z-20 shadow-sm mb-4">
+        <nav className="max-w-7xl mx-auto flex justify-between items-center py-3 px-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold"
           >
-            <Link href="/login">
-              Login
-            </Link>
-          </Button>
-          <Button
-            className="text-base text-white rounded-xl bg-primary-700 shadow-none px-4 py-2.5 hover:bg-primary-600"
-            asChild
-          >
-            <Link href="/signup">
-              Sign Up
-            </Link>
-          </Button>
-        </div>
-      </nav>
+            <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-8 w-6" width="28" height="28"/>
+            GoodBI
+            <span className="sr-only">GoodBI</span>
+          </Link>
+          <div className="flex gap-2 items-center">
+            <Button
+              className="text-base rounded-xl text-gray-800 shadow-none"
+              variant="ghost"
+              asChild
+            >
+              <Link href="/login">
+                Login
+              </Link>
+            </Button>
+            <Button
+              className="text-base text-white rounded-xl bg-primary-700 shadow-none px-4 py-2.5 hover:bg-primary-600"
+              asChild
+            >
+              <Link href="/signup">
+                Sign Up
+              </Link>
+            </Button>
+          </div>
+        </nav>
+      </header>
       <main className="text-gray-800">
         <div className="px-4 max-w-7xl mx-auto">
-          <div className="bg-primary-50 h-[calc(100lvh-60px)] rounded-2xl py-16">
+          <div className="bg-primary-50 h-[calc(100lvh-60px-16px)] rounded-2xl py-16">
             <div className="mx-auto text-center px-4 w-full max-w-2xl">
               <h1 className="font-bold text-5xl sm:text-6xl">
                 Say <span className="text-primary-500">goodbye</span> to complex analytics.
@@ -139,7 +141,8 @@ export default function Home() {
                     <span className="font-bold">You can count on us.</span> Reliable and secure by design.
                   </h2>
                 </div>
-                <div className="mt-12 flex flex-wrap justify-center lg:justify-between gap-12 font-bold leading-5">
+                <div
+                  className="mt-12 text-gray-600 flex flex-wrap justify-center lg:justify-between gap-12 font-bold leading-5">
                   <div className="w-36">
                     Built with
                     <div
