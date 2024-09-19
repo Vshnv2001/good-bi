@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
+import Meteors from "@/app/components/Landing/Meteors";
 
 export default function Home() {
   return (
@@ -67,9 +68,10 @@ export default function Home() {
               </h2>
             </div>
             <div className="grid grid-cols-1 max-w-5xl mx-auto gap-4 mt-6 px-8 md:grid-cols-3">
-              <div className="bg-white rounded-xl p-5">
+              <div className="relative bg-white rounded-xl p-5 overflow-hidden">
+                <Meteors number={80}/>
                 <h3 className="text-lg font-bold">Effortless insights</h3>
-                <p className="leading-5">No knowledge in business intelligence required.</p>
+                <p className="leading-5 text-gray-600">No knowledge in business intelligence required.</p>
               </div>
               <div className="bg-white rounded-xl p-5">
                 <h3 className="text-lg font-bold">Works anywhere</h3>
