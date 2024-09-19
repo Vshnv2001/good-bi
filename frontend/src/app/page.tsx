@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/accordion"
 import {useState} from "react";
 import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
-import {AnimatedBeamMultipleOutput} from "@/app/components/Landing/AnimatedBeamMultipleOutput";
+import {AiFeature} from "@/app/components/Landing/AiFeature";
 import {ChartFeature} from "@/app/components/Landing/ChartFeature";
 
 export default function Home() {
@@ -130,7 +130,7 @@ const FeatureSection = () => {
   }
 
   return (
-    <div className="flex h-full md:h-[600px] items-center gap-12">
+    <div className="flex h-full mt-12 items-center gap-12 md:mt-0 md:h-[600px]">
       <Accordion className="w-full md:w-2/5" type="single" collapsible value={value} onValueChange={handleValueChange}>
         <AccordionItem value="item-1">
           <AccordionTrigger>
@@ -140,7 +140,7 @@ const FeatureSection = () => {
           </AccordionTrigger>
           <AccordionContent className="text-base">
             Instantly generate key insights from your data, using the latest large-language models from OpenAI.
-            <AnimatedBeamMultipleOutput className="block h-[368px] md:hidden md:h-[500px]"/>
+            <AiFeature className="block h-[368px] md:hidden md:h-[500px]"/>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
@@ -168,7 +168,7 @@ const FeatureSection = () => {
         </AccordionItem>
       </Accordion>
       <div className="flex-grow hidden md:block">
-        {value === 'item-1' && <AnimatedBeamMultipleOutput/>}
+        {value === 'item-1' && <AiFeature/>}
         {value === 'item-2' && <ChartFeature/>}
       </div>
     </div>

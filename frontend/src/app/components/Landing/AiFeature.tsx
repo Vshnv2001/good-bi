@@ -25,7 +25,7 @@ const Circle = forwardRef<
 
 Circle.displayName = "Circle";
 
-export function AnimatedBeamMultipleOutput({
+export function AiFeature({
                                                  className,
                                                }: {
   className?: string;
