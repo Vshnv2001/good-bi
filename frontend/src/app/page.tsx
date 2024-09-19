@@ -7,6 +7,14 @@ import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 import Meteors from "@/app/components/Landing/Meteors";
 import RetroGrid from "@/app/components/Landing/RetroGrid";
 import Globe from "@/app/components/Landing/Globe";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { useState } from "react";
+import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
 
 export default function Home() {
   return (
@@ -93,16 +101,64 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="bg-gray-50 rounded-2xl py-32 mt-8">
-            <div className="mx-auto px-4 w-full max-w-5xl">
-              <span className="text-primary-500" id="how-it-works">How it works</span>
-              <h2 className="font-bold text-4xl mt-2 sm:text-5xl">
-                As easy as 1, 2, 3.
-              </h2>
-            </div>
+          <div className="py-32 px-16">
+            <span className="text-primary-500" id="features">Features</span>
+            <h2 className="text-4xl mt-2 max-w-xl sm:text-5xl">
+              <span className="font-bold">Get better insights, faster.</span>
+              <br/>
+              Powerful analytics on metrics that matter.
+            </h2>
+            <FeatureSection/>
           </div>
         </div>
       </main>
     </>
   );
+}
+
+const FeatureSection = () => {
+  const [value, setValue] = useState('item-1')
+
+  const handleValueChange = (newValue: string) => {
+    if (!newValue) {
+      return;
+    }
+
+    setValue(newValue);
+  }
+
+  return (
+    <Accordion type="single" collapsible value={value} onValueChange={handleValueChange}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>
+          <span className="flex items-center gap-1.5 text-lg font-bold">
+            <LucideSparkles className="h-5 w-5" /> AI-powered
+          </span>
+        </AccordionTrigger>
+        <AccordionContent className="text-base">
+          Instantly generate key insights from your data, using the latest LLM models
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>
+          <span className="flex items-center gap-1.5 text-lg font-bold">
+            <LucideChartArea className="h-5 w-5" /> Data visualisations
+          </span>
+        </AccordionTrigger>
+        <AccordionContent className="text-base">
+          Get real-time data visualisations from the click of a button.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>
+          <span className="flex items-center gap-1.5 text-lg font-bold">
+            <LucidePencilRuler className="h-5 w-5"/> Fully customisable
+          </span>
+        </AccordionTrigger>
+        <AccordionContent className="text-base">
+          Place your insights where you want them to be.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  )
 }
