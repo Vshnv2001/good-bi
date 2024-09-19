@@ -17,6 +17,7 @@ import {useState} from "react";
 import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
 import {AiFeature} from "@/app/components/Landing/AiFeature";
 import {ChartFeature} from "@/app/components/Landing/ChartFeature";
+import CustomisableFeature from "@/app/components/Landing/CustomisableFeature";
 
 export default function Home() {
   return (
@@ -163,13 +164,17 @@ const FeatureSection = () => {
           </span>
           </AccordionTrigger>
           <AccordionContent className="text-base">
-            Place your insights where you want them to be.
+            Place your insights where you want them to be. Resize and move them freely on your dashboard.
+            <div className="block pt-6 md:hidden md:pt-0">
+              <CustomisableFeature />
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
       <div className="flex-grow hidden md:block">
-        {value === 'item-1' && <AiFeature/>}
-        {value === 'item-2' && <ChartFeature/>}
+      {value === 'item-1' && <AiFeature />}
+        {value === 'item-2' && <ChartFeature />}
+        {value === 'item-3' && <CustomisableFeature />}
       </div>
     </div>
   )
