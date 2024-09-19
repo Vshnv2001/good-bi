@@ -16,6 +16,7 @@ import {
 import {useState} from "react";
 import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
 import {AnimatedBeamMultipleOutput} from "@/app/components/Landing/AnimatedBeamMultipleOutput";
+import {ChartFeature} from "@/app/components/Landing/ChartFeature";
 
 export default function Home() {
   return (
@@ -129,7 +130,7 @@ const FeatureSection = () => {
   }
 
   return (
-    <div className="flex items-center gap-12">
+    <div className="flex h-full md:h-[600px] items-center gap-12">
       <Accordion className="w-full md:w-2/5" type="single" collapsible value={value} onValueChange={handleValueChange}>
         <AccordionItem value="item-1">
           <AccordionTrigger>
@@ -138,8 +139,8 @@ const FeatureSection = () => {
           </span>
           </AccordionTrigger>
           <AccordionContent className="text-base">
-            Instantly generate key insights from your data, using the latest LLM models
-            <AnimatedBeamMultipleOutput className="block h-[368px] md:hidden md:h-[500px]" />
+            Instantly generate key insights from your data, using the latest large-language models from OpenAI.
+            <AnimatedBeamMultipleOutput className="block h-[368px] md:hidden md:h-[500px]"/>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
@@ -150,6 +151,9 @@ const FeatureSection = () => {
           </AccordionTrigger>
           <AccordionContent className="text-base">
             Get real-time data visualisations from the click of a button.
+            <div className="block pt-6 md:hidden md:pt-0">
+              <ChartFeature/>
+            </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
@@ -164,7 +168,8 @@ const FeatureSection = () => {
         </AccordionItem>
       </Accordion>
       <div className="flex-grow hidden md:block">
-        <AnimatedBeamMultipleOutput />
+        {value === 'item-1' && <AnimatedBeamMultipleOutput/>}
+        {value === 'item-2' && <ChartFeature/>}
       </div>
     </div>
   )
