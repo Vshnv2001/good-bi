@@ -23,7 +23,7 @@ import {IntegrationIconCloud} from "@/app/components/Landing/IntegrationIconClou
 export default function Home() {
   return (
     <>
-      <header className="sticky top-0 bg-background z-20 shadow-sm mb-4">
+      <header className="sticky top-0 bg-background z-20">
         <nav className="max-w-7xl mx-auto flex justify-between items-center py-3 px-4">
           <Link
             href="/"
@@ -56,12 +56,12 @@ export default function Home() {
       </header>
       <main className="text-gray-800">
         <div className="px-4 max-w-7xl mx-auto">
-          <div className="bg-primary-50 h-[calc(100lvh-60px-16px)] rounded-2xl py-16">
+          <div className="bg-primary-50 h-[calc(100lvh-60px)] rounded-2xl py-16">
             <div className="mx-auto text-center px-4 w-full max-w-2xl">
               <h1 className="font-bold text-5xl sm:text-6xl">
                 Say <span className="text-primary-500">goodbye</span> to complex analytics.
               </h1>
-              <p className="text-gray-700 text-xl pt-3">
+              <p className="text-gray-700 leading-6 text-lg md:text-xl pt-3">
                 GoodBI takes away the complexity of business intelligence with the power of AI. Trusted by many
                 high-growth startups.
               </p>
@@ -142,7 +142,7 @@ export default function Home() {
                   </h2>
                 </div>
                 <div
-                  className="mt-12 text-gray-600 flex flex-wrap justify-center lg:justify-between gap-12 font-bold leading-5">
+                  className="mt-12 text-gray-600 flex flex-wrap justify-center lg:justify-between gap-y-8 gap-x-12 font-bold leading-5">
                   <div className="w-36">
                     Built with
                     <div

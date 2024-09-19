@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Inter } from 'next/font/google'
 import "./globals.css";
 
-const inter = localFont({
-  src: "./fonts/InterVariable.woff2",
-  variable: "--font-inter",
-  weight: "100 400 700 800 900",
-});
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
