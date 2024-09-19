@@ -6,6 +6,7 @@ import {Button} from "@/components/ui/button";
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 import Meteors from "@/app/components/Landing/Meteors";
 import RetroGrid from "@/app/components/Landing/RetroGrid";
+import Globe from "@/app/components/Landing/Globe";
 
 export default function Home() {
   return (
@@ -69,21 +70,25 @@ export default function Home() {
               </h2>
             </div>
             <div className="grid grid-cols-1 max-w-5xl mx-auto gap-4 mt-6 px-8 md:grid-cols-3">
-              <div className="relative bg-white rounded-xl p-5 overflow-hidden">
-                <Meteors number={80}/>
+              <div className="relative overflow-hidden bg-white rounded-xl p-5 flex flex-col justify-end">
+                <Meteors number={200}/>
                 <h3 className="text-lg font-bold">Effortless insights</h3>
                 <p className="leading-5 text-gray-600">No knowledge in business intelligence required.</p>
               </div>
-              <div className="bg-white rounded-xl p-5">
-                <h3 className="text-lg font-bold">Works anywhere</h3>
-                <p className="leading-5">On any device, from mobile phones to desktops.</p>
+              <div className="relative bg-white rounded-xl">
+                <Globe className="relative h-48 w-48 mb-6"/>
+                <div className="absolute bottom-0 p-5">
+                  <h3 className="text-lg font-bold">Works anywhere</h3>
+                  <p className="leading-5">On any device, from mobile phones to desktops.</p>
+                </div>
               </div>
-              <div className="relative bg-white rounded-xl overflow-hidden">
-                <RetroGrid/>
-                <div className="p-5">
+              <div className="relative overflow-hidden bg-white rounded-xl flex flex-col justify-end">
+                <div className="p-5 z-10">
                   <h3 className="text-lg font-bold">Designed for speed</h3>
                   <p className="leading-5">Generate key performance indicators in just minutes.</p>
                 </div>
+                <RetroGrid/>
+
               </div>
             </div>
           </div>
