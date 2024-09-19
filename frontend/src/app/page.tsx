@@ -114,6 +114,26 @@ export default function Home() {
             <FeatureSection/>
           </div>
         </div>
+        <div className="bg-gray-100">
+          <div className="px-4 py-16 max-w-7xl mx-auto">
+            <div className="bg-white rounded-2xl py-24">
+              <div className="mx-auto max-w-5xl px-4 flex gap-8">
+                <div className="max-w-md">
+                  <span className="text-primary-500" id="integration">Integration</span>
+                  <h2 className="text-4xl mt-2 sm:text-5xl">
+                    <span className="font-bold">All your needs, in one platform.</span>
+                  </h2>
+                  <p className="mt-6">
+                    Seamless integrations with your favourite business applications, from CRM tools to cloud storage.
+                  </p>
+                </div>
+                <div>
+                  Hello!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </>
   );
@@ -166,15 +186,15 @@ const FeatureSection = () => {
           <AccordionContent className="text-base">
             Place your insights where you want them to be. Resize and move them freely on your dashboard.
             <div className="block pt-6 md:hidden md:pt-0">
-              <CustomisableFeature />
+              <CustomisableFeature/>
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
       <div className="flex-grow hidden md:block">
-      {value === 'item-1' && <AiFeature />}
-        {value === 'item-2' && <ChartFeature />}
-        {value === 'item-3' && <CustomisableFeature />}
+        {value === 'item-1' && <AiFeature/>}
+        {value === 'item-2' && <ChartFeature/>}
+        {value === 'item-3' && <CustomisableFeature/>}
       </div>
     </div>
   )
