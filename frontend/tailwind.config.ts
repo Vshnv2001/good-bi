@@ -9,6 +9,9 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+      animation: {
+        'logo-cloud': 'logo-cloud 30s linear infinite'
+      },
 			colors: {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
@@ -87,7 +90,13 @@ const config: Config = {
 			},
 			width: {
 				'4.5': '1.125rem',
-			}
+			},
+			keyframes: {
+        'logo-cloud': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - 4rem))' },
+        }
+      }
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

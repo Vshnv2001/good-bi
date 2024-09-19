@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
+import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 
 export default function Home() {
   return (
@@ -47,10 +48,8 @@ export default function Home() {
                 GoodBI takes away the complexity of business intelligence with the power of AI. Trusted by many
                 high-growth startups.
               </p>
-            </div>
-            <div className="flex justify-center mt-6">
               <Button
-                className="text-white text-lg rounded-xl bg-primary-700 shadow-none p-5 hover:bg-primary-600"
+                className="text-white text-lg rounded-xl bg-primary-700 shadow-none p-5 hover:bg-primary-600 mt-6"
                 asChild
               >
                 <Link href="/signup">
@@ -59,6 +58,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
+          <AnimatedLogoCloud />
         </div>
       </main>
     </>
