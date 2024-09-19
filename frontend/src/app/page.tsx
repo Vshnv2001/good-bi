@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { useState } from "react";
+import {useState} from "react";
 import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
 import {AnimatedBeamMultipleOutput} from "@/app/components/Landing/AnimatedBeamMultipleOutput";
 
@@ -129,38 +129,43 @@ const FeatureSection = () => {
   }
 
   return (
-    <Accordion type="single" collapsible value={value} onValueChange={handleValueChange}>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>
+    <div className="flex items-center gap-12">
+      <Accordion className="w-full md:w-2/5" type="single" collapsible value={value} onValueChange={handleValueChange}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>
           <span className="flex items-center gap-1.5 text-lg font-bold">
-            <LucideSparkles className="h-5 w-5" /> AI-powered
+            <LucideSparkles className="h-5 w-5"/> AI-powered
           </span>
-        </AccordionTrigger>
-        <AccordionContent className="text-base">
-          Instantly generate key insights from your data, using the latest LLM models
-          <AnimatedBeamMultipleOutput />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>
+          </AccordionTrigger>
+          <AccordionContent className="text-base">
+            Instantly generate key insights from your data, using the latest LLM models
+            <AnimatedBeamMultipleOutput className="block h-[368px] md:hidden md:h-[500px]" />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>
           <span className="flex items-center gap-1.5 text-lg font-bold">
-            <LucideChartArea className="h-5 w-5" /> Data visualisations
+            <LucideChartArea className="h-5 w-5"/> Data visualisations
           </span>
-        </AccordionTrigger>
-        <AccordionContent className="text-base">
-          Get real-time data visualisations from the click of a button.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>
+          </AccordionTrigger>
+          <AccordionContent className="text-base">
+            Get real-time data visualisations from the click of a button.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>
           <span className="flex items-center gap-1.5 text-lg font-bold">
             <LucidePencilRuler className="h-5 w-5"/> Fully customisable
           </span>
-        </AccordionTrigger>
-        <AccordionContent className="text-base">
-          Place your insights where you want them to be.
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+          </AccordionTrigger>
+          <AccordionContent className="text-base">
+            Place your insights where you want them to be.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <div className="flex-grow hidden md:block">
+        <AnimatedBeamMultipleOutput />
+      </div>
+    </div>
   )
 }
