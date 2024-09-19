@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/accordion"
 import { useState } from "react";
 import {LucideSparkles, LucideChartArea, LucidePencilRuler} from "lucide-react";
+import {AnimatedBeamMultipleOutput} from "@/app/components/Landing/AnimatedBeamMultipleOutput";
 
 export default function Home() {
   return (
@@ -137,6 +138,7 @@ const FeatureSection = () => {
         </AccordionTrigger>
         <AccordionContent className="text-base">
           Instantly generate key insights from your data, using the latest LLM models
+          <AnimatedBeamMultipleOutput />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
