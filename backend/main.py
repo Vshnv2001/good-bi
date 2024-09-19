@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
-import sqlite3
+import psycopg2
 
 app = FastAPI()
 
@@ -30,16 +30,21 @@ async def create_dataset(
     df = pd.read_csv(datasetFile.file)
 
     # Connect to the database
-    conn = sqlite3.connect('database.db')
+    import os
+
+    POSTGRES_URI = os.getenv('POSTGRES_URI')
+    conn = psycopg2.connect(POSTGRES_URI)
     cursor = conn.cursor()
 
     # Create table with columns from CSV
     columns = ', '.join([f'"{col}" TEXT' for col in df.columns])
     cursor.execute(f'CREATE TABLE IF NOT EXISTS "{datasetName}" ({columns})')
 
+    print(f"Columns: {columns}")
     # Insert rows into the table
     for row in df.itertuples(index=False, name=None):
-        placeholders = ', '.join(['?'] * len(row))
+        print(row)
+        placeholders = ', '.join(['%s'] * len(row))
         cursor.execute(f'INSERT INTO "{datasetName}" VALUES ({placeholders})', row)
 
     conn.commit()
