@@ -70,23 +70,23 @@ export default function Home() {
               </h2>
             </div>
             <div className="grid grid-cols-1 max-w-5xl mx-auto gap-4 mt-6 px-8 md:grid-cols-3">
-              <div className="relative overflow-hidden bg-white rounded-xl">
+              <div className="relative overflow-hidden bg-white rounded-xl h-[216px]">
                 <Meteors number={200}/>
-                <div className="absolute bottom-0 p-5 z-10">
+                <div className="flex flex-col h-full justify-end p-5">
                   <h3 className="text-lg font-bold">Effortless insights</h3>
                   <p className="leading-5 text-gray-500">No knowledge in business intelligence required.</p>
                 </div>
               </div>
-              <div className="relative bg-white rounded-xl">
+              <div className="relative overflow-hidden bg-white rounded-xl h-[216px]">
                 <Globe className="relative h-48 w-48 mb-6"/>
                 <div className="absolute bottom-0 p-5 z-10">
                   <h3 className="text-lg font-bold">Works anywhere</h3>
                   <p className="leading-5 text-gray-500">On any device, from mobile phones to desktops.</p>
                 </div>
               </div>
-              <div className="relative overflow-hidden bg-white rounded-xl">
-                <RetroGrid/>
-                <div className="absolute bottom-0 p-5 z-10">
+              <div className="relative overflow-hidden bg-white rounded-xl h-[216px]">
+                <RetroGrid className=""/>
+                <div className="flex flex-col h-full justify-end p-5 relative">
                   <h3 className="text-lg font-bold">Designed for speed</h3>
                   <p className="leading-5 text-gray-500">Generate key performance indicators in just minutes.</p>
                 </div>
