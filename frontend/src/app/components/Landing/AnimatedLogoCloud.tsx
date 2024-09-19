@@ -54,7 +54,7 @@ const AnimatedLogoCloud = () => {
           <Image
             key={key}
             src={logo.url}
-            className="h-10 w-28 px-2 brightness-0 dark:invert"
+            className="h-auto w-28 px-2 brightness-0 dark:invert"
             width="112"
             height="40"
             alt={`${logo.name}`}
@@ -62,19 +62,6 @@ const AnimatedLogoCloud = () => {
         ))}
       </div>
     </Marquee>
-    // <div className="w-full py-12">
-    //   <div className="mx-auto w-full px-4 md:px-8">
-    //     <div
-    //       className="group relative mt-6 flex gap-6 overflow-hidden p-2"
-    //       style={{
-    //         maskImage:
-    //           'linear-gradient(to left, transparent 0%, black 20%, black 80%, transparent 95%)',
-    //       }}
-    //     >
-    //
-    //     </div>
-    //   </div>
-    // </div>
   )
 }
 
