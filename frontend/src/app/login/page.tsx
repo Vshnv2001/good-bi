@@ -34,10 +34,10 @@ export default function Login() {
   }
 
   return (
-    <main className="bg-gray-100 h-screen grid w-full">
+    <main className="min-h-[600px] h-svh bg-gray-100 grid w-full">
       <Link
         href="/"
-        className={`fixed top-4 left-4 sm:top-12 sm:left-12 inline-flex items-center gap-1 text-gray-500 
+        className={`fixed top-4 left-4 sm:top-12 sm:left-12 inline-flex items-center gap-1 text-gray-500
                     transition-colors duration-100 hover:text-primary-700`
         }
       >
@@ -47,7 +47,7 @@ export default function Login() {
       <div className="max-w-lg px-4 w-full place-self-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto"
+          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto -mt-8"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-12 w-10" width="28" height="28"/>
           GoodBI
@@ -62,7 +62,7 @@ export default function Login() {
           .
         </p>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm mx-auto flex flex-col gap-y-5 w-full mt-8 mb-20">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm mx-auto flex flex-col gap-y-5 w-full mt-8">
             <FormField
               control={form.control}
               name="email"

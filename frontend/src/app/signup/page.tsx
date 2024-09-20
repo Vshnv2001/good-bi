@@ -36,7 +36,7 @@ export default function Signup() {
   }
 
   return (
-    <main className="bg-gray-100 h-screen grid w-full">
+    <main className="min-h-[600px] h-svh bg-gray-100 grid w-full">
       <Link
         href="/"
         className={`fixed top-4 left-4 sm:top-12 sm:left-12 inline-flex items-center gap-1 text-gray-500 
@@ -64,7 +64,7 @@ export default function Signup() {
           .
         </p>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm mx-auto flex flex-col gap-y-5 w-full mt-8 mb-20">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-sm mx-auto flex flex-col gap-y-5 w-full mt-8">
             <FormField
               control={form.control}
               name="name"
