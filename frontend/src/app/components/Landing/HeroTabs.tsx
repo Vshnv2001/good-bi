@@ -1,13 +1,13 @@
 import {motion} from 'framer-motion'
 import {useState} from 'react'
 import {DashboardCard} from "@/app/components/DashboardCard";
-import {Bar, BarChart, CartesianGrid, XAxis, YAxis, Line, LineChart} from "recharts";
+import {Bar, BarChart, PieChart, Pie, CartesianGrid, XAxis, YAxis, Line, LineChart, LabelList} from "recharts";
 import {ChartConfig} from "@/components/ui/chart";
 import {Responsive, WidthProvider} from "react-grid-layout";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 
-const buttonShapeTabs = ['Dashboard', 'Dataset']
+const buttonShapeTabs = ['Dashboard']
 
 interface TabProps {
   text: string
@@ -80,6 +80,40 @@ const chartData = [
   {month: "June", desktop: 214, mobile: 140},
 ]
 
+const pieChartData = [
+  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+]
+
+const pieChartConfig = {
+  visitors: {
+    label: "Visitors",
+  },
+  chrome: {
+    label: "Chrome",
+    color: "hsl(var(--chart-1))",
+  },
+  safari: {
+    label: "Safari",
+    color: "hsl(var(--chart-2))",
+  },
+  firefox: {
+    label: "Firefox",
+    color: "hsl(var(--chart-3))",
+  },
+  edge: {
+    label: "Edge",
+    color: "hsl(var(--chart-4))",
+  },
+  other: {
+    label: "Other",
+    color: "hsl(var(--chart-5))",
+  },
+} satisfies ChartConfig
+
 const HeroDashboard = () => {
   return (
     <ResponsiveGridLayout
@@ -89,26 +123,20 @@ const HeroDashboard = () => {
       rowHeight={200}
       maxRows={2}
     >
-      <DashboardCard key="a" cardTitle="Chart 1" chartConfig={chartConfig} className="[&_h3]:text-base">
-        <BarChart accessibilityLayer data={chartData} margin={{
-          left: -20,
-        }}>
-          <CartesianGrid vertical={false}/>
-          <XAxis
-            dataKey="month"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value) => value.slice(0, 3)}
-          />
-          <YAxis
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-          />
-          <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4}/>
-          <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4}/>
-        </BarChart>
+      <DashboardCard key="a" cardTitle="Chart 1" chartConfig={pieChartConfig} className="[&_h3]:text-base">
+        <PieChart>
+          <Pie data={pieChartData} dataKey="visitors">
+            <LabelList
+              dataKey="browser"
+              className="fill-background"
+              stroke="none"
+              fontSize={200}
+              formatter={(value: keyof typeof chartConfig) =>
+                chartConfig[value]?.label
+              }
+            />
+          </Pie>
+        </PieChart>
       </DashboardCard>
       <DashboardCard key="b" cardTitle="Chart 2" chartConfig={chartConfig} className="[&_h3]:text-base">
         <LineChart
