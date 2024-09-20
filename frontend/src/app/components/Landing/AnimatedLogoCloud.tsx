@@ -46,8 +46,8 @@ const AnimatedLogoCloud = () => {
             key={key}
             src={logo.url}
             className="h-10 w-auto px-2 brightness-0 dark:invert"
-            width="112"
-            height="40"
+            width="100"
+            height="100"
             alt={`${logo.name}`}
           />
         ))}
@@ -62,14 +62,3 @@ const AnimatedLogoCloud = () => {
 }
 
 export default AnimatedLogoCloud
-
-// {logos.map((logo, key) => (
-//   <Image
-//     key={key}
-//     src={logo.url}
-//     className="h-10 w-auto px-2 brightness-0 dark:invert"
-//     width="112"
-//     height="40"
-//     alt={`${logo.name}`}
-//   />
-// ))}

@@ -7,7 +7,7 @@ import HeroTabs from "@/app/components/Landing/HeroTabs";
 
 const HeroSection = () => {
   return (
-    <section className="bg-primary-50 overflow-hidden h-[calc(100lvh-60px)] min-h-[740px] rounded-2xl py-20">
+    <section className="bg-primary-50 overflow-hidden h-[calc(100lvh-60px)] min-h-[740px] rounded-2xl py-16 sm:py-20">
       <div className="mx-auto text-center px-4 w-full max-w-2xl">
         <h1 className="font-bold text-5xl sm:text-6xl">
           Say <span className="text-primary-500">goodbye</span> to complex analytics.
