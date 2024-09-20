@@ -10,7 +10,7 @@ const HeroSection = () => {
         <h1 className="font-bold text-5xl sm:text-6xl">
           Say <span className="text-primary-500">goodbye</span> to complex analytics.
         </h1>
-        <p className="text-gray-700 leading-6 text-lg md:text-xl pt-3">
+        <p className="text-gray-700 leading-6 text-lg md:text-xl pt-4">
           GoodBI takes away the complexity of business intelligence with the power of AI. Trusted by many
           high-growth startups.
         </p>

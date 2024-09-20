@@ -43,7 +43,7 @@ const FeatureToggle = () => {
             <LucideSparkles className="h-5 w-5"/> AI-powered
           </span>
           </AccordionTrigger>
-          <AccordionContent className="text-base">
+          <AccordionContent className="text-base text-gray-700">
             Instantly generate key insights from your data, using the latest large-language models from OpenAI.
             <AiFeature className="block h-[368px] md:hidden md:h-[500px]"/>
           </AccordionContent>
@@ -54,7 +54,7 @@ const FeatureToggle = () => {
             <LucideChartArea className="h-5 w-5"/> Data visualisations
           </span>
           </AccordionTrigger>
-          <AccordionContent className="text-base">
+          <AccordionContent className="text-base text-gray-700">
             Get real-time data visualisations from the click of a button.
             <div className="block pt-6 md:hidden md:pt-0">
               <ChartFeature/>
@@ -67,7 +67,7 @@ const FeatureToggle = () => {
             <LucidePencilRuler className="h-5 w-5"/> Fully customisable
           </span>
           </AccordionTrigger>
-          <AccordionContent className="text-base">
+          <AccordionContent className="text-base text-gray-700">
             Place your insights where you want them to be. Resize and move them freely on your dashboard.
             <div className="block pt-6 md:hidden md:pt-0">
               <CustomisableFeature/>

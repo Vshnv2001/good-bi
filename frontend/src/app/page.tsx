@@ -56,7 +56,7 @@ export default function Home() {
       </main>
       <footer className="py-8 bg-gray-100">
         <SectionContainer className="flex gap-12 justify-between items-center">
-          <div className="">
+          <div>
             <div className="flex items-center gap-2 text-3xl text-primary-500 font-extrabold">
               <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-10 w-8" width="28"
                      height="28"/>

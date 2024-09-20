@@ -9,7 +9,8 @@ const SecuritySection = () => {
           </h2>
         </div>
         <div
-          className="mt-12 text-gray-600 flex flex-wrap justify-center lg:justify-between gap-x-8 gap-y-8 font-bold leading-5">
+          className="mt-12 text-gray-700 flex flex-wrap justify-center lg:justify-between gap-x-8 gap-y-8 font-bold leading-5"
+        >
           <div className="w-36">
             Built with
             <div

@@ -11,7 +11,7 @@ const IntegrationSection = () => {
           <h2 className="text-4xl tracking-tight mt-2 sm:text-5xl">
             <span className="font-bold">All your needs, in one platform.</span>
           </h2>
-          <p className="mt-6">
+          <p className="mt-6 text-gray-700">
             Seamless integrations with your favourite business applications, from CRM tools to cloud storage.
           </p>
         </div>
