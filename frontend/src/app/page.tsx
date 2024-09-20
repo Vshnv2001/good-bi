@@ -1,44 +1,27 @@
 'use client'
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 import {IntegrationIconCloud} from "@/app/components/Landing/IntegrationIconCloud";
 import LandingNavBar from "@/app/components/Landing/LandingNavBar";
 import ProductSection from "@/app/components/Landing/ProductSection";
 import FeatureSection from "@/app/components/Landing/FeatureSection";
+import HeroSection from "@/app/components/Landing/HeroSection";
+import {ReactNode} from "react";
+import {cn} from "@/lib/utils";
 
 export default function Home() {
   return (
     <>
-      <LandingNavBar />
+      <LandingNavBar/>
       <main className="text-gray-800">
-        <div className="px-4 max-w-7xl mx-auto">
-          <div className="bg-primary-50 h-[calc(100lvh-60px)] rounded-2xl py-16">
-            <div className="mx-auto text-center px-4 w-full max-w-2xl">
-              <h1 className="font-bold text-5xl sm:text-6xl">
-                Say <span className="text-primary-500">goodbye</span> to complex analytics.
-              </h1>
-              <p className="text-gray-700 leading-6 text-lg md:text-xl pt-3">
-                GoodBI takes away the complexity of business intelligence with the power of AI. Trusted by many
-                high-growth startups.
-              </p>
-              <Button
-                className="text-white text-lg rounded-xl bg-primary-700 shadow-none p-5 hover:bg-primary-600 mt-6"
-                asChild
-              >
-                <Link href="/signup">
-                  Try it free!
-                </Link>
-              </Button>
-            </div>
-          </div>
+        <SectionContainer>
+          <HeroSection/>
           <AnimatedLogoCloud/>
-          <ProductSection />
-          <FeatureSection />
-        </div>
+          <ProductSection/>
+          <FeatureSection/>
+        </SectionContainer>
         <div className="bg-gray-100">
-          <div className="px-4 py-16 max-w-7xl mx-auto">
+          <SectionContainer className="py-16">
             <div className="bg-white rounded-2xl py-12">
               <div className="mx-auto max-w-5xl px-4 flex items-center justify-between gap-8 flex-col md:flex-row">
                 <div className="max-w-md">
@@ -111,9 +94,17 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </SectionContainer>
         </div>
       </main>
     </>
   );
+}
+
+const SectionContainer = ({ className, children }: { className?: string, children: ReactNode }) => {
+  return (
+    <div className={cn("px-4 max-w-7xl mx-auto", className)}>
+      {children}
+    </div>
+  )
 }
