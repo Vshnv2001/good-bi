@@ -38,13 +38,9 @@ const logos = [
 
 const AnimatedLogoCloud = () => {
   return (
-    <Marquee pauseOnHover className="py-16 [--duration:30s]" style={{
-      maskImage:
-        'linear-gradient(to left, transparent 0%, black 20%, black 80%, transparent 100%)',
-    }}>
-      <div
-        className="flex shrink-0 flex-row justify-around gap-6"
-      >
+    <div
+      className="relative flex py-16 w-full flex-col items-center justify-center overflow-hidden bg-background">
+      <Marquee pauseOnHover className="[--duration:30s]">
         {logos.map((logo, key) => (
           <Image
             key={key}
@@ -55,9 +51,25 @@ const AnimatedLogoCloud = () => {
             alt={`${logo.name}`}
           />
         ))}
-      </div>
-    </Marquee>
+      </Marquee>
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-background"></div>
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-background"></div>
+    </div>
+
   )
 }
 
 export default AnimatedLogoCloud
+
+// {logos.map((logo, key) => (
+//   <Image
+//     key={key}
+//     src={logo.url}
+//     className="h-10 w-auto px-2 brightness-0 dark:invert"
+//     width="112"
+//     height="40"
+//     alt={`${logo.name}`}
+//   />
+// ))}
