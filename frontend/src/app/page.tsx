@@ -37,12 +37,12 @@ export default function Home() {
         </SectionContainer>
         <div className="relative bg-black py-16">
           <Particles
-            className="absolute inset-0"
+            className="absolute inset-0 pointer-events-none"
             ease={80}
             color={"#ffffff"}
             refresh
           />
-          <SectionContainer>
+          <SectionContainer className="z-50">
             <p className="font-bold text-gray-100 text-4xl text-center max-w-[830px] mx-auto sm:text-5xl">
               The <span
               className="text-transparent bg-clip-text bg-gradient-to-r from-primary-700 to-secondary-700">future</span> of
