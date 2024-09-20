@@ -79,7 +79,7 @@ const Pricing = () => {
   const Heading = () => (
     <div className="relative z-10 my-12 flex flex-col items-center justify-center gap-4">
       <div className="flex w-full flex-col items-start justify-center space-y-4 md:items-center">
-        <span className="text-primary-500 pt-28 -mt-28" id="pricing">Pricing</span>
+        <span className="text-primary-500 pt-24 -mt-24" id="pricing">Pricing</span>
         <h2 className="font-bold text-4xl mt-2 tracking-tight sm:text-5xl">
           Choose the right plan.
         </h2>
@@ -185,7 +185,7 @@ const Pricing = () => {
   )
 
   return (
-    <section className="relative w-full overflow-hidden text-black lg:px-2">
+    <section className="relative w-full lg:px-2">
       <Heading/>
       <PricingCards/>
     </section>
