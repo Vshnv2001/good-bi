@@ -1,7 +1,7 @@
 import {motion} from 'framer-motion'
 import {useState} from 'react'
 import {DashboardCard} from "@/app/components/DashboardCard";
-import {Bar, BarChart, CartesianGrid, XAxis, YAxis} from "recharts";
+import {Bar, BarChart, CartesianGrid, XAxis, YAxis, Line, LineChart} from "recharts";
 import {ChartConfig} from "@/components/ui/chart";
 import {Responsive, WidthProvider} from "react-grid-layout";
 import '/node_modules/react-grid-layout/css/styles.css';
@@ -111,25 +111,35 @@ const HeroDashboard = () => {
         </BarChart>
       </DashboardCard>
       <DashboardCard key="b" cardTitle="Chart 2" chartConfig={chartConfig} className="[&_h3]:text-base">
-        <BarChart accessibilityLayer data={chartData} margin={{
-          left: -20,
-        }}>
+        <LineChart
+          accessibilityLayer
+          data={chartData}
+          margin={{
+            left: 12,
+            right: 12,
+          }}
+        >
           <CartesianGrid vertical={false}/>
           <XAxis
             dataKey="month"
             tickLine={false}
-            tickMargin={10}
             axisLine={false}
+            tickMargin={8}
             tickFormatter={(value) => value.slice(0, 3)}
           />
-          <YAxis
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
+          <Line
+            dataKey="desktop"
+            type="natural"
+            stroke="var(--color-desktop)"
+            strokeWidth={2}
+            dot={{
+              fill: "var(--color-desktop)",
+            }}
+            activeDot={{
+              r: 6,
+            }}
           />
-          <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4}/>
-          <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4}/>
-        </BarChart>
+        </LineChart>
       </DashboardCard>
       <DashboardCard key="c" cardTitle="Chart 3" chartConfig={chartConfig} className="[&_h3]:text-base">
         <BarChart accessibilityLayer data={chartData} margin={{
@@ -162,7 +172,7 @@ const HeroTabs = () => {
     <div className="p-4 max-w-4xl mx-auto mt-12">
       <div className="bg-gray-50 h-svh p-2 rounded-2xl shadow-lg">
         <Tabs selected={selected} setSelected={(val) => setSelected(val)}/>
-        {selected === 'Dashboard' && <HeroDashboard />}
+        {selected === 'Dashboard' && <HeroDashboard/>}
       </div>
     </div>
   )
