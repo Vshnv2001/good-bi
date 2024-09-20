@@ -16,10 +16,7 @@ const HeroSection = () => {
           GoodBI takes away the complexity of business intelligence with the power of AI. Trusted by many
           high-growth startups.
         </p>
-        <Button
-          className="text-white text-lg rounded-xl bg-primary-700 shadow-none p-5 hover:bg-primary-600 mt-6"
-          asChild
-        >
+        <Button size="lg" className="mt-6" asChild>
           <Link href="/signup">
             Try it free!
           </Link>

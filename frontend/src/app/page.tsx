@@ -49,10 +49,7 @@ export default function Home() {
               business intelligence is here.
             </p>
             <div className="flex justify-center mt-8">
-              <Button
-                className="max-w-sm text-white text-lg rounded-xl bg-primary-700 shadow-none py-5 px-12 hover:bg-primary-600"
-                asChild
-              >
+              <Button asChild size="lg">
                 <Link href="/signup">
                   Join now
                 </Link>
