@@ -1,69 +1,71 @@
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import {
+  LucideBrainCog,
+  LucideCheck,
+  LucideDatabase,
+  LucideFile,
+  LucideMail, LucideServer,
+  LucideSparkles,
+  LucideUsers
+} from 'lucide-react'
 import { useState } from 'react'
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const pricingPlans = [
   {
     name: 'Basic',
-    description: 'Start with essential tools to boost your online presence.',
-    monthlyPrice: 69,
+    description: 'For small businesses and start-ups starting out.',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    link: '/signup',
+    features: [
+      { text: '3 AI-powered KPIs', icon: LucideSparkles },
+      { text: 'Integration with CSV and Excel files', icon: LucideFile },
+      { text: '500MB data processing', icon: LucideDatabase },
+      { text: 'Standard email support', icon: LucideMail }
+    ],
+  },
+  {
+    name: 'Pro',
+    description: 'For small and medium size businesses.',
+    monthlyPrice: 10,
+    annualPrice: 10,
+    link: '/signup',
+    features: [
+      { text: 'Everything in Basic', icon: LucideCheck },
+      { text: '10 AI-powered KPIs', icon: LucideSparkles },
+      { text: 'Integration with CRM tools files', icon: LucideFile },
+      { text: '5GB data processing', icon: LucideDatabase },
+      { text: 'Standard email and chat support', icon: LucideMail }
+    ],
+  },
+  {
+    name: 'Enterprise',
+    description: 'For large companies with many data sources.',
+    monthlyPrice: 49,
     annualPrice: 49,
-    link: 'https://github.com/ansub/syntaxUI',
+    link: '/signup',
     features: [
-      'SEO Strategy & Topic Recommendations',
-      'Competitor Analysis to stand out',
-      'Built-in Keyword Research',
-      'Target latest Google trends',
-      'SEO optimized blogs and socials',
-      'Technical SEO analysis and Reports',
-      'Target 100+ regions and languages',
+      { text: 'Everything in Pro', icon: LucideCheck },
+      { text: 'Unlimited AI-powered KPIs', icon: LucideSparkles },
+      { text: '50GB data processing', icon: LucideDatabase },
+      { text: '24/7 priority support, onboarding and training', icon: LucideMail }
     ],
   },
   {
-    name: 'Basic',
-    description: 'Start with essential tools to boost your online presence.',
-    monthlyPrice: 69,
-    annualPrice: 49,
-    link: 'https://github.com/ansub/syntaxUI',
-    features: [
-      'SEO Strategy & Topic Recommendations',
-      'Competitor Analysis to stand out',
-      'Built-in Keyword Research',
-      'Target latest Google trends',
-      'SEO optimized blogs and socials',
-      'Technical SEO analysis and Reports',
-      'Target 100+ regions and languages',
-    ],
-  },
-  {
-    name: 'Professional',
+    name: 'Custom',
     description:
-      'Unlock enhanced features and premium content to supercharge your business.',
-    monthlyPrice: 299,
-    annualPrice: 199,
-    link: 'https://github.com/ansub/syntaxUI',
+      'For companies requiring tailored usage needs.',
+    monthlyPrice: "Custom",
+    annualPrice: "Custom",
+    link: '/signup',
     features: [
-      'Everything in Basic plan',
-      'Get 25 premium blogs',
-      'Index upto 1000 pages',
-      'Premium support',
-      'Local SEO',
-      'SEO Agent',
-    ],
-  },
-  {
-    name: 'Premium',
-    description:
-      'Ultimate customization and dedicated support for enterprises.',
-    monthlyPrice: 2499,
-    annualPrice: 1666,
-    link: 'https://github.com/ansub/syntaxUI',
-    features: [
-      'Everything in Professional plan',
-      'Get Unlimited premium blogs',
-      'Add your own AI Model key',
-      'Premium support & training sessions',
+      { text: 'Everything in Enterprise', icon: LucideCheck },
+      { text: 'Unlimited data processing', icon: LucideDatabase },
+      { text: 'Custom machine learning models', icon: LucideBrainCog },
+      { text: 'On-premises and hybrid cloud support', icon: LucideServer },
     ],
   },
 ]
@@ -82,6 +84,7 @@ const Pricing = () => {
           Get started with GoodBI and take your business intelligence to the next level.
         </p>
       </div>
+      {/*
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={() => setBillingCycle('M')}
@@ -108,6 +111,7 @@ const Pricing = () => {
           {billingCycle === 'A' && <BackgroundShift shiftKey="annual" />}
         </button>
       </div>
+      */}
     </div>
   )
 
@@ -129,30 +133,36 @@ const Pricing = () => {
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 100 }}
-                className="my-0 text-3xl font-semibold"
+                className="my-0 text-3xl font-bold"
               >
-                <span>
-                  ${billingCycle === 'M' ? plan.monthlyPrice : plan.annualPrice}
-                </span>
-                <span className="text-sm font-normal">
-                  {' '}/ user / {billingCycle === 'M' ? 'month' : 'year'}
-                </span>
+                {plan.monthlyPrice === 'Custom'
+                  ? (
+                    <>Contact us</>
+                  ) : (
+                    <>
+                      <span>
+                        ${billingCycle === 'M' ? plan.monthlyPrice : plan.annualPrice}
+                      </span>
+                      <span className="text-sm font-normal">
+                        {' '}/ user / {billingCycle === 'M' ? 'month' : 'year'}
+                      </span>
+                    </>
+                  )}
               </motion.p>
             </AnimatePresence>
-            <motion.button
-              whileTap={{ scale: 0.985 }}
-              onClick={() => {
-                window.open(plan.link)
-              }}
-              className="mt-8 w-full rounded-lg bg-red-500 py-2 text-sm font-medium text-white hover:bg-red-500/90"
-            >
-              Get Started
-            </motion.button>
+            <Button className="mt-8 text-sm w-full text-white rounded-xl bg-primary-700 px-4 py-2.5 shadow-none hover:bg-primary-600" asChild>
+              <Link href={plan.link}>
+                Get started
+              </Link>
+            </Button>
           </div>
           {plan.features.map((feature, idx) => (
             <div key={idx} className="mb-3 flex items-center gap-2">
-              <Check className="text-red-500" size={18} />
-              <span className="text-sm text-gray-600">{feature}</span>
+              {feature.icon
+                ? <feature.icon className="shrink-0 h-4.5 w-4.5 text-gray-700" />
+                : <LucideCheck className="shrink-0 text-gray-700 h-4.5 w-4.5" />
+              }
+              <span className="text-sm text-gray-600">{feature.text}</span>
             </div>
           ))}
         </div>
