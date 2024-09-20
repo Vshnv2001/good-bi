@@ -4,7 +4,7 @@ const SecuritySection = () => {
       <div className="mx-auto max-w-5xl px-4">
         <div className="max-w-lg">
           <span className="text-primary-500" id="security">Security</span>
-          <h2 className="text-4xl mt-2 sm:text-5xl">
+          <h2 className="text-4xl mt-2 tracking-tight sm:text-5xl">
             <span className="font-bold">You can count on us.</span> Reliable and secure by design.
           </h2>
         </div>

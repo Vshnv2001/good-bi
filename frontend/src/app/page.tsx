@@ -9,6 +9,7 @@ import FeatureSection from "@/app/components/Landing/FeatureSection";
 import HeroSection from "@/app/components/Landing/HeroSection";
 import IntegrationSection from "@/app/components/Landing/IntegrationSection";
 import SecuritySection from "@/app/components/Landing/SecuritySection";
+import PricingSection from "@/app/components/Landing/PricingSection";
 
 export default function Home() {
   return (
@@ -27,12 +28,21 @@ export default function Home() {
             <SecuritySection />
           </SectionContainer>
         </div>
+        <SectionContainer className="py-16">
+          {/*<div className="mx-auto text-center px-4 w-full max-w-2xl">*/}
+          {/*  <span className="text-primary-500" id="pricing">Pricing</span>*/}
+          {/*  <h2 className="font-bold text-4xl mt-2 sm:text-5xl">*/}
+          {/*    Choose the right plan.*/}
+          {/*  </h2>*/}
+          {/*</div>*/}
+          <PricingSection />
+        </SectionContainer>
       </main>
     </>
   );
 }
 
-const SectionContainer = ({ className, children }: { className?: string, children: ReactNode }) => {
+const SectionContainer = ({className, children}: { className?: string, children: ReactNode }) => {
   return (
     <div className={cn("px-4 max-w-7xl mx-auto", className)}>
       {children}
