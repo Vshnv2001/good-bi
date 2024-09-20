@@ -4,8 +4,6 @@ import Link from "next/link"
 
 import { Search } from "lucide-react";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ChartConfig } from "@/components/ui/chart"
@@ -17,17 +15,22 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
+import GBBarChart from "@/app/components/Charts/BarChart";
+import GBLineChart from "@/app/components/Charts/LineChart";
+
+import { BarChartData, LineChartData, PieChartData } from "@/app/types/ChartData";
+import GBPieChart from "../components/Charts/PieChart";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const chartConfig = {
   desktop: {
     label: "Desktop",
-    color: "#2563eb",
+    color: "hsl(var(--chart-1))",
   },
   mobile: {
     label: "Mobile",
-    color: "#60a5fa",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
@@ -40,19 +43,74 @@ const chartData = [
   { month: "June", desktop: 214, mobile: 140 },
 ]
 
+const browserChartConfig = {
+  visitors: {
+    label: "Visitors",
+  },
+  chrome: {
+    label: "Chrome",
+    color: "hsl(var(--chart-1))",
+  },
+  safari: {
+    label: "Safari",
+    color: "hsl(var(--chart-2))",
+  },
+  firefox: {
+    label: "Firefox",
+    color: "hsl(var(--chart-3))",
+  },
+  edge: {
+    label: "Edge",
+    color: "hsl(var(--chart-4))",
+  },
+  other: {
+    label: "Other",
+    color: "hsl(var(--chart-5))",
+  },
+} satisfies ChartConfig
+
+const browserChartData = [
+  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+]
+
+const barChartData = {
+  chartConfig: chartConfig,
+  data: chartData,
+  xAxisDataKey: "month",
+  dataKeys: ["desktop", "mobile"]
+} satisfies BarChartData;
+
+const lineChartData = {
+  chartConfig: chartConfig,
+  data: chartData,
+  xAxisDataKey: "month",
+  dataKeys: ["desktop", "mobile"]
+} satisfies LineChartData;
+
+const pieChartData = {
+  chartConfig: browserChartConfig,
+  data: browserChartData,
+  nameKey: "browser",
+  dataKey: "visitors"
+} satisfies PieChartData;
+
 const layouts = {
   sm: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, static: true },
+    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
     { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
     { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
   ],
   md: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, static: true },
+    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
     { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
     { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
   ],
   lg: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, static: true },
+    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
     { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
     { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
   ]
@@ -95,68 +153,14 @@ export default function Dashboard() {
             compactType="horizontal"
             draggableCancel=".react-resizable-handle-custom"
           >
-            <DashboardCard key="a" cardTitle="Dash 1" chartConfig={chartConfig}>
-              <BarChart accessibilityLayer data={chartData} margin={{
-                left: -20,
-              }}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <YAxis
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                />
-                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-              </BarChart>
+            <DashboardCard key="a" cardTitle="Dash 1">
+              <GBBarChart chartData={barChartData} />
             </DashboardCard>
-            <DashboardCard key="b" cardTitle="Dash 2" chartConfig={chartConfig}>
-              <BarChart accessibilityLayer data={chartData} margin={{
-                left: -20,
-              }}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <YAxis
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                />
-                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-              </BarChart>
+            <DashboardCard key="b" cardTitle="Dash 2">
+              <GBLineChart chartData={lineChartData} />
             </DashboardCard>
-            <DashboardCard key="c" cardTitle="Dash 3" chartConfig={chartConfig}>
-              <BarChart accessibilityLayer data={chartData} margin={{
-                left: -20,
-              }}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <YAxis
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                />
-                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-              </BarChart>
+            <DashboardCard key="c" cardTitle="Dash 3">
+              <GBPieChart chartData={pieChartData} />
             </DashboardCard>
           </ResponsiveGridLayout>
         </div>
