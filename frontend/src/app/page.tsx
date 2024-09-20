@@ -1,8 +1,7 @@
 'use client'
 
-import Image from "next/image";
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 import Meteors from "@/app/components/Landing/Meteors";
 import RetroGrid from "@/app/components/Landing/RetroGrid";
@@ -19,41 +18,12 @@ import {AiFeature} from "@/app/components/Landing/AiFeature";
 import {ChartFeature} from "@/app/components/Landing/ChartFeature";
 import CustomisableFeature from "@/app/components/Landing/CustomisableFeature";
 import {IntegrationIconCloud} from "@/app/components/Landing/IntegrationIconCloud";
+import LandingNavBar from "@/app/components/Landing/LandingNavBar";
 
 export default function Home() {
   return (
     <>
-      <header className="sticky top-0 bg-background z-20">
-        <nav className="max-w-7xl mx-auto flex justify-between items-center py-3 px-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold"
-          >
-            <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-8 w-6" width="28" height="28"/>
-            GoodBI
-            <span className="sr-only">GoodBI</span>
-          </Link>
-          <div className="flex gap-2 items-center">
-            <Button
-              className="text-base rounded-xl text-gray-800 shadow-none"
-              variant="ghost"
-              asChild
-            >
-              <Link href="/login">
-                Login
-              </Link>
-            </Button>
-            <Button
-              className="text-base text-white rounded-xl bg-primary-700 shadow-none px-4 py-2.5 hover:bg-primary-600"
-              asChild
-            >
-              <Link href="/signup">
-                Sign Up
-              </Link>
-            </Button>
-          </div>
-        </nav>
-      </header>
+      <LandingNavBar />
       <main className="text-gray-800">
         <div className="px-4 max-w-7xl mx-auto">
           <div className="bg-primary-50 h-[calc(100lvh-60px)] rounded-2xl py-16">
