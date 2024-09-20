@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils'
-import { AnimatePresence, motion } from 'framer-motion'
+import {cn} from '@/lib/utils'
+import {AnimatePresence, motion} from 'framer-motion'
 import {
   LucideBrainCog,
   LucideCheck,
@@ -7,11 +7,10 @@ import {
   LucideFile,
   LucideMail, LucideServer,
   LucideSparkles,
-  LucideUsers
 } from 'lucide-react'
-import { useState } from 'react'
+import {useState} from 'react'
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 
 const pricingPlans = [
   {
@@ -20,11 +19,12 @@ const pricingPlans = [
     monthlyPrice: 0,
     annualPrice: 0,
     link: '/signup',
+    linkText: 'Join for free',
     features: [
-      { text: '3 AI-powered KPIs', icon: LucideSparkles },
-      { text: 'Integration with CSV and Excel files', icon: LucideFile },
-      { text: '500MB data processing', icon: LucideDatabase },
-      { text: 'Standard email support', icon: LucideMail }
+      {text: '3 AI-powered KPIs', icon: LucideSparkles},
+      {text: 'Integration with CSV and Excel files', icon: LucideFile},
+      {text: '500MB data processing', icon: LucideDatabase},
+      {text: 'Standard email support', icon: LucideMail}
     ],
   },
   {
@@ -33,12 +33,13 @@ const pricingPlans = [
     monthlyPrice: 10,
     annualPrice: 10,
     link: '/signup',
+    linkText: 'Coming soon',
     features: [
-      { text: 'Everything in Basic', icon: LucideCheck },
-      { text: '10 AI-powered KPIs', icon: LucideSparkles },
-      { text: 'Integration with CRM tools files', icon: LucideFile },
-      { text: '5GB data processing', icon: LucideDatabase },
-      { text: 'Standard email and chat support', icon: LucideMail }
+      {text: 'Everything in Basic', icon: LucideCheck},
+      {text: '10 AI-powered KPIs', icon: LucideSparkles},
+      {text: 'Integration with CRM tools files', icon: LucideFile},
+      {text: '5GB data processing', icon: LucideDatabase},
+      {text: 'Standard email and chat support', icon: LucideMail}
     ],
   },
   {
@@ -47,11 +48,12 @@ const pricingPlans = [
     monthlyPrice: 49,
     annualPrice: 49,
     link: '/signup',
+    linkText: 'Coming soon',
     features: [
-      { text: 'Everything in Pro', icon: LucideCheck },
-      { text: 'Unlimited AI-powered KPIs', icon: LucideSparkles },
-      { text: '50GB data processing', icon: LucideDatabase },
-      { text: '24/7 priority support, onboarding and training', icon: LucideMail }
+      {text: 'Everything in Pro', icon: LucideCheck},
+      {text: 'Unlimited AI-powered KPIs', icon: LucideSparkles},
+      {text: '50GB data processing', icon: LucideDatabase},
+      {text: '24/7 priority support, onboarding and training', icon: LucideMail}
     ],
   },
   {
@@ -60,12 +62,13 @@ const pricingPlans = [
       'For companies requiring tailored usage needs.',
     monthlyPrice: "Custom",
     annualPrice: "Custom",
-    link: '/signup',
+    link: 'mailto:cs3216-staff@googlegroups.com',
+    linkText: 'Enquire',
     features: [
-      { text: 'Everything in Enterprise', icon: LucideCheck },
-      { text: 'Unlimited data processing', icon: LucideDatabase },
-      { text: 'Custom machine learning models', icon: LucideBrainCog },
-      { text: 'On-premises and hybrid cloud support', icon: LucideServer },
+      {text: 'Everything in Enterprise', icon: LucideCheck},
+      {text: 'Unlimited data processing', icon: LucideDatabase},
+      {text: 'Custom machine learning models', icon: LucideBrainCog},
+      {text: 'On-premises and hybrid cloud support', icon: LucideServer},
     ],
   },
 ]
@@ -130,9 +133,9 @@ const Pricing = () => {
             <AnimatePresence mode="wait">
               <motion.p
                 key={billingCycle === 'M' ? 'monthly' : 'annual'}
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 100 }}
+                initial={{y: -50, opacity: 0}}
+                animate={{y: 0, opacity: 1}}
+                transition={{type: 'spring', stiffness: 100}}
                 className="my-0 text-3xl font-bold"
               >
                 {plan.monthlyPrice === 'Custom'
@@ -150,17 +153,28 @@ const Pricing = () => {
                   )}
               </motion.p>
             </AnimatePresence>
-            <Button className="mt-8 text-sm w-full text-white rounded-xl bg-primary-700 px-4 py-2.5 shadow-none hover:bg-primary-600" asChild>
-              <Link href={plan.link}>
-                Get started
-              </Link>
+            <Button
+              className={cn(
+                "mt-8 text-sm w-full text-white rounded-xl px-4 py-2.5 shadow-none",
+                plan.linkText === "Coming soon" ? "bg-gray-500 opacity-50" : "bg-primary-700 hover:bg-primary-600"
+              )}
+              disabled={plan.linkText === "Coming soon"}
+              asChild={plan.linkText !== "Coming soon"}
+            >
+              {plan.linkText === "Coming soon"
+                ? <>{plan.linkText}</>
+                : <Link href={plan.link}>
+                  {plan.linkText ? plan.linkText : 'Get started'}
+                </Link>
+              }
+
             </Button>
           </div>
           {plan.features.map((feature, idx) => (
             <div key={idx} className="mb-3 flex items-center gap-2">
               {feature.icon
-                ? <feature.icon className="shrink-0 h-4.5 w-4.5 text-gray-700" />
-                : <LucideCheck className="shrink-0 text-gray-700 h-4.5 w-4.5" />
+                ? <feature.icon className="shrink-0 h-4.5 w-4.5 text-gray-700"/>
+                : <LucideCheck className="shrink-0 text-gray-700 h-4.5 w-4.5"/>
               }
               <span className="text-sm text-gray-600">{feature.text}</span>
             </div>
@@ -172,24 +186,24 @@ const Pricing = () => {
 
   return (
     <section className="relative w-full overflow-hidden  py-12 text-black lg:px-2 lg:py-12">
-      <Heading />
-      <PricingCards />
+      <Heading/>
+      <PricingCards/>
     </section>
   )
 }
 
-const BackgroundShift = ({ shiftKey }: { shiftKey: string }) => (
+const BackgroundShift = ({shiftKey}: { shiftKey: string }) => (
   <motion.span
     key={shiftKey}
     layoutId="bg-shift"
     className="absolute inset-0 -z-10 rounded-lg bg-primary-600"
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.8 }}
-    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+    initial={{opacity: 0, scale: 0.8}}
+    animate={{opacity: 1, scale: 1}}
+    exit={{opacity: 0, scale: 0.8}}
+    transition={{type: 'spring', stiffness: 200, damping: 20}}
   />
 )
 
 export default function PricingSection() {
-  return <Pricing />
+  return <Pricing/>
 }
