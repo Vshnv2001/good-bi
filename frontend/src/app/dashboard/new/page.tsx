@@ -101,7 +101,7 @@ export default function Dashboard() {
                   name="dataset"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="font-normal text-base text-gray-800">Dataset</FormLabel>
+                      <FormLabel>Dataset</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value} >
                         <FormControl>
                           <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
@@ -123,7 +123,7 @@ export default function Dashboard() {
                   name="chartType"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="font-normal text-base text-gray-800">Type of chart</FormLabel>
+                      <FormLabel>Type of chart</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value} >
                         <FormControl>
                           <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
@@ -145,7 +145,7 @@ export default function Dashboard() {
                   name="dateRange"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="font-normal text-base text-gray-800">Date range</FormLabel>
+                      <FormLabel>Date range</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none">
                           <FormControl>
@@ -195,7 +195,7 @@ export default function Dashboard() {
                   name="yRange"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="font-normal text-base text-gray-800">Y range</FormLabel>
+                      <FormLabel>Y range</FormLabel>
                       <Input
                         type="number"
                         {...field}
@@ -209,7 +209,7 @@ export default function Dashboard() {
                   name="title"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="font-normal text-base text-gray-800">Title</FormLabel>
+                      <FormLabel>Title</FormLabel>
                       <Input
                         type="text"
                         {...field}
@@ -223,9 +223,9 @@ export default function Dashboard() {
                   name="kpiDescription"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="font-normal text-base text-gray-800">KPI description</FormLabel>
+                      <FormLabel>KPI description</FormLabel>
                       <Textarea
-                        className="h-28 rounded-xl text-base border border-gray-200/70 bg-white shadow-none resize-none"
+                        className="h-28 resize-none"
                         {...field}
                       />
                       <FormMessage />

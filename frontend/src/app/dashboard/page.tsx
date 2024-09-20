@@ -130,7 +130,7 @@ export default function Dashboard() {
                 <Input
                   type="search"
                   placeholder="Search"
-                  className="pl-10 rounded-xl text-base placeholder:text-gray-500 border border-gray-200/70 bg-white shadow-none md:w-56"
+                  className="pl-10 md:w-56"
                 />
               </div>
             </form>
