@@ -8,7 +8,7 @@ const ProductSection = () => {
   return (
     <div className="bg-gray-50 rounded-2xl py-24">
       <div className="mx-auto text-center px-4 w-full max-w-2xl">
-        <span className="text-primary-500" id="product">Product</span>
+        <span className="text-primary-500 pt-44 -mt-44" id="product">Product</span>
         <h2 className="font-bold tracking-tight text-4xl mt-2 sm:text-5xl">
           The ultimate <span className="text-primary-500">AI business intelligence</span> tool.
         </h2>
