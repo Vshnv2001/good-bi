@@ -9,7 +9,7 @@ import CustomisableFeature from "@/app/components/Landing/CustomisableFeature";
 
 const FeatureSection = () => {
   return (
-    <div className="py-32 px-4 md:px-16">
+    <section className="py-32 px-4 md:px-16">
       <span className="text-primary-500 pt-40 -mt-40" id="features">Features</span>
       <h2 className="text-4xl tracking-tight mt-2 max-w-xl sm:text-5xl">
         <span className="font-bold">Get better insights, faster.</span>
@@ -17,7 +17,7 @@ const FeatureSection = () => {
         Powerful analytics on metrics that matter.
       </h2>
       <FeatureToggle />
-    </div>
+    </section>
   )
 }
 

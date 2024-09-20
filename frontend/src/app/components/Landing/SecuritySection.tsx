@@ -1,6 +1,6 @@
 const SecuritySection = () => {
   return (
-    <div className="bg-white rounded-2xl py-16">
+    <section className="bg-white rounded-2xl py-16">
       <div className="mx-auto max-w-5xl px-4">
         <div className="max-w-lg">
           <span className="text-primary-500 pt-36 -mt-36" id="security">Security</span>
@@ -58,7 +58,7 @@ const SecuritySection = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

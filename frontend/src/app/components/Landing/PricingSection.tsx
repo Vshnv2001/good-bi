@@ -185,7 +185,7 @@ const Pricing = () => {
   )
 
   return (
-    <section className="relative w-full overflow-hidden  py-12 text-black lg:px-2 lg:py-12">
+    <section className="relative w-full overflow-hidden text-black lg:px-2">
       <Heading/>
       <PricingCards/>
     </section>

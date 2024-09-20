@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const HeroSection = () => {
   return (
-    <div className="bg-primary-50 h-[calc(100lvh-60px)] rounded-2xl py-16">
+    <section className="bg-primary-50 h-[calc(100lvh-60px)] rounded-2xl py-16">
       <div className="mx-auto text-center px-4 w-full max-w-2xl">
         <h1 className="font-bold text-5xl sm:text-6xl">
           Say <span className="text-primary-500">goodbye</span> to complex analytics.
@@ -23,7 +23,7 @@ const HeroSection = () => {
           </Link>
         </Button>
       </div>
-    </div>
+    </section>
   )
 }
 
