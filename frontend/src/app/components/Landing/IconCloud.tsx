@@ -79,6 +79,7 @@ export default function IconCloud({iconSlugs}: DynamicCloudProps) {
 
   return (
     <Cloud {...cloudProps}>
+      <div></div>
       <>{renderedIcons}</>
     </Cloud>
   );
