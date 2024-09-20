@@ -11,10 +11,9 @@ const FeatureSection = () => {
   return (
     <section className="py-32 px-4 md:px-16">
       <span className="text-primary-500 pt-24 -mt-24" id="features">Features</span>
-      <h2 className="text-4xl tracking-tight mt-2 max-w-xl sm:text-5xl">
-        <span className="font-bold">Get better insights, faster.</span>
-        <br/>
-        Powerful analytics on metrics that matter.
+      <h2 className="text-4xl tracking-tight mt-2 sm:text-5xl">
+        <div className="font-bold max-w-2xl">Get better insights, faster.</div>
+        <div className="max-w-xl">Powerful analytics on metrics that matter.</div>
       </h2>
       <FeatureToggle />
     </section>
