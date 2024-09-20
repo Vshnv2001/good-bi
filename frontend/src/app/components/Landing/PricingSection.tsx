@@ -120,9 +120,9 @@ const Pricing = () => {
       {pricingPlans.map((plan, index) => (
         <div
           key={index}
-          className="w-full rounded-xl border-[1px] border-gray-300 p-6 text-left dark:border-gray-600"
+          className="w-full rounded-xl border border-gray-200/70 p-6 text-left dark:border-gray-600"
         >
-          <p className="mb-1 mt-0 text-sm font-medium uppercase text-red-500">
+          <p className="mb-1 mt-0 text-sm font-medium uppercase text-primary-600">
             {plan.name}
           </p>
           <p className="my-0 mb-6 text-sm text-gray-600">{plan.description}</p>
@@ -182,7 +182,7 @@ const BackgroundShift = ({ shiftKey }: { shiftKey: string }) => (
   <motion.span
     key={shiftKey}
     layoutId="bg-shift"
-    className="absolute inset-0 -z-10 rounded-lg bg-red-500"
+    className="absolute inset-0 -z-10 rounded-lg bg-primary-600"
     initial={{ opacity: 0, scale: 0.8 }}
     animate={{ opacity: 1, scale: 1 }}
     exit={{ opacity: 0, scale: 0.8 }}
