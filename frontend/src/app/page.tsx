@@ -13,6 +13,7 @@ import PricingSection from "@/app/components/Landing/PricingSection";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import Particles from "@/app/components/Landing/Particles";
 
 export default function Home() {
   return (
@@ -34,18 +35,21 @@ export default function Home() {
         <SectionContainer className="py-16">
           <PricingSection/>
         </SectionContainer>
-        <div className="bg-black py-16">
-          <SectionContainer>
+        <div className="relative bg-black py-16">
+          <Particles
+            className="absolute inset-0 pointer-events-none"
+            ease={80}
+            color={"#ffffff"}
+            refresh
+          />
+          <SectionContainer className="z-50">
             <p className="font-bold text-gray-100 text-4xl text-center max-w-[830px] mx-auto sm:text-5xl">
               The <span
               className="text-transparent bg-clip-text bg-gradient-to-r from-primary-700 to-secondary-700">future</span> of
               business intelligence is here.
             </p>
             <div className="flex justify-center mt-8">
-              <Button
-                className="max-w-sm text-white text-lg rounded-xl bg-primary-700 shadow-none py-5 px-12 hover:bg-primary-600"
-                asChild
-              >
+              <Button asChild size="lg">
                 <Link href="/signup">
                   Join now
                 </Link>
