@@ -134,7 +134,7 @@ export default function Dashboard() {
                 />
               </div>
             </form>
-            <Button className="text-base text-white rounded-xl bg-primary-700 px-4 py-2.5 shadow-none hover:bg-primary-600" asChild>
+            <Button asChild>
               <Link href="/dashboard/new">
                 Create New
               </Link>

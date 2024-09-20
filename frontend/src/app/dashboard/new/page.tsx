@@ -198,7 +198,6 @@ export default function Dashboard() {
                       <FormLabel className="font-normal text-base text-gray-800">Y range</FormLabel>
                       <Input
                         type="number"
-                        className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
                         {...field}
                       />
                       <FormMessage />
@@ -213,7 +212,6 @@ export default function Dashboard() {
                       <FormLabel className="font-normal text-base text-gray-800">Title</FormLabel>
                       <Input
                         type="text"
-                        className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
                         {...field}
                       />
                       <FormMessage />

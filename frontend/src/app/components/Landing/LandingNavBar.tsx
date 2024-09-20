@@ -44,7 +44,6 @@ const LandingNavBar = () => {
             </Link>
           </Button>
           <Button
-            className="text-base text-white rounded-xl bg-primary-700 shadow-none px-4 py-2.5 hover:bg-primary-600"
             asChild
           >
             <Link href="/signup">
