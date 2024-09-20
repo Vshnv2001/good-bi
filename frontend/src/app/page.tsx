@@ -13,6 +13,7 @@ import PricingSection from "@/app/components/Landing/PricingSection";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import Particles from "@/app/components/Landing/Particles";
 
 export default function Home() {
   return (
@@ -34,7 +35,13 @@ export default function Home() {
         <SectionContainer className="py-16">
           <PricingSection/>
         </SectionContainer>
-        <div className="bg-black py-16">
+        <div className="relative bg-black py-16">
+          <Particles
+            className="absolute inset-0"
+            ease={80}
+            color={"#ffffff"}
+            refresh
+          />
           <SectionContainer>
             <p className="font-bold text-gray-100 text-4xl text-center max-w-[830px] mx-auto sm:text-5xl">
               The <span
