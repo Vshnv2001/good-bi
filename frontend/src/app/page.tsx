@@ -1,11 +1,11 @@
 'use client'
 
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
-import {IntegrationIconCloud} from "@/app/components/Landing/IntegrationIconCloud";
 import LandingNavBar from "@/app/components/Landing/LandingNavBar";
 import ProductSection from "@/app/components/Landing/ProductSection";
 import FeatureSection from "@/app/components/Landing/FeatureSection";
 import HeroSection from "@/app/components/Landing/HeroSection";
+import IntegrationSection from "@/app/components/Landing/IntegrationSection";
 import {ReactNode} from "react";
 import {cn} from "@/lib/utils";
 
@@ -22,20 +22,7 @@ export default function Home() {
         </SectionContainer>
         <div className="bg-gray-100">
           <SectionContainer className="py-16">
-            <div className="bg-white rounded-2xl py-12">
-              <div className="mx-auto max-w-5xl px-4 flex items-center justify-between gap-8 flex-col md:flex-row">
-                <div className="max-w-md">
-                  <span className="text-primary-500" id="integration">Integration</span>
-                  <h2 className="text-4xl mt-2 sm:text-5xl">
-                    <span className="font-bold">All your needs, in one platform.</span>
-                  </h2>
-                  <p className="mt-6">
-                    Seamless integrations with your favourite business applications, from CRM tools to cloud storage.
-                  </p>
-                </div>
-                <IntegrationIconCloud/>
-              </div>
-            </div>
+            <IntegrationSection />
             <div className="bg-white rounded-2xl py-16 mt-8">
               <div className="mx-auto max-w-5xl px-4">
                 <div className="max-w-lg">

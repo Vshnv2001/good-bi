@@ -35,7 +35,7 @@ const FeatureToggle = () => {
   }
 
   return (
-    <div className="flex h-full mt-12 items-center gap-12 md:mt-0 md:h-[600px]">
+    <div className="flex h-full mt-12 items-center gap-12 md:mt-0 md:h-[540px]">
       <Accordion className="w-full md:w-2/5" type="single" collapsible value={value} onValueChange={handleValueChange}>
         <AccordionItem value="item-1">
           <AccordionTrigger>
