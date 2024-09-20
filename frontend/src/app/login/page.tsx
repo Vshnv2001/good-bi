@@ -93,8 +93,7 @@ export default function Login() {
                 </FormItem>
               )}
             />
-            <Button type="submit"
-                    className="text-base text-white rounded-xl bg-primary-700 px-4 py-2.5 shadow-none hover:bg-primary-600">
+            <Button type="submit">
               Login
             </Button>
           </form>
