@@ -112,7 +112,7 @@ export default function Signup() {
             />
             <Button type="submit"
                     className="text-base text-white rounded-xl bg-primary-700 px-4 py-2.5 shadow-none hover:bg-primary-600">
-              Login
+              Sign up
             </Button>
           </form>
         </Form>
