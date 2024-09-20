@@ -113,13 +113,13 @@ export function AiFeature({
 
 const Icons = {
   csv: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" className="stroke-green-700">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16" className="stroke-green-700">
       <path fill="none" stroke="" strokeLinecap="round" strokeLinejoin="round"
             d="M1.5 3.5c0-.54.48-1 1.08-1H6.5l1.54 1h5.38c.6 0 1.08.44 1.08.98l-.09 9.04c0 .54-.48.98-1.08.98H2.58c-.6 0-1.08-.44-1.08-.98zm2 4v4m3-4v4m3-4v4m3-4v4m-9 0h9m-9-2h9m-9-2h9"/>
     </svg>
   ),
   excel: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
       <path fill="#20744a" fillRule="evenodd"
             d="M28.781 4.405h-10.13V2.018L2 4.588v22.527l16.651 2.868v-3.538h10.13A1.16 1.16 0 0 0 30 25.349V5.5a1.16 1.16 0 0 0-1.219-1.095m.16 21.126H18.617l-.017-1.889h2.487v-2.2h-2.506l-.012-1.3h2.518v-2.2H18.55l-.012-1.3h2.549v-2.2H18.53v-1.3h2.557v-2.2H18.53v-1.3h2.557v-2.2H18.53v-2h10.411Z"/>
       <path fill="#20744a"
@@ -129,7 +129,7 @@ const Icons = {
     </svg>
   ),
   onedrive: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 165">
+    <svg xmlns="http://www.w3.org/2000/svg" width="256" height="165" viewBox="0 0 256 165">
       <path fill="#0364b8"
             d="m154.66 110.682l52.842-50.534c-10.976-42.8-54.57-68.597-97.37-57.62a80 80 0 0 0-46.952 33.51c.817-.02 91.48 74.644 91.48 74.644"/>
       <path fill="#0078d4"
