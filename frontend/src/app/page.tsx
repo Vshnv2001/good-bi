@@ -12,8 +12,8 @@ import SecuritySection from "@/app/components/Landing/SecuritySection";
 import PricingSection from "@/app/components/Landing/PricingSection";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
 import Particles from "@/app/components/Landing/Particles";
+import LandingFooter from "@/app/components/Landing/LandingFooter";
 
 export default function Home() {
   return (
@@ -58,38 +58,7 @@ export default function Home() {
           </SectionContainer>
         </div>
       </main>
-      <footer className="py-8 bg-gray-100">
-        <SectionContainer className="flex gap-12 justify-between items-center">
-          <div>
-            <div className="flex items-center gap-2 text-3xl text-primary-500 font-extrabold">
-              <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-10 w-8" width="28"
-                     height="28"/>
-              GoodBI
-              <span className="sr-only">GoodBI</span>
-            </div>
-            <span className="block text-gray-500 text-sm mt-4">
-            &copy; {new Date().getFullYear()} GoodBI. All Rights Reserved.
-          </span>
-          </div>
-          <nav className="justify-end flex flex-wrap gap-y-3 gap-x-7 text-gray-600 flex-col sm:flex-row">
-            <Link className="transition-colors duration-100 hover:text-primary-700" href="/#product">
-              Product
-            </Link>
-            <Link className="transition-colors duration-100 hover:text-primary-700" href="/#features">
-              Features
-            </Link>
-            <Link className="transition-colors duration-100 hover:text-primary-700" href="/#integration">
-              Integration
-            </Link>
-            <Link className="transition-colors duration-100 hover:text-primary-700" href="/#security">
-              Security
-            </Link>
-            <Link className="transition-colors duration-100 hover:text-primary-700" href="/#pricing">
-              Pricing
-            </Link>
-          </nav>
-        </SectionContainer>
-      </footer>
+      <LandingFooter />
     </>
   );
 }
