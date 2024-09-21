@@ -6,7 +6,7 @@ import {cn} from "@/lib/utils";
 
 const LandingFooter = ({className}: { className?: string }) => {
   return (
-    <footer className={cn("py-8 bg-gray-100", className)}>
+    <footer className={cn("py-4 bg-gray-100", className)}>
       <div className="px-4 max-w-7xl mx-auto flex gap-8 justify-between items-center">
         <div className="flex items-center gap-2 text-3xl text-primary-500 font-extrabold">
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-10 w-8" width="28"
