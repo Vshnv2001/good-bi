@@ -20,8 +20,8 @@ export default function PrivacyPolicy() {
               (&quot;Services&quot;). This includes interactions such as:
             </p>
             <ul>
-              <li>Visiting our website</li>
-              <li>Engage with us in other related ways, including any sales, marketing, or events</li>
+              <li>Visiting our website.</li>
+              <li>Engage with us in other related ways, including any sales, marketing, or events.</li>
             </ul>
           </div>
           <div>

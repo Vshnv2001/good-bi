@@ -34,7 +34,7 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-[600px] h-svh bg-gray-100 grid w-full">
+    <main className="min-h-[800px] h-svh bg-gray-100 grid w-full">
       <Link
         href="/"
         className={`fixed top-4 left-4 sm:top-12 sm:left-12 inline-flex items-center gap-1 text-gray-500
@@ -98,6 +98,17 @@ export default function Login() {
             </Button>
           </form>
         </Form>
+        <p className="mt-8 text-center text-sm text-gray-500 max-w-64 mx-auto">
+          By proceeding, you agree to our{" "}
+          <Link href="/privacy-policy" target="_blank" className="underline transition-colors duration-100 hover:text-gray-700">
+            Privacy Policy
+          </Link>
+          {' '}and{' '}
+          <Link href="/terms-of-service" target="_blank" className="underline transition-colors duration-100 hover:text-gray-700">
+            Terms of Service
+          </Link>
+          .
+        </p>
       </div>
     </main>
   )
