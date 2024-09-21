@@ -34,7 +34,7 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-[800px] h-svh bg-gray-100 grid w-full">
+    <main className="min-h-[600px] h-svh bg-gray-100 grid w-full">
       <Link
         href="/"
         className={`fixed top-4 left-4 sm:top-12 sm:left-12 inline-flex items-center gap-1 text-gray-500
@@ -53,8 +53,8 @@ export default function Login() {
           GoodBI
           <span className="sr-only">GoodBI</span>
         </Link>
-        <h1 className="font-bold text-3xl text-center mt-10">Welcome back!</h1>
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <h1 className="font-bold tracking-tight text-3xl text-center mt-4">Welcome back!</h1>
+        <p className="mt-2 text-center text-gray-500">
           New here?{' '}
           <Link className="transition-colors duration-100 text-primary-700 hover:text-primary-500" href="/signup">
             Sign up
