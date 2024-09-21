@@ -14,27 +14,25 @@ const layout = [
 
 const CustomisableFeature = () => {
   return (
-    <div className="relative bg-gray-100 rounded-lg pt-2">
-      <span className="pl-2 z-10 text-sm text-gray-500">
+    <div className="relative bg-gray-50 rounded-lg pt-2">
+      <div className="z-10 text-sm mx-auto max-w-fit text-gray-800 rounded-md px-3 py-1 bg-gray-200">
         Dashboard
-      </span>
+      </div>
       <ResponsiveGridLayout
-        className="layout"
+        className="layout [&_.react-grid-placeholder]:rounded-lg"
         layouts={{ lg: layout }}
         cols={{ lg: 2, md: 2, sm: 2, xs: 2, xxs: 2 }}
         rowHeight={50}
         width={500}
         maxRows={2}
       >
-        <div key="a" className="rounded-lg flex items-center justify-center bg-white border border-gray-200/70">
-          Insight A
-        </div>
-        <div key="b" className="rounded-lg flex items-center justify-center bg-white border border-gray-200/70">
-          Insight B
-        </div>
-        <div key="c" className="rounded-lg flex items-center justify-center bg-white border border-gray-200/70">
-          Insight C
-        </div>
+        {["a", "b", "c"].map((letter) => {
+          return (
+            <div key={letter} className="rounded-lg bg-white flex items-center justify-center border border-gray-200/70">
+              Insight {letter.toUpperCase()}
+            </div>
+          )
+        })}
       </ResponsiveGridLayout>
     </div>
   )
