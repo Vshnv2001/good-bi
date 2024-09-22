@@ -1,14 +1,24 @@
-import './globals.css'
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { Inter } from 'next/font/google'
-import { SuperTokensProvider } from "./components/supertokensProvider";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 400 700 800 900",
+});
 
 export const metadata: Metadata = {
-  title: 'GoodBI',
-  description: 'GoodBI',
-}
+  title: "GoodBI",
+  description: "The ultimate AI business intelligence platform.",
+};
 
 export default function RootLayout({
   children,
@@ -17,9 +27,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <SuperTokensProvider>
-        <body className={inter.className}>{children}</body>
-      </SuperTokensProvider>
+      <body
+        className={`${inter.variable} font-sans ${geistMono.variable} antialiased`}
+      >
+        {children}
+      </body>
     </html>
   )
 }
