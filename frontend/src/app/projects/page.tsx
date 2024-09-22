@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { Search, EllipsisVertical } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,14 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Responsive, WidthProvider } from "react-grid-layout";
 
 import { NavBar } from "@/app/components/NavBar";
-
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardFooter
-} from "@/components/ui/card"
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';

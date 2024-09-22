@@ -17,6 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import axios from 'axios';
+
 import { NavBar } from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
@@ -36,8 +38,22 @@ export default function Dashboard() {
     resolver: zodResolver(FormSchema),
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(JSON.stringify(data, null, 2));
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/create`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+      } else {
+        console.error('Failed to submit dataset');
+      }
+    } catch (error) {
+      console.error('Error submitting dataset:', error);
+    }
   }
 
   return (
