@@ -21,12 +21,12 @@ import {
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
-import { Project } from "@/app/types/Project"
+import { ProjectCardData } from "@/app/types/ProjectCardData"
 import { ProjectCard } from "../components/ProjectCard";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const projects: Project[] = [
+const projects: ProjectCardData[] = [
     {
         id: "1",
         name: "Project 1",
@@ -84,7 +84,7 @@ export default function Projects() {
                         {
                             projects.map((project) => {
                                 return (
-                                    <ProjectCard project={project} />
+                                    <ProjectCard key={project.id} project={project} />
                                 )
                             })
                         }
