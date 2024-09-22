@@ -13,7 +13,7 @@ const ProductSection = () => {
           The ultimate <span className="text-primary-500">AI business intelligence</span> tool.
         </h2>
       </div>
-      <div className="grid grid-cols-1 max-w-5xl mx-auto gap-4 mt-12 px-8 md:grid-cols-3">
+      <div className="grid grid-cols-1 max-w-5xl mx-auto gap-4 mt-12 px-4 md:grid-cols-3">
         <div className="relative overflow-hidden bg-white rounded-xl h-[216px] border border-gray-200/70">
           <Meteors number={200}/>
           <div className="flex flex-col h-full justify-end p-5">

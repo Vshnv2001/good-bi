@@ -30,6 +30,9 @@ const LandingFooter = ({className}: { className?: string }) => {
           <Link className="transition-colors duration-100 hover:text-primary-700" href="/#pricing">
             Pricing
           </Link>
+          <Link className="transition-colors duration-100 hover:text-primary-700" href="/#faq">
+            FAQ
+          </Link>
         </nav>
       </div>
       <div className="text-sm mt-4 text-gray-500 px-4 max-w-7xl mx-auto border-t">

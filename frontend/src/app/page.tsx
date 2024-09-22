@@ -14,6 +14,7 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import Particles from "@/app/components/Landing/Particles";
 import LandingFooter from "@/app/components/Landing/LandingFooter";
+import FAQSection from "@/app/components/Landing/FAQSection";
 
 export default function Home() {
   return (
@@ -32,8 +33,9 @@ export default function Home() {
             <SecuritySection/>
           </SectionContainer>
         </div>
-        <SectionContainer className="py-16">
+        <SectionContainer className="py-16 space-y-24">
           <PricingSection/>
+          <FAQSection/>
         </SectionContainer>
         <div className="relative bg-black py-16">
           <Particles
