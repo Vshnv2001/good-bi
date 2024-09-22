@@ -1,6 +1,12 @@
 import { ChartConfig } from "@/components/ui/chart"
 
-interface ChartData {
+export enum ChartType {
+    Bar = "bar",
+    Line = "line",
+    Pie = "pie"
+}
+
+export type ChartData = {
     chartConfig: ChartConfig,
     data: {}[]
 }

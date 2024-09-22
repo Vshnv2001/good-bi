@@ -1,4 +1,4 @@
-export type Project = {
+export type ProjectCardData = {
     id: string,
     name: string,
     lastUpdated: Date
