@@ -16,10 +16,10 @@ import {
 
 import { format } from "date-fns"
 
-import { Project } from "@/app/types/Project"
+import { ProjectCardData } from "@/app/types/ProjectCardData"
 
 interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
-    project: Project
+    project: ProjectCardData
 }
 
 const ProjectCard = React.forwardRef<

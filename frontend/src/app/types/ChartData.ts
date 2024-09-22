@@ -8,7 +8,7 @@ export enum ChartType {
 
 export type ChartData = {
     chartConfig: ChartConfig,
-    data: {}[]
+    data: object[]
 }
 
 export type BarChartData = ChartData & {
