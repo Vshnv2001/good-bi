@@ -15,12 +15,10 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
-import GBBarChart from "@/app/components/Charts/BarChart";
-import GBLineChart from "@/app/components/Charts/LineChart";
-import GBPieChart from "@/app/components/Charts/PieChart";
 
-import { BarChartData, LineChartData, PieChartData } from "@/app/types/ChartData";
+import { BarChartData, LineChartData, PieChartData, ChartType } from "@/app/types/ChartData";
 import { usePathname } from "next/navigation";
+import { DashboardCardData } from "@/app/types/DashboardCardData";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -35,7 +33,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const chartData = [
+const dbData = [
   { month: "January", desktop: 186, mobile: 80 },
   { month: "February", desktop: 305, mobile: 200 },
   { month: "March", desktop: 237, mobile: 120 },
@@ -80,24 +78,48 @@ const browserChartData = [
 
 const barChartData = {
   chartConfig: chartConfig,
-  data: chartData,
+  data: dbData,
   xAxisDataKey: "month",
   dataKeys: ["desktop", "mobile"]
-} satisfies BarChartData;
+} as BarChartData;
 
 const lineChartData = {
   chartConfig: chartConfig,
-  data: chartData,
+  data: dbData,
   xAxisDataKey: "month",
   dataKeys: ["desktop", "mobile"]
-} satisfies LineChartData;
+} as LineChartData;
 
 const pieChartData = {
   chartConfig: browserChartConfig,
   data: browserChartData,
   nameKey: "browser",
   dataKey: "visitors"
-} satisfies PieChartData;
+} as PieChartData;
+
+const cardData: DashboardCardData[] = [
+  {
+    id: "1",
+    key: "a",
+    title: "Insight 1",
+    chartType: ChartType.Bar,
+    chartData: barChartData
+  },
+  {
+    id: "2",
+    key: "b",
+    title: "Insight 2",
+    chartType: ChartType.Line,
+    chartData: lineChartData,
+  },
+  {
+    id: "3",
+    key: "c",
+    title: "Insight 3",
+    chartType: ChartType.Pie,
+    chartData: pieChartData
+  },
+]
 
 const layouts = {
   sm: [
@@ -154,15 +176,14 @@ export default function Dashboard() {
             compactType="horizontal"
             draggableCancel=".react-resizable-handle-custom"
           >
-            <DashboardCard key="a" cardTitle="Dash 1">
-              <GBBarChart chartData={barChartData} />
-            </DashboardCard>
-            <DashboardCard key="b" cardTitle="Dash 2">
-              <GBLineChart chartData={lineChartData} />
-            </DashboardCard>
-            <DashboardCard key="c" cardTitle="Dash 3">
-              <GBPieChart chartData={pieChartData} />
-            </DashboardCard>
+            {
+              cardData.map((data) => {
+                console.log(data.key)
+                return (
+                  <DashboardCard key={data.key} data={data} />
+                )
+              })
+            }
           </ResponsiveGridLayout>
         </div>
       </main>

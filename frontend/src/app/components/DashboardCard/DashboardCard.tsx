@@ -11,26 +11,37 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { DashboardCardData } from "@/app/types/DashboardCardData";
+import { BarChartData, ChartType, LineChartData, PieChartData } from "@/app/types/ChartData";
+import GBBarChart from "../Charts/BarChart";
+import GBLineChart from "../Charts/LineChart";
+import GBPieChart from "../Charts/PieChart";
 
 interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
-    key: string,
-    cardTitle: string,
-    children: React.ReactElement
+    data: DashboardCardData,
 }
 
 const DashboardCard = React.forwardRef<
     HTMLDivElement,
     DashboardCardProps
->(({ key, cardTitle, children, className, ...props }, ref) => {
+>(({ data, children, className, ...props }, ref) => {
     return (
-        <Card ref={ref} key={key} className={cn("flex flex-col", className)} {...props}>
+        <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
-                <CardTitle>{cardTitle}</CardTitle>
+                <CardTitle>{data.title}</CardTitle>
                 <EllipsisVertical className="text-gray-500 w-5 h-5" />
             </CardHeader>
             <CardContent className="flex flex-grow px-3 pb-3 max-h-full overflow-hidden w-full">
-            {children}
-                
+                {
+                    data.chartType == ChartType.Bar
+                        ? <GBBarChart chartData={data.chartData as BarChartData} />
+                        : data.chartType == ChartType.Line
+                            ? <GBLineChart chartData={data.chartData as LineChartData} />
+                            : data.chartType == ChartType.Pie
+                                ? <GBPieChart chartData={data.chartData as PieChartData} />
+                                : <div></div>
+                }
+                {children}
             </CardContent>
         </Card>
     );
