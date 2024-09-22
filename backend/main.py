@@ -33,6 +33,7 @@ async def create_dataset(
     import os
 
     POSTGRES_URI = os.getenv('POSTGRES_URI')
+    print(f"POSTGRES_URI: {POSTGRES_URI}")
     conn = psycopg2.connect(POSTGRES_URI)
     cursor = conn.cursor()
 

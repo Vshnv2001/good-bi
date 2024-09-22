@@ -9,21 +9,27 @@ services:
       - ./backend:/backend
     environment:
       - PYTHONUNBUFFERED=1
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=goodbiuser
+      - DB_PASSWORD=goodbye
+      - DB_NAME=goodbi-db
+      - POSTGRES_URI=postgresql://goodbiuser:goodbye@db:5432/goodbi-db
     depends_on:
       - db
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/frontend
-      - /frontend/node_modules
-      - /frontend/.next
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-    depends_on:
-      - backend
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./frontend:/frontend
+  #     - /frontend/node_modules
+  #     - /frontend/.next
+  #   environment:
+  #     - NEXT_PUBLIC_API_URL=http://localhost:8000
+  #   depends_on:
+  #     - backend
 
   db:
     image: postgres:15

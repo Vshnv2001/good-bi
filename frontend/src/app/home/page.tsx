@@ -16,7 +16,7 @@ import { NavBar } from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
-import { DashboardCard } from "../components/DashboardCards/DashboardCards";
+import { DashboardCard } from "@/app/components/DashboardCard";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
