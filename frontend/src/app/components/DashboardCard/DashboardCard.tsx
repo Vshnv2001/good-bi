@@ -23,9 +23,9 @@ const DashboardCard = React.forwardRef<
     DashboardCardProps
 >(({ key, cardTitle, children, className, ...props }, ref) => {
     return (
-        <Card ref={ref} key={key} className={cn("flex flex-col border-0 shadow-none", className)} {...props}>
-            <CardHeader className="p-3 space-y-0 flex-row items-center justify-between">
-                <CardTitle className="text-xl text-gray-800 font-bold">{cardTitle}</CardTitle>
+        <Card ref={ref} key={key} className={cn("flex flex-col", className)} {...props}>
+            <CardHeader className="flex-row items-center justify-between">
+                <CardTitle>{cardTitle}</CardTitle>
                 <EllipsisVertical className="text-gray-500 w-5 h-5" />
             </CardHeader>
             <CardContent className="flex flex-grow px-3 pb-3 max-h-full overflow-hidden w-full">
