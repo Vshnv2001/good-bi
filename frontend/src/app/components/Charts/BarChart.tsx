@@ -30,7 +30,7 @@ const GBBarChart = ({ chartData }: { chartData: BarChartData }) => {
                 {
                     chartData.dataKeys.map((dataKey) => {
                         return (
-                            <Bar dataKey={dataKey} fill={`var(--color-${dataKey})`} radius={4} />
+                            <Bar key={dataKey} dataKey={dataKey} fill={`var(--color-${dataKey})`} radius={4} />
                         )
                     })
                 }

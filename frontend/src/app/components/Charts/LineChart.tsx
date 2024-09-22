@@ -30,7 +30,7 @@ const GBLineChart = ({ chartData }: { chartData: LineChartData }) => {
                 {
                     chartData.dataKeys.map((dataKey) => {
                         return (
-                            <Line type="natural" dataKey={dataKey} stroke={`var(--color-${dataKey})`} strokeWidth={2} />
+                            <Line type="natural" key={dataKey} dataKey={dataKey} stroke={`var(--color-${dataKey})`} strokeWidth={2} />
                         )
                     })
                 }
