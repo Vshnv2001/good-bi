@@ -5,17 +5,17 @@ interface ChartData {
     data: {}[]
 }
 
-export interface BarChartData extends ChartData {
+export type BarChartData = ChartData & {
     xAxisDataKey: string,
     dataKeys: string[]
 }
 
-export interface LineChartData extends ChartData {
+export type LineChartData = ChartData & {
     xAxisDataKey: string,
     dataKeys: string[]
 }
 
-export interface PieChartData extends ChartData {
+export type PieChartData = ChartData & {
     nameKey: string,
     dataKey: string
 }
