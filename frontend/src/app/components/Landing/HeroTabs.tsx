@@ -22,8 +22,8 @@ const Tab = ({ text, selected, setSelected }: TabProps) => {
     <button
       onClick={() => setSelected(text)}
       className={`${selected
-          ? 'text-gray-800'
-          : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-100'
+        ? 'text-gray-800'
+        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-100'
         } relative rounded-md px-3 py-1 text-base transition-colors`}
     >
       <span className="relative z-[1]">{text}</span>
@@ -142,7 +142,8 @@ const cardData: DashboardCardData[] = [
     key: "a",
     title: "Chart 1",
     chartType: ChartType.Bar,
-    chartData: barChartData
+    chartData: barChartData,
+    projectId: ""
   },
   {
     id: "2",
@@ -150,13 +151,15 @@ const cardData: DashboardCardData[] = [
     title: "Chart 2",
     chartType: ChartType.Line,
     chartData: lineChartData,
+    projectId: ""
   },
   {
     id: "3",
     key: "c",
     title: "Chart 3",
     chartType: ChartType.Pie,
-    chartData: pieChartData
+    chartData: pieChartData,
+    projectId: ""
   },
 ]
 
