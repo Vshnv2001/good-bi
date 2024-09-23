@@ -40,9 +40,10 @@ const AnimatedLogoCloud = () => {
   return (
     <div
       className="relative flex py-16 w-full flex-col items-center justify-center overflow-hidden bg-background">
-      <Marquee pauseOnHover className="[--duration:30s]">
+      <Marquee pauseOnHover className="[--duration:45s]">
         {logos.map((logo, key) => (
           <Image
+            loading="eager"
             key={key}
             src={logo.url}
             className="h-10 w-auto px-2 brightness-0 dark:invert"
