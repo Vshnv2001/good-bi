@@ -5,5 +5,6 @@ export type DashboardCardData = {
     key: string,
     title: string,
     chartType: ChartType,
-    chartData: ChartData
+    chartData: ChartData,
+    projectId: string
 }

@@ -30,7 +30,7 @@ const FormSchema = z.object({
   })
 })
 
-export default function UpdateProject({ params }: { params: { id: string } }) {
+export default function UpdateProject({ params }: { params: { projectid: string } }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
 
@@ -39,7 +39,7 @@ export default function UpdateProject({ params }: { params: { id: string } }) {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.id}/update`, {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/update`, {
       method: 'POST',
       body: JSON.stringify(data)
     })

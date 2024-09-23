@@ -17,10 +17,9 @@ export function POST(request: NextRequest, { params }: { params: { projectid: st
 
         let userId = session!.getUserId();
 
-        const req = await request.json();
-
         let formData = new FormData();
         formData.append('insight_id', params.insightid);
+        formData.append('project_id', params.projectid);
         formData.append('user_id', userId);
         let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
             method: 'POST',

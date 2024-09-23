@@ -170,6 +170,27 @@ async def get_insights(
 
     return res
 
+@app.post("/api/insights/delete")
+async def delete_insight(
+    insight_id: str = Form(...),
+    project_id: str = Form(...),
+    user_id: str = Form(...),
+):
+    # Connect to the database
+    import os
+
+    POSTGRES_URI = os.getenv('POSTGRES_URI')
+    print(f"POSTGRES_URI: {POSTGRES_URI}")
+    conn = psycopg2.connect(POSTGRES_URI)
+    cursor = conn.cursor()
+
+    cursor.execute(f'DELETE FROM insights WHERE insight_id = %s AND project_id = %s AND user_id = %s', (insight_id, project_id, user_id))
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Insight deleted successfully"}
+
 @app.get("/health_check")
 def health_check():
     print("Health Check Passed, API is up and running LOLLLL!")

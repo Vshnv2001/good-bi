@@ -67,7 +67,7 @@ const FormSchema = z.object({
   })
 })
 
-export default function NewDashboard({ params }: { params: { id: string } }) {
+export default function NewDashboard({ params }: { params: { projectid: string } }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       dateRange: {
@@ -79,17 +79,14 @@ export default function NewDashboard({ params }: { params: { id: string } }) {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-    let finalData = { ...data, projectId: params.id }
-    console.log(finalData)
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/insights/${params.id}`, {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/${params.projectid}/insights`, {
       method: 'POST',
-      body: JSON.stringify(finalData)
+      body: JSON.stringify(data)
     })
 
     if (res.status == 200) {
       let responseData = await res.json()
-      window.location.href = `/projects/${params.id}/dashboard`
+      window.location.href = `/projects/${params.projectid}/dashboard`
     }
   }
 
@@ -250,12 +247,12 @@ export default function NewDashboard({ params }: { params: { id: string } }) {
             </Form>
           </div>
           <div className="pt-3 pb-7 text-sm text-center text-gray-500">
-              <span>GoodBI may share some information with third parties to generate insights. For more information, view our </span>
-              <span className="underline decoration-inherit">Privacy Policy</span>
-              <span> and </span>
-              <span className="underline decoration-inherit">Terms of Service</span>
-              <span>.</span>
-            </div>
+            <span>GoodBI may share some information with third parties to generate insights. For more information, view our </span>
+            <span className="underline decoration-inherit">Privacy Policy</span>
+            <span> and </span>
+            <span className="underline decoration-inherit">Terms of Service</span>
+            <span>.</span>
+          </div>
         </div>
       </main>
     </div>

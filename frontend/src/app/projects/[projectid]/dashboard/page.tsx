@@ -42,13 +42,13 @@ const layouts = {
   ]
 };
 
-export default function Dashboard({ params }: { params: { id: string } }) {
+export default function Dashboard({ params }: { params: { projectid: string } }) {
   const [dashboards, setDashboards] = useState<DashboardCardData[]>([]);
   const [layouts, setLayouts] = useState({lg: []});
 
   useEffect(() => {
     async function fetchDashboards() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/insights/${params.id}`)
+      let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/insights`)
 
       if (res.status == 200) {
         let data = await res.json()

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link"
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +13,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { DashboardCardData } from "@/app/types/DashboardCardData";
 import { BarChartData, ChartType, LineChartData, PieChartData } from "@/app/types/ChartData";
 import GBBarChart from "../Charts/BarChart";
@@ -25,11 +34,31 @@ const DashboardCard = React.forwardRef<
     HTMLDivElement,
     DashboardCardProps
 >(({ data, children, className, ...props }, ref) => {
+
+    async function deleteInsight() {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${data.projectId}/insights/${data.id}/delete`, {
+            method: 'POST'
+        })
+        let responseData = await res.json()
+    }
+
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
                 <CardTitle>{data.title}</CardTitle>
-                <EllipsisVertical className="text-gray-500 w-5 h-5" />
+                <div className="flex items-center md:ml-auto">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <EllipsisVertical className="text-gray-500 w-5 h-5" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <Link href={`/projects/${data.id}/update`}>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuItem onClick={() => deleteInsight()}>Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </CardHeader>
             <CardContent className="flex flex-grow px-3 pb-3 max-h-full overflow-hidden w-full">
                 {
