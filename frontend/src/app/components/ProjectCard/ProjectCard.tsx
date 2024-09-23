@@ -25,20 +25,16 @@ import { format } from "date-fns"
 import { ProjectCardData } from "@/app/types/ProjectCardData"
 
 interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
-    project: ProjectCardData
+    project: ProjectCardData,
+    deleteProject: (projectId: string) => void
 }
 
 const ProjectCard = React.forwardRef<
     HTMLDivElement,
     DashboardCardProps
->(({ project, children, className, ...props }, ref) => {
+>(({ project, deleteProject, children, className, ...props }, ref) => {
 
-    async function deleteProject() {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${project.id}/delete`, {
-            method: 'POST'
-        })
-        let responseData = await res.json()
-    }
+
 
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
@@ -55,7 +51,7 @@ const ProjectCard = React.forwardRef<
                             <Link href={`/projects/${project.id}/update`}>
                                 <DropdownMenuItem>Edit</DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem onClick={() => deleteProject()}>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => deleteProject(project.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

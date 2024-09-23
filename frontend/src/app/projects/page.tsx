@@ -33,6 +33,17 @@ export default function Projects() {
         fetchProjects()
     }, []);
 
+    async function deleteProject(projectId: string) {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${projectId}/delete`, {
+            method: 'POST'
+        })
+
+        if (res.status == 200) {
+            setProjects(projects => projects.filter(project => project.id != projectId));
+            let responseData = await res.json()
+        }
+    }
+
     return (
         <SessionCheck>
             <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
@@ -63,7 +74,7 @@ export default function Projects() {
                             {
                                 projects.map((project) => {
                                     return (
-                                        <ProjectCard key={project.id} project={project} />
+                                        <ProjectCard key={project.id} project={project} deleteProject={deleteProject} />
                                     )
                                 })
                             }

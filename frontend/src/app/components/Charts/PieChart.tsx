@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Pie, PieChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Pie, PieChart } from "recharts"
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart"
 
@@ -17,7 +17,7 @@ const GBPieChart = ({ chartData }: { chartData: PieChartData }) => {
                 <Pie data={chartData.data} dataKey={chartData.dataKey} nameKey={chartData.nameKey} />
                 <ChartLegend
                     content={<ChartLegendContent nameKey={chartData.nameKey} />}
-                    className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                    className='-translate-y-2 flex-wrap gap-2 basis-1/4 justify-center'
                 />
             </PieChart>
         </ChartContainer>

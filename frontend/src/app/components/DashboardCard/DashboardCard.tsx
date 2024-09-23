@@ -28,20 +28,13 @@ import GBPieChart from "../Charts/PieChart";
 
 interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
     data: DashboardCardData,
+    deleteInsight: (projectId: string, insightId: string) => void
 }
 
 const DashboardCard = React.forwardRef<
     HTMLDivElement,
     DashboardCardProps
->(({ data, children, className, ...props }, ref) => {
-
-    async function deleteInsight() {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${data.projectId}/insights/${data.id}/delete`, {
-            method: 'POST'
-        })
-        let responseData = await res.json()
-    }
-
+>(({ data, deleteInsight, children, className, ...props }, ref) => {
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
@@ -55,7 +48,7 @@ const DashboardCard = React.forwardRef<
                             <Link href={`/projects/${data.projectId}/insights/${data.id}/update`}>
                                 <DropdownMenuItem>Edit</DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem onClick={() => deleteInsight()}>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => deleteInsight(data.projectId, data.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

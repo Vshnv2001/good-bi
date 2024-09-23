@@ -43,7 +43,7 @@ const layouts = {
 };
 
 export default function Dashboard({ params }: { params: { projectid: string } }) {
-  const [dashboards, setDashboards] = useState<DashboardCardData[]>([]);
+  const [insights, setInsights] = useState<DashboardCardData[]>([]);
   const [layouts, setLayouts] = useState({ sm: [], md: [], lg: [] });
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function Dashboard({ params }: { params: { projectid: string } })
 
       if (res.status == 200) {
         let data = await res.json()
-        setDashboards(data);
+        setInsights(data);
 
         let smLayouts = data.map((data: DashboardCardData, index: number) => {
           return {
@@ -96,6 +96,17 @@ export default function Dashboard({ params }: { params: { projectid: string } })
     fetchDashboards()
   }, []);
 
+  async function deleteInsight(projectId: string, insightId: string) {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${projectId}/insights/${insightId}/delete`, {
+      method: 'POST'
+    })
+
+    if (res.status == 200) {
+      setInsights(insights => insights.filter(insight => insight.id != insightId));
+      let responseData = await res.json()
+    }
+  }
+
   return (
     <SessionCheck>
       <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
@@ -134,9 +145,9 @@ export default function Dashboard({ params }: { params: { projectid: string } })
               draggableCancel=".react-resizable-handle-custom"
             >
               {
-                dashboards.map((data) => {
+                insights.map((data) => {
                   return (
-                    <DashboardCard key={data.key} data={data} />
+                    <DashboardCard key={data.key} data={data} deleteInsight={deleteInsight} />
                   )
                 })
               }
