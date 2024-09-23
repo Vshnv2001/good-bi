@@ -17,9 +17,15 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Session from "supertokens-web-js/recipe/session";
 
 const NavBar = () => {
     const currentPath = usePathname();
+
+    const signOut = async () => {
+        await Session.signOut();
+        window.location.href = "/" // TODO: Do we want to redirect to the login page?
+    }
 
     return (
         <header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 justify-between">
@@ -88,7 +94,7 @@ const NavBar = () => {
                         <DropdownMenuItem>Settings</DropdownMenuItem>
                         <DropdownMenuItem>Support</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Logout</DropdownMenuItem>
+                        <DropdownMenuItem onClick={signOut}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
