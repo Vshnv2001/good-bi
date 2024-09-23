@@ -36,6 +36,7 @@
     "react-icon-cloud": "^4.1.4",
     "react-spring": "^9.7.4",
     "recharts": "^2.12.7",
+    "supertokens-auth-react": "^0.47.1",
     "supertokens-node": "^20.1.2",
     "supertokens-web-js": "^0.13.0",
     "tailwind-merge": "^2.5.2",

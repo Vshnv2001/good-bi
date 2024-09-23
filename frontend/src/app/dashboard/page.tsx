@@ -17,6 +17,9 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
+import { useState, useEffect } from "react";
+import { doesSessionExist } from "supertokens-web-js/recipe/session";
+import SessionCheck from "../components/SessionCheck";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -60,6 +63,7 @@ const layouts = {
 
 export default function Dashboard() {
   return (
+    <SessionCheck>
     <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
       <NavBar />
       <main className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 mx-4 mt-3 rounded-2xl border border-gray-200/70">
@@ -162,5 +166,6 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
+    </SessionCheck>
   )
 }
