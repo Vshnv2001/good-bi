@@ -89,3 +89,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* For the placeholder of react grid when dragging */
+.react-grid-placeholder {
+  @apply rounded-2xl !bg-primary-500;
+}

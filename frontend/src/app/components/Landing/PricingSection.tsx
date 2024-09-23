@@ -78,12 +78,12 @@ const Pricing = () => {
 
   const Heading = () => (
     <div className="relative z-10 my-12 flex flex-col items-center justify-center gap-4">
-      <div className="flex w-full flex-col items-start justify-center space-y-4 md:items-center">
-        <span className="text-primary-500 pt-24 -mt-24" id="pricing">Pricing</span>
-        <h2 className="font-bold text-4xl mt-2 tracking-tight sm:text-5xl">
+      <div className="flex w-full flex-col justify-center space-y-2 items-center">
+        <span className="text-primary-500 text-center pt-24 -mt-24 mx-auto" id="pricing">Pricing</span>
+        <h2 className="font-bold text-4xl text-center mt-2 tracking-tight sm:text-5xl">
           Choose the right plan.
         </h2>
-        <p className="text-md max-w-lg text-gray-700 md:text-center">
+        <p className="text-md max-w-lg text-gray-700 text-center pt-4">
           Get started with GoodBI and take your business intelligence to the next level.
         </p>
       </div>

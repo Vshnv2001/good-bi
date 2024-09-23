@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "GoodBI",
+  title: process.env.APP_NAME,
   description: "The ultimate AI business intelligence platform.",
 };
 
