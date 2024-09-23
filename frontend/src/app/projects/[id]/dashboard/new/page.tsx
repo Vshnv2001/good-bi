@@ -49,8 +49,8 @@ const FormSchema = z.object({
   }),
   dateRange: z.object(
     {
-      from: z.date(),
-      to: z.date(),
+      start: z.date(),
+      end: z.date(),
     },
     {
       required_error: "Please select a date range",
@@ -67,19 +67,30 @@ const FormSchema = z.object({
   })
 })
 
-export default function Dashboard() {
+export default function NewDashboard({ params }: { params: { id: string } }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       dateRange: {
-        from: new Date(),
-        to: new Date(),
+        start: new Date(),
+        end: new Date(),
       },
     },
     resolver: zodResolver(FormSchema),
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data, null, 2));
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(data);
+    let finalData = { ...data, projectId: params.id }
+    console.log(finalData)
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/dashboards/${params.id}`, {
+      method: 'POST',
+      body: JSON.stringify(finalData)
+    })
+
+    if (res.status == 200) {
+      let responseData = await res.json()
+      window.location.href = `/api/dashboards/${params.id}`
+    }
   }
 
   return (
@@ -153,17 +164,17 @@ export default function Dashboard() {
                               variant={"outline"}
                               className={cn(
                                 "w-full pl-3 justify-start text-left font-normal",
-                                !field.value.from && "text-muted-foreground"
+                                !field.value.start && "text-muted-foreground"
                               )}
                             >
-                              {field.value.from && (
-                                field.value.to ? (
+                              {field.value.start && (
+                                field.value.end ? (
                                   <>
-                                    {format(field.value.from, "LLL dd y")} -{" "}
-                                    {format(field.value.to, "LLL dd y")}
+                                    {format(field.value.start, "LLL dd y")} -{" "}
+                                    {format(field.value.end, "LLL dd y")}
                                   </>
                                 ) : (
-                                  format(field.value.from, "LLL dd y")
+                                  format(field.value.start, "LLL dd y")
                                 )
                               )}
                               <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
@@ -174,8 +185,8 @@ export default function Dashboard() {
                           <Calendar
                             mode="range"
                             selected={{
-                              from: field.value.from,
-                              to: field.value.to
+                              from: field.value.start,
+                              to: field.value.end
                             }}
                             onSelect={field.onChange}
                             captionLayout="dropdown"

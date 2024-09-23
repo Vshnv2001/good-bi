@@ -30,7 +30,7 @@ const FormSchema = z.object({
   })
 })
 
-export default function Dashboard({ params }: { params: { id: string } }) {
+export default function UpdateProject({ params }: { params: { id: string } }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
 

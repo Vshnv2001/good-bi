@@ -27,9 +27,9 @@ export function GET(request: NextRequest) {
 
         let projects = await data.json()
 
-        let mappedProjects: ProjectCardData[] = projects.map((data: { project_id: number, user_id: string, name: string, created_at: string, updated_at: string }) => {
+        let mappedProjects: ProjectCardData[] = projects.map((data: { project_id: string, user_id: string, name: string, created_at: string, updated_at: string }) => {
             return {
-                id: data.project_id.toString(),
+                id: data.project_id,
                 name: data.name,
                 lastUpdated: Date.parse(data.created_at)
             };

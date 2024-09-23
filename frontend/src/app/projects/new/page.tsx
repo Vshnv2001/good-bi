@@ -30,7 +30,7 @@ const FormSchema = z.object({
   })
 })
 
-export default function Dashboard() {
+export default function NewProject() {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
 
