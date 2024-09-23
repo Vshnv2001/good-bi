@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+import './globals.css'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import "./globals.css";
+import { frontendConfig } from './config/frontend';
+import { SuperTokensInit } from "./components/supertokensInit";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -9,29 +10,21 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 400 700 800 900",
-});
-
 export const metadata: Metadata = {
   title: process.env.APP_NAME,
   description: "The ultimate AI business intelligence platform.",
-};
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} font-sans ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <SuperTokensInit>
+        <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
+      </SuperTokensInit>
     </html>
-  );
+  )
 }
