@@ -1,9 +1,41 @@
+import uuid
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
-import psycopg2
+from supertokens_python.recipe.session.framework.fastapi import verify_session
+from supertokens_python.recipe.session import SessionContainer
+from fastapi import Depends
+from utils.db_utils import get_db
+from models.org_tables import OrgTables
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from supertokens_python import init, InputAppInfo, SupertokensConfig
+from supertokens_python.recipe import emailpassword, session
+from sqlalchemy.ext.asyncio import AsyncSession
+from supertokens_python.framework.fastapi import get_middleware
+
+init(
+    app_info=InputAppInfo(
+        app_name="goodbi",
+        api_domain="http://localhost:3000",
+        website_domain="http://localhost:3000",
+        api_base_path="/api/auth",
+        website_base_path="/auth"
+    ),
+    supertokens_config=SupertokensConfig(
+        connection_uri="https://st-dev-d077cc10-75bf-11ef-822f-59b1a0e8c720.aws.supertokens.io",
+        api_key="FNvAao5-YkZKaRMPzgOhiVOek8",
+    ),
+    framework='fastapi',
+    recipe_list=[
+        session.init(), # initializes session features
+        emailpassword.init()
+    ],
+    mode='asgi' # use wsgi if you are running using gunicorn
+)
 
 app = FastAPI()
+app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +53,9 @@ def read_root():
 async def create_dataset(
     datasetName: str = Form(...),
     datasetDescription: str = Form(...),
-    datasetFile: UploadFile = File(...)
+    datasetFile: UploadFile = File(...),
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
 ):
     print(f"Dataset Name: {datasetName}")
     print(f"Dataset Description: {datasetDescription}")
@@ -29,27 +63,29 @@ async def create_dataset(
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
 
-    # Connect to the database
-    import os
+    user_id = auth_session.get_user_id()
+    # user_id = "test"
+    print(f"User ID: {user_id}")
 
-    POSTGRES_URI = os.getenv('POSTGRES_URI')
-    print(f"POSTGRES_URI: {POSTGRES_URI}")
-    conn = psycopg2.connect(POSTGRES_URI)
-    cursor = conn.cursor()
-
-    # Create table with columns from CSV
-    columns = ', '.join([f'"{col}" TEXT' for col in df.columns])
-    cursor.execute(f'CREATE TABLE IF NOT EXISTS "{datasetName}" ({columns})')
+    # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
+    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'])
+    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
+    
+    orgtable = OrgTables(user_id=user_id, table_name=datasetName, table_description=datasetDescription)
+    db.add(orgtable)
+    await db.commit()
 
     print(f"Columns: {columns}")
     # Insert rows into the table
     for row in df.itertuples(index=False, name=None):
         print(row)
-        placeholders = ', '.join(['%s'] * len(row))
-        cursor.execute(f'INSERT INTO "{datasetName}" VALUES ({placeholders})', row)
+        placeholders = ', '.join([':{}'.format(i) for i in range(len(row))])
+        # Convert all values to strings
+        row_as_str = tuple(str(value) for value in row)
+        await db.execute(text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'), {str(i): value for i, value in enumerate(row_as_str)})
 
-    conn.commit()
-    conn.close()
+    await db.commit()
 
     return {"message": "Dataset created successfully"}
 
