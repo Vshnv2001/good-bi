@@ -33,7 +33,7 @@ export default function Login() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(JSON.stringify(data, null, 2));
     try {
-      let response = await signIn({
+      const response = await signIn({
           formFields: [{
               id: "email",
               value: data.email

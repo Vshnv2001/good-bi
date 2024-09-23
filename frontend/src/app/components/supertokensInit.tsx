@@ -8,8 +8,8 @@ if (typeof window !== 'undefined') {
   SuperTokensWebJs.init(frontendConfig());
 }
 
-export const SuperTokensInit: React.FC<React.PropsWithChildren<{}>> = ({
+export const SuperTokensInit = ({
   children,
-}) => {
+}: { children: React.ReactNode} ) => {
   return <>{children}</>;
 };
