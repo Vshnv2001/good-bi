@@ -4,7 +4,11 @@ import { Inter } from 'next/font/google'
 import { frontendConfig } from './config/frontend';
 import { SuperTokensInit } from "./components/supertokensInit";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: process.env.APP_NAME,
