@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SuperTokensInit>
-        <body className={inter.className}>{children}</body>
+        <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
       </SuperTokensInit>
     </html>
   )
