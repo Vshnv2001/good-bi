@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Session from 'supertokens-web-js/recipe/session';
 import { doesSessionExist } from '../../lib/utils';
 
-const SessionCheck: React.FC = ({ children }) => {
+const SessionCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sessionExists, setSessionExists] = useState<boolean | null>(null);
 
   useEffect(() => {

@@ -35,7 +35,7 @@ export default function Signup() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(JSON.stringify(data, null, 2));
     try {
-      let response = await signUp({
+      const response = await signUp({
           formFields: [{
               id: "email",
               value: data.email
