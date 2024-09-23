@@ -82,14 +82,14 @@ export default function NewDashboard({ params }: { params: { id: string } }) {
     console.log(data);
     let finalData = { ...data, projectId: params.id }
     console.log(finalData)
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/dashboards/${params.id}`, {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/insights/${params.id}`, {
       method: 'POST',
       body: JSON.stringify(finalData)
     })
 
     if (res.status == 200) {
       let responseData = await res.json()
-      window.location.href = `/api/dashboards/${params.id}`
+      window.location.href = `/projects/${params.id}/dashboard`
     }
   }
 
@@ -102,9 +102,9 @@ export default function NewDashboard({ params }: { params: { id: string } }) {
         <span className="text-sm text-gray-500 font-normal">New insight</span>
       </div>
       <main className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
-        <div className="px-4 pt-7 flex flex-col w-full max-w-sm gap-y-10 items-center align-center flex-grow min-h-0">
-          <h1 className="text-center flex text-3xl font-normal text-gray-800">Create a new insight</h1>
-          <div className="sm:px-3 pb-7 flex flex-grow w-full">
+        <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
+          <h1 className="pb-5 text-center flex text-3xl font-normal text-gray-800">Create a new insight</h1>
+          <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full">
                 <FormField
@@ -249,6 +249,13 @@ export default function NewDashboard({ params }: { params: { id: string } }) {
               </form>
             </Form>
           </div>
+          <div className="pt-3 pb-7 text-sm text-center text-gray-500">
+              <span>GoodBI may share some information with third parties to generate insights. For more information, view our </span>
+              <span className="underline decoration-inherit">Privacy Policy</span>
+              <span> and </span>
+              <span className="underline decoration-inherit">Terms of Service</span>
+              <span>.</span>
+            </div>
         </div>
       </main>
     </div>

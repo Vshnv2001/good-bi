@@ -34,9 +34,8 @@ const ProjectCard = React.forwardRef<
 >(({ project, children, className, ...props }, ref) => {
 
     async function deleteProject() {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/delete`, {
-            method: 'POST',
-            body: JSON.stringify({projectId: project.id})
+        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${project.id}/delete`, {
+            method: 'POST'
         })
         let responseData = await res.json()
     }

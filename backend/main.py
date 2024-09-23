@@ -110,8 +110,8 @@ async def delete_project(
 
     return {"message": "Project deleted successfully"}
 
-@app.post("/api/dashboards/new")
-async def create_dashboard(
+@app.post("/api/insights/new")
+async def create_insight(
     dataset_id: str = Form(...),
     chart_type: str = Form(...),
     start_date: str = Form(...),
@@ -145,8 +145,8 @@ async def create_dashboard(
 
     return {"message": "Insight created successfully"}
 
-@app.post("/api/dashboards")
-async def get_dashboards(
+@app.post("/api/insights")
+async def get_insights(
     user_id: str = Form(...),
     project_id: str = Form(...),
 ):
