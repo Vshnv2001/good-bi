@@ -38,6 +38,7 @@ import { NavBar } from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
+import SessionCheck from "@/app/components/SessionCheck";
 
 const FormSchema = z.object({
   dataset: z
@@ -79,7 +80,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/${params.projectid}/insights`, {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/insights`, {
       method: 'POST',
       body: JSON.stringify(data)
     })
@@ -91,170 +92,172 @@ export default function NewDashboard({ params }: { params: { projectid: string }
   }
 
   return (
-    <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
-      <NavBar />
-      <div className="mx-4 my-2 flex flex-row gap-1 items-center">
-        <span className="text-sm text-gray-500 font-normal">Dashboard</span>
-        <ChevronRight className="text-gray-500 h-3 w-3" />
-        <span className="text-sm text-gray-500 font-normal">New insight</span>
-      </div>
-      <main className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
-        <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
-          <h1 className="pb-5 text-center flex text-3xl font-normal text-gray-800">Create a new insight</h1>
-          <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full">
-                <FormField
-                  control={form.control}
-                  name="dataset"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>Dataset</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} >
-                        <FormControl>
-                          <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                            <SelectValue className="" placeholder="Select" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="1">1</SelectItem>
-                          <SelectItem value="2">2</SelectItem>
-                          <SelectItem value="3">3</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="chartType"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>Type of chart</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} >
-                        <FormControl>
-                          <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                            <SelectValue className="" placeholder="Select chart type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="bar">Bar</SelectItem>
-                          <SelectItem value="pie">Pie</SelectItem>
-                          <SelectItem value="line">Line</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="dateRange"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>Date range</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none">
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 justify-start text-left font-normal",
-                                !field.value.start && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value.start && (
-                                field.value.end ? (
-                                  <>
-                                    {format(field.value.start, "LLL dd y")} -{" "}
-                                    {format(field.value.end, "LLL dd y")}
-                                  </>
-                                ) : (
-                                  format(field.value.start, "LLL dd y")
-                                )
-                              )}
-                              <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <Calendar
-                            mode="range"
-                            selected={{
-                              from: field.value.start,
-                              to: field.value.end
-                            }}
-                            onSelect={field.onChange}
-                            captionLayout="dropdown"
-                            disabled={(date) =>
-                              date > new Date()
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="yRange"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>Y range</FormLabel>
-                      <Input
-                        type="number"
-                        {...field}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>Title</FormLabel>
-                      <Input
-                        type="text"
-                        {...field}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="kpiDescription"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>KPI description</FormLabel>
-                      <Textarea
-                        className="h-28 resize-none"
-                        {...field}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit">
-                  Create
-                </Button>
-              </form>
-            </Form>
-          </div>
-          <div className="pt-3 pb-7 text-sm text-center text-gray-500">
-            <span>GoodBI may share some information with third parties to generate insights. For more information, view our </span>
-            <span className="underline decoration-inherit">Privacy Policy</span>
-            <span> and </span>
-            <span className="underline decoration-inherit">Terms of Service</span>
-            <span>.</span>
-          </div>
+    <SessionCheck>
+      <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
+        <NavBar />
+        <div className="mx-4 my-2 flex flex-row gap-1 items-center">
+          <span className="text-sm text-gray-500 font-normal">Dashboard</span>
+          <ChevronRight className="text-gray-500 h-3 w-3" />
+          <span className="text-sm text-gray-500 font-normal">New insight</span>
         </div>
-      </main>
-    </div>
+        <main className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
+          <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
+            <h1 className="pb-5 text-center flex text-3xl font-normal text-gray-800">Create a new insight</h1>
+            <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full">
+                  <FormField
+                    control={form.control}
+                    name="dataset"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Dataset</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} >
+                          <FormControl>
+                            <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
+                              <SelectValue className="" placeholder="Select" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="chartType"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Type of chart</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} >
+                          <FormControl>
+                            <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
+                              <SelectValue className="" placeholder="Select chart type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="bar">Bar</SelectItem>
+                            <SelectItem value="pie">Pie</SelectItem>
+                            <SelectItem value="line">Line</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dateRange"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Date range</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none">
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 justify-start text-left font-normal",
+                                  !field.value.start && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value.start && (
+                                  field.value.end ? (
+                                    <>
+                                      {format(field.value.start, "LLL dd y")} -{" "}
+                                      {format(field.value.end, "LLL dd y")}
+                                    </>
+                                  ) : (
+                                    format(field.value.start, "LLL dd y")
+                                  )
+                                )}
+                                <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0" align="start">
+                            <Calendar
+                              mode="range"
+                              selected={{
+                                from: field.value.start,
+                                to: field.value.end
+                              }}
+                              onSelect={field.onChange}
+                              captionLayout="dropdown"
+                              disabled={(date) =>
+                                date > new Date()
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="yRange"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Y range</FormLabel>
+                        <Input
+                          type="number"
+                          {...field}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Title</FormLabel>
+                        <Input
+                          type="text"
+                          {...field}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="kpiDescription"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>KPI description</FormLabel>
+                        <Textarea
+                          className="h-28 resize-none"
+                          {...field}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit">
+                    Create
+                  </Button>
+                </form>
+              </Form>
+            </div>
+            <div className="pt-3 pb-7 text-sm text-center text-gray-500">
+              <span>GoodBI may share some information with third parties to generate insights. For more information, view our </span>
+              <span className="underline decoration-inherit">Privacy Policy</span>
+              <span> and </span>
+              <span className="underline decoration-inherit">Terms of Service</span>
+              <span>.</span>
+            </div>
+          </div>
+        </main>
+      </div>
+    </SessionCheck>
   )
 }

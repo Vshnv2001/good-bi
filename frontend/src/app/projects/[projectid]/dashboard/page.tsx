@@ -44,7 +44,7 @@ const layouts = {
 
 export default function Dashboard({ params }: { params: { projectid: string } }) {
   const [dashboards, setDashboards] = useState<DashboardCardData[]>([]);
-  const [layouts, setLayouts] = useState({lg: []});
+  const [layouts, setLayouts] = useState({ sm: [], md: [], lg: [] });
 
   useEffect(() => {
     async function fetchDashboards() {
@@ -54,18 +54,43 @@ export default function Dashboard({ params }: { params: { projectid: string } })
         let data = await res.json()
         setDashboards(data);
 
+        let smLayouts = data.map((data: DashboardCardData, index: number) => {
+          return {
+            i: data.key,
+            x: 0,
+            y: index,
+            w: 1,
+            h: 1,
+            minH: 1,
+            minW: 1
+          }
+        });
+
+        let mdLayouts = data.map((data: DashboardCardData, index: number) => {
+          return {
+            i: data.key,
+            x: index % 2,
+            y: Math.floor(index / 2),
+            w: 1,
+            h: 1,
+            minH: 1,
+            minW: 1
+          }
+        });
+
         let lgLayouts = data.map((data: DashboardCardData, index: number) => {
           return {
             i: data.key,
             x: index % 3,
             y: Math.floor(index / 3),
-            w: 1, 
-            h: 1, 
-            minH: 1, 
+            w: 1,
+            h: 1,
+            minH: 1,
             minW: 1
           }
         });
-        setLayouts({lg: lgLayouts});
+
+        setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
       }
     }
     fetchDashboards()
@@ -110,7 +135,6 @@ export default function Dashboard({ params }: { params: { projectid: string } })
             >
               {
                 dashboards.map((data) => {
-                  console.log(data.key)
                   return (
                     <DashboardCard key={data.key} data={data} />
                   )
