@@ -15,6 +15,8 @@ services:
       - DB_PASSWORD=goodbye
       - DB_NAME=goodbi-db
       - POSTGRES_URI=postgresql://goodbiuser:goodbye@db:5432/goodbi-db
+      - SUPERTOKENS_CONNECTION_URI=https://st-dev-d077cc10-75bf-11ef-822f-59b1a0e8c720.aws.supertokens.io
+      - SUPERTOKENS_API_KEY=FNvAao5-YkZKaRMPzgOhiVOek8
     depends_on:
       - db
 

@@ -1,5 +1,7 @@
+import os
 import uuid
 from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.responses import FileResponse, JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -7,7 +9,8 @@ from supertokens_python.recipe.session import SessionContainer
 from fastapi import Depends
 from utils.db_utils import get_db
 from models.org_tables import OrgTables
-from sqlalchemy.orm import Session
+import csv
+import io
 from sqlalchemy import text
 from supertokens_python import init, InputAppInfo, SupertokensConfig
 from supertokens_python.recipe import emailpassword, session
@@ -49,6 +52,40 @@ app.add_middleware(
 def read_root():
     return {"message" : "Root Message"}
 
+@app.get("/api/datasets")
+async def get_datasets(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+    
+    # Query to get the list of tables for the user
+    result = await db.execute(text(f"""
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = :user_id AND table_type = 'BASE TABLE'
+    """), {'user_id': user_id})
+    tables = result.fetchall()
+    tables = [table[0] for table in tables]
+    
+    datasets = []
+    
+    for table_name in tables:
+        # Query to get the first three rows from the table
+        result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3'))
+        rows = result.fetchall()
+        
+        # Convert rows to JSON format
+        columns = [col for col in result.keys()]
+        json_rows = [dict(zip(columns, row)) for row in rows]
+        
+        datasets.append({
+            "datasetName": table_name,
+            "datasetDescription": "Placeholder description",
+            "datasetJson": json_rows
+        })
+    
+    # Return JSON response with dataset information
+    return JSONResponse(content={"data": datasets})
+
 @app.post("/api/datasets")
 async def create_dataset(
     datasetName: str = Form(...),
@@ -71,7 +108,7 @@ async def create_dataset(
     columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'])
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
-    
+    await db.commit()
     orgtable = OrgTables(user_id=user_id, table_name=datasetName, table_description=datasetDescription)
     db.add(orgtable)
     await db.commit()

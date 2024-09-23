@@ -10,6 +10,7 @@ import Papa from "papaparse"
 
 interface DatasetCardProps {
     dataset: Dataset;
+    
 }
 
 export function DatasetCard({ dataset }: DatasetCardProps) {
@@ -18,24 +19,50 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
 
     useEffect(() => {
         // console.log("Parsing CSV");
-        if (!dataset.datasetFile) {
+        if (!dataset.datasetFile && !dataset.datasetJson) {
             console.error("datasetFile is undefined or null");
             return;
         }
         console.log("datasetFile:", dataset.datasetFile);
 
         const parseCSV = async () => {
-            Papa.parse(dataset.datasetFile, {
-                header: true,
-                complete: (results: Papa.ParseResult<any>) => {
-                    setHeaders(Object.keys(results.data[0]))
-                    setRows(results.data.slice(1, 4)) // Get first 3 rows
-                }
-            })
-        }
+            if (dataset.datasetFile) { // Check if datasetFile is defined
+                Papa.parse(dataset.datasetFile, {
+                    header: true,
+                    complete: (results: Papa.ParseResult<any>) => {
+                        let headers = Object.keys(results.data[0])
+                        headers = headers.filter(header => header !== 'user_id');
+                        setHeaders(headers)
+                        setRows(results.data.slice(0, 3)) // Get first 3 rows
+                    }
+                });
+            } else {
+                console.error("Dataset file is undefined");
+            }
+        };
 
-        parseCSV()
-    }, [dataset.datasetFile])
+        const parseJSON = async () => {
+            if (dataset.datasetJson) { // Check if datasetJson is defined
+                console.log("datasetJson:", dataset.datasetJson);
+                console.log(Object.keys(dataset.datasetJson[0]));
+                const data = dataset.datasetJson; // No need to parse
+                let headers = Object.keys(data[0])
+                headers = headers.filter(header => header !== 'user_id');
+                setHeaders(headers)
+                setRows(data.slice(0, 3));
+            } else {
+                console.error("Dataset JSON is undefined");
+            }
+        };
+
+        if (dataset.datasetFile) {
+            parseCSV()
+        } else if (dataset.datasetJson) {
+            parseJSON()
+        } else {
+            console.error("Invalid data type");
+        }
+    }, [dataset.datasetFile, dataset.datasetJson])
 
     // console.log("Headers:", headers);
     // console.log("Rows:", rows);

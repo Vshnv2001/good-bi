@@ -17,8 +17,6 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
-import { useState, useEffect } from "react";
-import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "../components/SessionCheck";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);

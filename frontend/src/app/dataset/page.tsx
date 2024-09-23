@@ -6,16 +6,13 @@ import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ChartConfig } from "@/components/ui/chart"
-
-import { Responsive, WidthProvider } from "react-grid-layout";
 
 import { NavBar } from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import { DatasetCard } from "@/app/components/DatasetCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewDataSetForm from "@/app/components/DatasetCard/NewDataSetForm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Dataset } from "@/app/interfaces/dataset"
@@ -23,7 +20,14 @@ import { Dataset } from "@/app/interfaces/dataset"
 export default function DatasetPage() {
 
     const [datasets, setDatasets] = useState<Dataset[]>([]);
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`)
+        .then((res) => res.json())
+        .then((data) => {setDatasets(data.data)});
+    }, []);
+
     console.log(datasets);
+    
     return (
         <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
         <NavBar />
