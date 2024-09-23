@@ -20,9 +20,9 @@ export function POST(request: NextRequest) {
         const req = await request.json();
 
         let formData = new FormData();
-        formData.append('project_id', req['projectId']);
+        formData.append('insight', req['projectId']);
         formData.append('user_id', userId);
-        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/delete`, {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
             method: 'POST',
             body: formData
         });

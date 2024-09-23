@@ -5,7 +5,7 @@ import { backendConfig } from "@/app/config/backend";
 
 SuperTokens.init(backendConfig());
 
-export function POST(request: NextRequest) {
+export function POST(request: NextRequest, { params }: { params: { projectid: string } }) {
     return withSession(request, async (err, session) => {
         if (err) {
             return NextResponse.json(err, { status: 500 });
@@ -21,7 +21,7 @@ export function POST(request: NextRequest) {
 
         let formData = new FormData();
         formData.append('name', req['name'])
-        formData.append('project_id', req['projectId']);
+        formData.append('project_id', params.projectid);
         formData.append('user_id', userId);
         let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/update`, {
             method: 'POST',

@@ -24,7 +24,7 @@ export function GET(request: NextRequest, { params }: { params: { projectid: str
         let formData = new FormData();
         formData.append('user_id', userId);
         formData.append('project_id', params.projectid);
-        let data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboards`, {
+        let data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights`, {
             method: 'POST',
             body: formData
         });
@@ -141,7 +141,7 @@ export function POST(request: NextRequest) {
         formData.append('kpi_description', req['kpiDescription'])
         formData.append('project_id', req['projectId'])
         formData.append('user_id', userId);
-        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboards/new`, {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
             method: 'POST',
             body: formData
         });
