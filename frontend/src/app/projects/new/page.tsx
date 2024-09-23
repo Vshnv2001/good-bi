@@ -39,9 +39,8 @@ export default function Dashboard() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data, null, 2));
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/create`, data, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

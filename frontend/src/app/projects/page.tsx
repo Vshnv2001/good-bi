@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import Link from "next/link"
 
 import { Search } from "lucide-react";
@@ -15,6 +17,8 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import { ProjectCardData } from "@/app/types/ProjectCardData"
 import { ProjectCard } from "../components/ProjectCard";
+
+import axios from 'axios';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -47,6 +51,22 @@ const projects: ProjectCardData[] = [
 ]
 
 export default function Projects() {
+    const [projects, setProjects] = useState<ProjectCardData[]>([]);
+
+    useEffect(() => {
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/get`).then((response) => {
+            let fetchedProjects: ProjectCardData[] = response.data.map((data: { project_id: number, user_id: string, name: string, created_at: string, updated_at: string }) => {
+                return {
+                    id: data.project_id.toString(),
+                    name: data.name,
+                    lastUpdated: Date.parse(data.created_at)
+                };
+            });
+            console.log(fetchedProjects);
+            setProjects(fetchedProjects);
+        });
+    }, []);
+
     return (
         <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
             <NavBar />
