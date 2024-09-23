@@ -5,7 +5,7 @@ import { backendConfig } from "@/app/config/backend";
 
 SuperTokens.init(backendConfig());
 
-export function POST(request: NextRequest) {
+export function POST(request: NextRequest, { params }: { params: { projectid: string, insightid: string } }) {
     return withSession(request, async (err, session) => {
         if (err) {
             return NextResponse.json(err, { status: 500 });
@@ -20,7 +20,7 @@ export function POST(request: NextRequest) {
         const req = await request.json();
 
         let formData = new FormData();
-        formData.append('insight', req['projectId']);
+        formData.append('insight_id', params.insightid);
         formData.append('user_id', userId);
         let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
             method: 'POST',
