@@ -17,8 +17,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -34,6 +32,15 @@ const ProjectCard = React.forwardRef<
     HTMLDivElement,
     DashboardCardProps
 >(({ project, children, className, ...props }, ref) => {
+
+    async function deleteProject() {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/delete`, {
+            method: 'POST',
+            body: JSON.stringify({projectId: project.id})
+        })
+        let responseData = await res.json()
+    }
+
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
@@ -49,12 +56,12 @@ const ProjectCard = React.forwardRef<
                             <Link href={`/projects/${project.id}/update`}>
                                 <DropdownMenuItem>Edit</DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem>Update</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => deleteProject()}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
             </CardHeader>
-            <Link href="/projects/1/dashboard">
+            <Link href={`/projects/${project.id}/dashboard`}>
                 <CardFooter>
                     <p>Updated {format(project.lastUpdated, "dd MMM yyyy")}</p>
                 </CardFooter>

@@ -39,19 +39,14 @@ export default function Dashboard() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, data, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
 
-      if (response.status === 200) {
-      } else {
-        console.error('Failed to submit dataset');
-      }
-    } catch (error) {
-      console.error('Error submitting dataset:', error);
+    if (res.status == 200) {
+      let responseData = await res.json()
+      window.location.href = '/projects'
     }
   }
 
