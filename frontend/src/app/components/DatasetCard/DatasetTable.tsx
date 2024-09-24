@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import {ArrowDown, ArrowUp, ArrowUpDown} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-export function DataTableDemo<T>({ data, columns }: { data: T[], columns: ColumnDef<T>[] }) {
+export function DatasetTable<T>({ data, columns }: { data: T[], columns: ColumnDef<T>[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

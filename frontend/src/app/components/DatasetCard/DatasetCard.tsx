@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import Papa from "papaparse"
 import axios from "axios";
 import {ArrowDown, ArrowUp, ArrowUpDown, Trash} from "lucide-react";
-import {DataTableDemo} from "@/app/components/DatasetCard/DatasetTable";
+import {DatasetTable} from "@/app/components/DatasetCard/DatasetTable";
 import {ColumnDef} from "@tanstack/react-table";
 import * as React from "react";
 interface DatasetCardProps {
@@ -152,7 +152,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
                 <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile} />
             </CardHeader>
             <CardContent>
-                <DataTableDemo<ColumnType> columns={columns} data={data} />
+                <DatasetTable<ColumnType> columns={columns} data={data} />
                 <p className="mb-4 italic">{dataset.datasetDescription}</p>
               <div className="max-w-full overflow-scroll">
 
