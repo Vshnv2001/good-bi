@@ -175,7 +175,7 @@ const HeroDashboard = () => {
       {
         cardData.map((data) => {
           return (
-            <DashboardCard key={data.key} data={data} />
+            <DashboardCard key={data.key} data={data} deleteInsight={() => {}} />
           )
         })
       }
