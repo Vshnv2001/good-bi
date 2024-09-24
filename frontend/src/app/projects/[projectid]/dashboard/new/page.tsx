@@ -102,7 +102,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         </div>
         <main className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
           <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
-            <h1 className="pb-5 text-center flex text-3xl font-normal text-gray-800">Create a new insight</h1>
+            <h1 className="pb-5 text-center text-3xl font-normal text-gray-800">Create a new insight</h1>
             <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full">
