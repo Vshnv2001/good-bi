@@ -195,8 +195,7 @@ async def create_project(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text('CREATE TABLE IF NOT EXISTS projects (project_id UUID, user_id UUID, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
-
+    await db.execute(text('CREATE TABLE IF NOT EXISTS projects (project_id UUID, user_id UUID, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     await db.execute(text(f"""
@@ -216,6 +215,9 @@ async def get_projects(
 ):
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
+
+    await db.execute(text('CREATE TABLE IF NOT EXISTS projects (project_id UUID, user_id UUID, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.commit()
 
     result = await db.execute(text(f"""
         SELECT * 
@@ -295,7 +297,6 @@ async def create_insight(
     print(f"User ID: {user_id}")
 
     await db.execute(text('CREATE TABLE IF NOT EXISTS insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
-
     await db.commit()
 
     await db.execute(text(f"""
@@ -316,6 +317,9 @@ async def get_insights(
 ):
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
+
+    await db.execute(text('CREATE TABLE IF NOT EXISTS insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.commit()
 
     result = await db.execute(text(f"""
         SELECT * 
