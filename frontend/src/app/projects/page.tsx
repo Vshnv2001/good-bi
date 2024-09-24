@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState, ChangeEvent } from "react";
 
 import Link from "next/link"
 
 import { Search } from "lucide-react";
+
+import { debounce } from "lodash";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +20,10 @@ import { ProjectCard } from "../components/ProjectCard";
 
 import SessionCheck from "../components/SessionCheck";
 
+
 export default function Projects() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredProjects, setFilteredProjects] = useState<ProjectCardData[]>([]);
     const [projects, setProjects] = useState<ProjectCardData[]>([]);
 
     useEffect(() => {
@@ -28,10 +33,28 @@ export default function Projects() {
             if (res.status == 200) {
                 let data = await res.json()
                 setProjects(data)
+                setFilteredProjects(data)
             }
         }
         fetchProjects()
     }, []);
+
+    const debouncedSearch = debounce((query: string) => {
+        console.log(query)
+        setSearchQuery(query);
+
+        console.log(searchQuery)
+
+        const filteredProjects = projects.filter((project) =>
+            project.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        setFilteredProjects(filteredProjects);
+    }, 300);
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        debouncedSearch(e.target.value);
+    }
 
     async function deleteProject(projectId: string) {
         let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${projectId}/delete`, {
@@ -58,6 +81,7 @@ export default function Projects() {
                                     <Input
                                         type="search"
                                         placeholder="Search"
+                                        onChange={handleInputChange}
                                         className="pl-10 rounded-xl text-base placeholder:text-gray-500 border border-gray-200/70 bg-white shadow-none md:w-56"
                                     />
                                 </div>
@@ -72,7 +96,7 @@ export default function Projects() {
                     <div className="mx-4 pb-4 flex-grow overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {
-                                projects.map((project) => {
+                                filteredProjects.map((project) => {
                                     return (
                                         <ProjectCard key={project.id} project={project} deleteProject={deleteProject} />
                                     )

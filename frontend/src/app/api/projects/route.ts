@@ -20,22 +20,26 @@ export function GET(request: NextRequest) {
 
         let formData = new FormData();
         formData.append('user_id', userId);
-        let data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, {
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, {
             method: 'POST',
             body: formData
         });
 
-        let projects = await data.json()
+        if (res.status == 200) {
+            let projects = await res.json()
 
-        let mappedProjects: ProjectCardData[] = projects.map((data: { project_id: string, user_id: string, name: string, created_at: string, updated_at: string }) => {
-            return {
-                id: data.project_id,
-                name: data.name,
-                lastUpdated: Date.parse(data.created_at)
-            };
-        });
-        
-        return NextResponse.json(mappedProjects)
+            let mappedProjects: ProjectCardData[] = projects.map((data: { project_id: string, user_id: string, name: string, created_at: string, updated_at: string }) => {
+                return {
+                    id: data.project_id,
+                    name: data.name,
+                    lastUpdated: Date.parse(data.created_at)
+                };
+            });
+
+            return NextResponse.json(mappedProjects)
+        } else {
+            return NextResponse.json({"error": "Error fetching projects from the database"}, { status: 500 });
+        }
     });
 }
 
@@ -62,7 +66,7 @@ export function POST(request: NextRequest) {
         });
 
         let data = await res.json()
-        
+
         return NextResponse.json(data)
     });
 }
