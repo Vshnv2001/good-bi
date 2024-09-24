@@ -4,7 +4,7 @@ WORKDIR /backend
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 # Install uvicorn[standard] for better performance and watchfiles for hot reloading
 RUN pip install --no-cache-dir uvicorn[standard] watchfiles
