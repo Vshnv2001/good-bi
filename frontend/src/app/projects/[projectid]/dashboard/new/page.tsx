@@ -48,6 +48,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import PrivacyModal from "@/app/components/PrivacyModal";
+import TermsOfServiceModal from "@/app/components/TermsOfServiceModal";
 
 const FormSchema = z.object({
   dataset: z
@@ -279,7 +280,9 @@ export default function NewDashboard({params}: { params: { projectid: string } }
                 <button className="underline decoration-inherit">Privacy Policy</button>
               </PrivacyModal>
               <span> and </span>
-              <span className="underline decoration-inherit">Terms of Service</span>
+              <TermsOfServiceModal>
+                <button className="underline decoration-inherit">Terms of Service</button>
+              </TermsOfServiceModal>
               <span>.</span>
             </div>
           </div>
