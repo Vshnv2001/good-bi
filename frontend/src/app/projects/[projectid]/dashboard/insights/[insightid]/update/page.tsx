@@ -41,7 +41,7 @@ export default function UpdateInsight({ params }: { params: { projectid: string,
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-
+      title: ""
     },
     resolver: zodResolver(FormSchema),
   })

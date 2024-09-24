@@ -45,7 +45,7 @@ export default function NewProject() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-
+      name: ""
     },
     resolver: zodResolver(FormSchema),
   })

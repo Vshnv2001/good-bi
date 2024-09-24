@@ -44,7 +44,7 @@ export default function UpdateProject({ params }: { params: { projectid: string 
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-
+      name: ""
     },
     resolver: zodResolver(FormSchema),
   })

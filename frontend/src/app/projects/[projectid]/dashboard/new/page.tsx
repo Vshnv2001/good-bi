@@ -119,10 +119,14 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
+      dataset: "",
+      chartType: ChartType.Bar,
       dateRange: {
         start: new Date(),
         end: new Date(),
       },
+      title: "",
+      kpiDescription: ""
     },
     resolver: zodResolver(FormSchema),
   })
