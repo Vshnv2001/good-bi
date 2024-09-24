@@ -52,6 +52,26 @@ app.add_middleware(
 def read_root():
     return {"message" : "Root Message"}
 
+@app.delete("/api/datasets/{datasetName}")
+async def delete_dataset(datasetName: str, auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
+    user_id = auth_session.get_user_id()
+
+    # Delete the file from the database
+    await db.execute(text(f'DROP TABLE IF EXISTS "{user_id}"."{datasetName}"'))
+    await db.commit()
+    
+@app.get("/api/datasetnames")
+async def get_dataset_names(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
+    user_id = auth_session.get_user_id()
+    result = await db.execute(text(f"""
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = :user_id AND table_type = 'BASE TABLE'
+    """), {'user_id': user_id})
+    tables = result.fetchall()
+    tables = [table[0] for table in tables]
+    return JSONResponse(content={"data": tables})
+
 @app.get("/api/datasets")
 async def get_datasets(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
     user_id = auth_session.get_user_id()
@@ -75,11 +95,13 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
         
         # Convert rows to JSON format
         columns = [col for col in result.keys()]
-        json_rows = [dict(zip(columns, row)) for row in rows]
+        json_rows = [dict(zip(columns, [str(value) for value in row])) for row in rows]
+        description = await db.execute(text(f'SELECT description FROM "{user_id}"."{table_name}" LIMIT 1'))
+        description = description.fetchone()[0]
         
         datasets.append({
             "datasetName": table_name,
-            "datasetDescription": "Placeholder description",
+            "datasetDescription": description,
             "datasetJson": json_rows
         })
     
@@ -91,6 +113,7 @@ async def create_dataset(
     datasetName: str = Form(...),
     datasetDescription: str = Form(...),
     datasetFile: UploadFile = File(...),
+    file_id: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db)
 ):
@@ -105,7 +128,7 @@ async def create_dataset(
     print(f"User ID: {user_id}")
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'])
+    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
     await db.commit()
@@ -117,6 +140,8 @@ async def create_dataset(
     # Insert rows into the table
     for row in df.itertuples(index=False, name=None):
         print(row)
+        row = list(row)
+        row += [user_id, file_id, datasetDescription]
         placeholders = ', '.join([':{}'.format(i) for i in range(len(row))])
         # Convert all values to strings
         row_as_str = tuple(str(value) for value in row)

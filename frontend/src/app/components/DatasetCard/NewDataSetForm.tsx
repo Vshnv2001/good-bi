@@ -1,14 +1,88 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
+import Papa from "papaparse"
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { v4 as uuidv4 } from 'uuid';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+function UploadCsvPage({datasetName, existingDatasetNames, setDatasetName, datasetDescription, setDatasetDescription}: {datasetName: string, existingDatasetNames: string[], setDatasetName: (datasetName: string) => void, datasetDescription: string, setDatasetDescription: (datasetDescription: string) => void}) {
+
+  return (
+      <div className="mx-4 my-3">
+        {/* Dataset Name Input */}
+        <h2 className="text-lg font-bold">Choose Dataset</h2>
+        <Select onValueChange={(value) => { setDatasetName(value) }}>
+          <SelectTrigger className="w-full p-2 my-2 border border-gray-300 rounded bg-white cursor-pointer">
+            <SelectValue placeholder="Select a dataset" />
+          </SelectTrigger>
+          <SelectContent>
+            {existingDatasetNames.map((datasetName: string) => (
+              <SelectItem className="cursor-pointer" key={datasetName} value={datasetName}>
+                {datasetName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+    {datasetName === 'New Dataset' && (<div className="flex flex-col">
+          <h2 className="text-lg font-bold">Dataset Name</h2>
+          <Input
+          placeholder="Dataset Name"
+          value={datasetName === 'New Dataset' ? '' : datasetName}
+          onChange={(e) => setDatasetName(e.target.value)}
+          disabled={datasetName !== 'New Dataset'}
+          className="w-full p-2 my-2 border border-gray-300 rounded bg-white"
+        />
+        {/* Dataset Description Textarea */}
+        <h2 className="text-lg font-bold">Dataset Description</h2>
+        <Textarea
+          placeholder="Dataset Description"
+          value={datasetDescription === 'New Dataset' ? '' : datasetDescription}
+          onChange={(e) => setDatasetDescription(e.target.value)}
+          disabled={datasetName !== 'New Dataset'}
+          className="w-full p-2 my-2 border border-gray-300 rounded bg-white"
+        />
+        </div>)}
+      </div>
+    )
+}
+
 
 
 export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dataSets: any, setDataSets: any, closeModal: () => void}) {
   const [datasetName, setDatasetName] = useState('');
   const [datasetDescription, setDatasetDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [columns, setColumns] = useState<string[]>([]);
+  const [existingDatasetNames, setExistingDatasetNames] = useState<string[]>(['New Dataset']);
+  
+
+  useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/datasetnames`)
+      .then((res) => {
+        console.log(res.data.data);
+        setExistingDatasetNames([ ...res.data.data, ...existingDatasetNames]);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }, []);
+
+  function getColumns(file: File) {
+    console.log("getting columns");
+    Papa.parse(file, {
+      header: true,
+      complete: (results: Papa.ParseResult<any>) => {
+          let headers = Object.keys(results.data[0])
+          headers = headers.filter(header => header !== 'user_id');
+          setColumns(headers);
+      }
+    });
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +92,8 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
     if (file) {
       formData.append('datasetFile', file);
     }
-
+    const file_id = uuidv4();
+    formData.append('file_id', file_id);
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`, formData, {
         headers: {
@@ -47,6 +122,10 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files ? e.target.files[0] : null);
+    if (e.target.files && e.target.files.length > 0) {
+      const columns = getColumns(e.target.files[0]);
+      console.log(columns);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -62,28 +141,16 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
   };
 
   return (
-    <main className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 mx-4 mt-3 rounded-2xl border border-gray-200/70">
-      <div className="mx-4 my-3">
-        <h1>Create New Dataset</h1>
+    <ScrollArea className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 p-4 mx-4 mt-3 rounded-2xl border border-gray-200/70">
+      <div className="mx-4 my-3 mb-4 flex justify-center">
+        <h1 className="text-3xl font-bold">Create New Dataset</h1>
       </div>
-      <div className="mx-4 my-3">
-        {/* Dataset Name Input */}
-        <h2>Dataset Name</h2>
-        <input
-          type="text"
-          placeholder="Dataset Name"
-          value={datasetName}
-          onChange={(e) => setDatasetName(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        {/* Dataset Description Textarea */}
-        <Textarea
-          placeholder="Dataset Description"
-          value={datasetDescription}
-          onChange={(e) => setDatasetDescription(e.target.value)}
-          className="w-full p-2 mt-4 border border-gray-300 rounded"
-        />
-      </div>
+      <UploadCsvPage datasetName={datasetName}
+              existingDatasetNames={existingDatasetNames}
+              setDatasetName={setDatasetName}
+              datasetDescription={datasetDescription}
+              setDatasetDescription={setDatasetDescription}
+              />
       <form onSubmit={handleSubmit}>
         {/* File Upload Area */}
         <div 
@@ -102,6 +169,22 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
               {file ? file.name : "Drag and drop a CSV file here, or click to select"}
             </label>
         </div>
+        <h2 className="text-lg mx-4 my-2 font-bold">Column Descriptors</h2>
+        {columns.length > 0 && 
+        columns.map((column: string) => {
+          return (
+            <div key={column} className="flex flex-col mx-4">
+              <p className="text-sm">{column}</p>
+              <Input
+                placeholder="Column Name"
+                value={"Column Descriptor for " + column}
+                onChange={(e) => setColumns(e.target.value.split(','))}
+                className="w-full p-2 my-2 border border-gray-300 rounded bg-white"
+              />
+            </div>
+          )
+        })
+        }
         <div className="flex justify-end space-x-4 mt-4">
           <Button 
             type="submit" 
@@ -112,7 +195,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
           </Button>
         </div>
       </form>
-    </main>
+    </ScrollArea>
   );
 };
 

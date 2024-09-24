@@ -1,4 +1,5 @@
 export interface Dataset {
+    fileId: string;
     datasetName: string;
     datasetDescription: string;
     datasetFile?: File;

@@ -7,15 +7,30 @@ import {
 import { Dataset } from "@/app/interfaces/dataset"
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
-
+import axios from "axios";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 interface DatasetCardProps {
     dataset: Dataset;
-    
+    datasets: Dataset[];
+    setDatasets: (datasets: Dataset[]) => void;
 }
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
-export function DatasetCard({ dataset }: DatasetCardProps) {
-    const [headers, setHeaders] = useState<string[]>([])
-    const [rows, setRows] = useState<string[][]>([])
+
+export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps) {
+    const [headers, setHeaders] = useState<string[]>([]);
+    const [rows, setRows] = useState<string[][]>([]);
+    function deleteFile() {
+        axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets/${dataset.datasetName}`)
+        .then((res) => {
+            console.log(res);
+            setDatasets(datasets.filter(d => d.datasetName !== dataset.datasetName));
+        })
+        .catch((err) => {
+            console.error(err);
+        })
+    }
+
 
     useEffect(() => {
         // console.log("Parsing CSV");
@@ -31,24 +46,25 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
                     header: true,
                     complete: (results: Papa.ParseResult<any>) => {
                         let headers = Object.keys(results.data[0])
-                        headers = headers.filter(header => header !== 'user_id');
-                        setHeaders(headers)
+                        headers = headers.filter(header => !header.includes('user_id') && !header.includes('file_id') && !header.includes('description') && !header.includes('created_at'));
+                        setHeaders(headers);;
                         setRows(results.data.slice(0, 3)) // Get first 3 rows
                     }
                 });
             } else {
                 console.error("Dataset file is undefined");
             }
+            
         };
 
         const parseJSON = async () => {
-            if (dataset.datasetJson) { // Check if datasetJson is defined
+            if (dataset.datasetJson && dataset.datasetJson.length > 0) { // Check if datasetJson is defined and not empty
                 console.log("datasetJson:", dataset.datasetJson);
                 console.log(Object.keys(dataset.datasetJson[0]));
                 const data = dataset.datasetJson; // No need to parse
                 let headers = Object.keys(data[0])
-                headers = headers.filter(header => header !== 'user_id');
-                setHeaders(headers)
+                headers = headers.filter(header => !header.includes('user_id') && !header.includes('file_id') && !header.includes('description') && !header.includes('created_at'));
+                setHeaders(headers);
                 setRows(data.slice(0, 3));
             } else {
                 console.error("Dataset JSON is undefined");
@@ -64,16 +80,15 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
         }
     }, [dataset.datasetFile, dataset.datasetJson])
 
-    // console.log("Headers:", headers);
-    // console.log("Rows:", rows);
 
     return (
-        <Card className="w-full mb-4 mr-4">
-            <CardHeader>
-                <CardTitle>{dataset.datasetName}</CardTitle>
+        <Card>
+            <CardHeader className="flex flex-row justify-between">
+                <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
+                <FontAwesomeIcon icon={faTrashAlt} className="text-red-500 cursor-pointer size-5 mt-3" onClick={deleteFile}/>
             </CardHeader>
             <CardContent>
-                <p className="mb-4">Database: {dataset.datasetDescription}</p>
+                <p className="mb-4 italic">{dataset.datasetDescription}</p>
                 <table className="w-full border-collapse">
                     <thead>
                         <tr>

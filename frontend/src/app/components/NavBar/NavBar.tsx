@@ -52,7 +52,7 @@ const NavBar = () => {
                             href="/dataset"
                             className={`${currentPath.includes("/dataset") ? "" : "text-muted-foreground"} hover:text-foreground`}
                         >
-                            Dataset
+                            Datasets
                         </Link>
                     </nav>
                 </SheetContent>

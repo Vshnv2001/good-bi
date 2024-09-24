@@ -16,14 +16,17 @@ import { useEffect, useState } from "react";
 import NewDataSetForm from "@/app/components/DatasetCard/NewDataSetForm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Dataset } from "@/app/interfaces/dataset"
+import { Spinner } from '@/components/ui/spinner';
 
 export default function DatasetPage() {
 
     const [datasets, setDatasets] = useState<Dataset[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`)
         .then((res) => res.json())
-        .then((data) => {setDatasets(data.data)});
+        .then((data) => {setDatasets(data.data); setIsLoading(false)});
     }, []);
 
     console.log(datasets);
@@ -51,16 +54,22 @@ export default function DatasetPage() {
                             New Dataset
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="w-4/5">
                         <NewDataSetForm dataSets={datasets} setDataSets={setDatasets} closeModal={() => {}} />
                     </DialogContent>
                 </Dialog>
             </div>
             </div>
             <div className="mx-4 pb-4 flex-grow overflow-y-auto">
-                {datasets.map((dataset, index) => (
-                    <DatasetCard key={index} dataset={dataset} />
-                ))}
+                {isLoading ? 
+                    <div className="flex justify-center items-center h-full mt-10">
+                        <Spinner size="large" />
+                    </div>
+                : (
+                    datasets.map((dataset, index) => (
+                        <DatasetCard key={index} dataset={dataset} datasets={datasets} setDatasets={setDatasets} />
+                    ))
+                )}
             </div>
         </main>
         </div>
