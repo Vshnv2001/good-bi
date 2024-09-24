@@ -32,6 +32,7 @@ export default function Projects() {
 
             if (res.status == 200) {
                 let data = await res.json();
+
                 setProjects(data);
                 setFilteredProjects(data);
             }
