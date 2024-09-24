@@ -88,6 +88,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
             </CardHeader>
             <CardContent>
                 <p className="mb-4 italic">{dataset.datasetDescription}</p>
+              <div className="max-w-full overflow-scroll">
                 <table className="w-full border-collapse">
                     <thead>
                         <tr>
@@ -106,6 +107,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
                         ))}
                     </tbody>
                 </table>
+              </div>
             </CardContent>
         </Card>
     )
