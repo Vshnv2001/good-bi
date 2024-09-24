@@ -82,7 +82,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
 
 
     return (
-        <Card>
+        <Card className="m-4">
             <CardHeader className="flex flex-row justify-between">
                 <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
                 <FontAwesomeIcon icon={faTrashAlt} className="text-red-500 cursor-pointer size-5 mt-3" onClick={deleteFile}/>

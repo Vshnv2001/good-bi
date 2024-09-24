@@ -59,8 +59,8 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
   const [file, setFile] = useState<File | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
   const [existingDatasetNames, setExistingDatasetNames] = useState<string[]>(['New Dataset']);
-  
-
+  const [isNewDataset, setIsNewDataset] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/datasetnames`)
       .then((res) => {
@@ -107,11 +107,13 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
           datasetDescription: datasetDescription,
           datasetFile: file
         }
-        setDataSets([...dataSets, newDataset]);
+        if (isNewDataset) {
+          setDataSets([...dataSets, newDataset]);
+        } 
         setDatasetName('');
         setDatasetDescription('');
         setFile(null);
-        closeModal(); // Close the modal after submitting
+        setSubmitted(true);
       } else {
         console.error('Failed to submit dataset');
       }
@@ -140,18 +142,56 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
     }
   };
 
+  if (submitted) {
+    return (
+      <div className="mx-4 my-3">
+        <h1 className="text-3xl font-bold">Dataset Submitted</h1>
+        <p>Your dataset has been submitted for review. You will be notified when it is approved.</p>
+      </div>
+    )
+  }
+
   return (
     <ScrollArea className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 p-4 mx-4 mt-3 rounded-2xl border border-gray-200/70">
       <div className="mx-4 my-3 mb-4 flex justify-center">
         <h1 className="text-3xl font-bold">Create New Dataset</h1>
       </div>
-      <UploadCsvPage datasetName={datasetName}
-              existingDatasetNames={existingDatasetNames}
-              setDatasetName={setDatasetName}
-              datasetDescription={datasetDescription}
-              setDatasetDescription={setDatasetDescription}
-              />
-      <form onSubmit={handleSubmit}>
+      <div className="mx-4 my-3">
+        {/* Dataset Name Input */}
+        <h2 className="text-lg font-bold">Choose Dataset</h2>
+        <Select onValueChange={(value) => { setDatasetName(value); setIsNewDataset(value === 'New Dataset') }}>
+          <SelectTrigger className="w-full p-2 my-2 border border-gray-300 rounded bg-white cursor-pointer">
+            <SelectValue placeholder="Select a dataset" />
+          </SelectTrigger>
+          <SelectContent>
+            {existingDatasetNames.map((datasetName: string) => (
+              <SelectItem className="cursor-pointer" key={datasetName} value={datasetName}>
+                {datasetName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+    {isNewDataset && (<div className="flex flex-col">
+          <h2 className="text-lg font-bold">Dataset Name</h2>
+          <Input
+          placeholder="Dataset Name"
+          value={datasetName}
+          onChange={(e) => setDatasetName(e.target.value)}
+          disabled={!isNewDataset}
+          className="w-full p-2 my-2 border border-gray-300 rounded bg-white"
+        />
+        {/* Dataset Description Textarea */}
+        <h2 className="text-lg font-bold">Dataset Description</h2>
+        <Textarea
+          placeholder="Dataset Description"
+          value={datasetDescription === 'New Dataset' ? '' : datasetDescription}
+          onChange={(e) => setDatasetDescription(e.target.value)}
+          disabled={!isNewDataset}
+          className="w-full p-2 my-2 border border-gray-300 rounded bg-white"
+        />
+        </div>)}
+      </div>
+      <form onSubmit={(event) => {handleSubmit(event); closeModal()}}>
         {/* File Upload Area */}
         <div 
             className="border-2 border-dashed border-gray-300 mx-4 rounded-lg p-6 mb-4 text-center cursor-pointer"
@@ -188,7 +228,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
         <div className="flex justify-end space-x-4 mt-4">
           <Button 
             type="submit" 
-            disabled={!datasetName || !datasetDescription || !file}
+            disabled={!datasetName || !file}
             className="text-white bg-primary-700 hover:bg-primary-600"
           >
             Submit
