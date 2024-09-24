@@ -162,16 +162,18 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
     setInsightFormData(formData);
     setIsFormSubmitted(true);
+  }
 
-    // let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
-    //   method: 'POST',
-    //   body: formData
-    // });
+  async function onConfirm() {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
+      method: 'POST',
+      body: insightFormData
+    });
 
-    // if (res.status == 200) {
-    //   let responseData = await res.json()
-    //   router.push(`/projects/${params.projectid}/dashboard`)
-    // }
+    if (res.status == 200) {
+      let responseData = await res.json()
+      router.push(`/projects/${params.projectid}/dashboard`)
+    }
   }
 
   return (
@@ -215,7 +217,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
               <span>Regenerate</span>
             </div>
             <div className="pb-7">
-              <Button className="w-full">
+              <Button className="w-full" onClick={onConfirm}>
                 Confirm
               </Button>
             </div>
