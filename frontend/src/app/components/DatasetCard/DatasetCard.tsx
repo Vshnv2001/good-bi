@@ -120,7 +120,7 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
             </CardHeader>
             <CardContent>
                 <p className="mb-4 italic">{dataset.datasetDescription}</p>
-                <DatasetTable<ColumnType> columns={columns} data={rows}/>
+                <DatasetTable<ColumnType> columns={columns} data={rows.concat(rows).concat(rows).concat(rows).concat(rows)}/>
             </CardContent>
         </Card>
     )
