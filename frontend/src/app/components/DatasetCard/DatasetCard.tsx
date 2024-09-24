@@ -8,7 +8,7 @@ import { Dataset } from "@/app/interfaces/dataset"
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
 import axios from "axios";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Trash } from "lucide-react";
 interface DatasetCardProps {
     dataset: Dataset;
     datasets: Dataset[];
@@ -85,7 +85,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
         <Card className="m-4">
             <CardHeader className="flex flex-row justify-between">
                 <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
-                <FontAwesomeIcon icon={faTrashAlt} className="text-red-500 cursor-pointer size-5 mt-3" onClick={deleteFile}/>
+                <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile} />
             </CardHeader>
             <CardContent>
                 <p className="mb-4 italic">{dataset.datasetDescription}</p>
