@@ -28,9 +28,7 @@ export default function Projects() {
 
     useEffect(() => {
         async function fetchProjects() {
-            let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, {
-                method: 'GET'
-            });
+            let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
 
             if (res.status == 200) {
                 let data = await res.json();
