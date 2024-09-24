@@ -163,12 +163,12 @@ async def create_project(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}".projects (project_id UUID, user_id UUID, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}.user_data";'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".projects (project_id UUID, user_id UUID, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     await db.execute(text(f"""
-        INSERT INTO "{user_id}".projects
+        INSERT INTO "{user_id}.user_data".projects
         (project_id, user_id, name)
         VALUES (:project_id, :user_id, :name)
     """), {'project_id': str(uuid.uuid4()), 'user_id': user_id, 'name': name})
@@ -185,13 +185,13 @@ async def get_projects(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}".projects (project_id UUID, user_id UUID, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}.user_data";'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".projects (project_id UUID, user_id UUID, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     result = await db.execute(text(f"""
         SELECT * 
-        FROM "{user_id}".projects
+        FROM "{user_id}.user_data".projects
         WHERE user_id = :user_id
     """), {'user_id': user_id})
 
@@ -200,14 +200,16 @@ async def get_projects(
 
     def create_project_card_object(project):
         return {
-            "id": project['project_id'],
+            "id": str(project['project_id']),
             "name": project['name'],
-            "lastUpdated": project['updated_at']
+            "lastUpdated": str(project['updated_at'])
         }
     
     projects = list(map(create_project_card_object, projects))
 
-    return projects
+    print(projects)
+
+    return JSONResponse(content=projects)
 
 @app.post("/api/projects/update")
 async def update_project(
@@ -220,7 +222,7 @@ async def update_project(
     print(f"User ID: {user_id}")
 
     await db.execute(text(f"""
-        UPDATE "{user_id}".projects
+        UPDATE "{user_id}.user_data".projects
         SET name = :name, updated_at = CURRENT_TIMESTAMP 
         WHERE project_id = :project_id AND user_id = :user_id
     """), {'name': name, 'project_id': project_id, 'user_id': user_id})
@@ -239,7 +241,7 @@ async def delete_project(
     print(f"User ID: {user_id}")
 
     await db.execute(text(f"""
-        DELETE FROM "{user_id}".projects
+        DELETE FROM "{user_id}.user_data".projects
         WHERE project_id = :project_id AND user_id = :user_id
     """), {'project_id': project_id, 'user_id': user_id})
 
@@ -266,12 +268,11 @@ async def create_insight(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     await db.execute(text(f"""
-        INSERT INTO "{user_id}".insights
+        INSERT INTO "{user_id}.user_data".insights
         (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date, y_range_start, y_range_end)
         VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date, :y_range_start, :y_range_end)
     """), {'insight_id': str(uuid.uuid4()), 'user_id': user_id, 'project_id': project_id, 'dataset_id': dataset_id, 'title': title, 'kpi_description': kpi_description, 'chart_type': chart_type, 'start_date': datetime.strptime(start_date, '%m-%d-%Y'), 'end_date': datetime.strptime(end_date, '%m-%d-%Y'), 'y_range_start': y_range_start, 'y_range_end': y_range_end})
@@ -289,13 +290,12 @@ async def get_insights(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     result = await db.execute(text(f"""
         SELECT * 
-        FROM "{user_id}".insights
+        FROM "{user_id}.user_data".insights
         WHERE project_id = :project_id AND user_id = :user_id
     """), {'project_id': project_id, 'user_id': user_id})
 
@@ -361,8 +361,8 @@ async def get_insights(
 
     def create_dashboard_card_object(insight):
         return {
-            "id": insight['insight_id'],
-            "key": insight['insight_id'],
+            "id": str(insight['insight_id']),
+            "key": str(insight['insight_id']),
             "title": insight['title'],
             "chartType": insight['chart_type'],
             "chartData": {
@@ -376,12 +376,12 @@ async def get_insights(
                 "xAxisDataKey": "month",
                 "dataKeys": ["desktop", "mobile"]
             },
-            "projectId": insight['project_id']
+            "projectId": str(insight['project_id'])
         }
     
     insights = list(map(create_dashboard_card_object, insights))
 
-    return insights
+    return JSONResponse(content=insights)
 
 @app.post("/api/insights/delete")
 async def delete_insight(
@@ -394,7 +394,7 @@ async def delete_insight(
     print(f"User ID: {user_id}")
 
     await db.execute(text(f"""
-        DELETE FROM "{user_id}".insights
+        DELETE FROM "{user_id}.user_data".insights
          WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
     """), {'insight_id': insight_id, 'project_id': project_id, 'user_id': user_id})
 
