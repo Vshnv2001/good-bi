@@ -12,6 +12,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
 import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
 import { ColumnDef } from "@tanstack/react-table";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
 
 interface DatasetCardProps {
     dataset: Dataset;
@@ -116,11 +117,14 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
         <Card className="mb-4">
             <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
-                <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile}/>
+                <Button variant="ghost" size="icon" className="[&_svg]:hover:text-red-500">
+                    <Trash className="size-5" onClick={deleteFile}/>
+                </Button>
             </CardHeader>
             <CardContent>
-                <p className="mb-4 italic">{dataset.datasetDescription}</p>
-                <DatasetTable<ColumnType> columns={columns} data={rows.concat(rows).concat(rows).concat(rows).concat(rows)}/>
+                {dataset.datasetDescription && <p className="mb-4 italic">{dataset.datasetDescription}</p>}
+                <DatasetTable<ColumnType> columns={columns}
+                                          data={rows.concat(rows).concat(rows).concat(rows).concat(rows)}/>
             </CardContent>
         </Card>
     )
