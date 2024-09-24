@@ -46,14 +46,14 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
                     complete: (results: Papa.ParseResult<any>) => {
                         let headers = Object.keys(results.data[0])
                         headers = headers.filter(header => !header.includes('user_id') && !header.includes('file_id') && !header.includes('description') && !header.includes('created_at'));
-                        setHeaders(headers);;
+                        setHeaders(headers);
                         setRows(results.data.slice(0, 3)) // Get first 3 rows
                     }
                 });
             } else {
                 console.error("Dataset file is undefined");
             }
-            
+
         };
 
         const parseJSON = async () => {
