@@ -32,6 +32,7 @@ import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const FormSchema = z.object({
   name: z.string({
@@ -48,6 +49,23 @@ export default function UpdateProject({ params }: { params: { projectid: string 
     },
     resolver: zodResolver(FormSchema),
   })
+
+  const { register, handleSubmit, reset, formState: { errors } } = form;
+
+  useEffect(() => {
+    async function fetchProject() {
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/project/${params.projectid}`);
+
+      if (res.status == 200) {
+        let data = await res.json();
+
+        reset({
+          name: data.name
+        });
+      }
+    }
+    fetchProject()
+  }, []);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     let formData = new FormData();

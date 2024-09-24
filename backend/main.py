@@ -211,6 +211,39 @@ async def get_projects(
 
     return JSONResponse(content=projects)
 
+@app.get("/api/project/{project_id}")
+async def get_projects(
+    project_id: str,
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    result = await db.execute(text(f"""
+        SELECT * 
+        FROM "{user_id}.user_data".projects
+        WHERE project_id = :project_id AND user_id = :user_id LIMIT 1
+    """), {'project_id': project_id, 'user_id': user_id})
+
+    projects = result.fetchall()
+
+    if len(projects) == 1:
+        projects = [r._asdict() for r in projects]
+
+        def create_project_card_object(project):
+            return {
+                "id": str(project['project_id']),
+                "name": project['name'],
+                "lastUpdated": str(project['updated_at'])
+            }
+        
+        projects = list(map(create_project_card_object, projects))
+
+        return JSONResponse(content=projects[0])
+
+    return JSONResponse(content={})
+
 @app.post("/api/projects/update")
 async def update_project(
     name: str = Form(...),
@@ -380,6 +413,40 @@ async def get_insights(
     insights = list(map(create_dashboard_card_object, insights))
 
     return JSONResponse(content=insights)
+
+@app.get("/api/insight/{insight_id}")
+async def get_insights(
+    insight_id: str,
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    result = await db.execute(text(f"""
+        SELECT * 
+        FROM "{user_id}.user_data".insights
+        WHERE insight_id = :insight_id AND user_id = :user_id LIMIT 1
+    """), {'insight_id': insight_id, 'user_id': user_id})
+
+    insights = result.fetchall()
+    
+    if len(insights) == 1:
+        insights = [r._asdict() for r in insights]
+    
+        def create_dashboard_card_object(insight):
+            return {
+                "id": str(insight['insight_id']),
+                "key": str(insight['insight_id']),
+                "title": insight['title'],
+                "projectId": str(insight['project_id'])
+            }
+        
+        insights = list(map(create_dashboard_card_object, insights))
+
+        return JSONResponse(content=insights[0])
+
+    return JSONResponse(content={})
 
 @app.post("/api/insights/update")
 async def update_project(
