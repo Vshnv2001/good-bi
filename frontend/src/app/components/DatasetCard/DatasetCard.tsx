@@ -8,10 +8,11 @@ import { Dataset } from "@/app/types/Dataset";
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
 import axios from "axios";
-import {ArrowDown, ArrowUp, ArrowUpDown, Trash} from "lucide-react";
-import {DatasetTable} from "@/app/components/DatasetCard/DatasetTable";
-import {ColumnDef} from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
+import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
+import { ColumnDef } from "@tanstack/react-table";
 import * as React from "react";
+
 interface DatasetCardProps {
     dataset: Dataset;
     datasets: Dataset[];
@@ -19,19 +20,20 @@ interface DatasetCardProps {
 }
 
 
-export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps) {
+export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) {
 
     const [headers, setHeaders] = useState<string[]>([]);
     const [rows, setRows] = useState<Record<string, string>[]>([]);
+
     function deleteFile() {
         axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets/${dataset.datasetName}`)
-        .then((res) => {
-            console.log(res);
-            setDatasets(datasets.filter(d => d.datasetName !== dataset.datasetName));
-        })
-        .catch((err) => {
-            console.error(err);
-        })
+            .then((res) => {
+                console.log(res);
+                setDatasets(datasets.filter(d => d.datasetName !== dataset.datasetName));
+            })
+            .catch((err) => {
+                console.error(err);
+            })
     }
 
 
@@ -88,58 +90,37 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
     const columns: ColumnDef<ColumnType>[] = keys.map((key) => {
         return {
             accessorKey: key,
-            header: ({ column }) => {
+            header: ({column}) => {
                 return (
-                  <button
-                    className="inline-flex hover:text-gray-800 transition-colors duration-100"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                  >
-                      {key}
-                      {!column.getIsSorted()
-                        ? <ArrowUpDown className="ml-1 size-4" />
-                        : column.getIsSorted() === 'asc'
-                          ? <ArrowUp className="ml-1 size-4" />
-                          : <ArrowDown className="ml-1 size-4" />
-                      }
-                  </button>
+                    <button
+                        className="inline-flex hover:text-gray-800 transition-colors duration-100"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        {key}
+                        {!column.getIsSorted()
+                            ? <ArrowUpDown className="ml-1 size-4"/>
+                            : column.getIsSorted() === 'asc'
+                                ? <ArrowUp className="ml-1 size-4"/>
+                                : <ArrowDown className="ml-1 size-4"/>
+                        }
+                    </button>
                 )
             },
-            cell: ({ row }) => (
-              <div>{row.getValue(key)}</div>
+            cell: ({row}) => (
+                <div>{row.getValue(key)}</div>
             ),
         }
     })
 
     return (
-        <Card className="m-4">
-            <CardHeader className="flex flex-row justify-between">
+        <Card className="mb-4">
+            <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
-                <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile} />
+                <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile}/>
             </CardHeader>
             <CardContent>
-                <DatasetTable<ColumnType> columns={columns} data={rows} />
                 <p className="mb-4 italic">{dataset.datasetDescription}</p>
-              <div className="max-w-full overflow-scroll">
-
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr>
-                        {headers.map((header, index) => (
-                                <th key={index} className="border p-2 text-left">{header}</th>
-                        ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {rows.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {headers.map((header, cellIndex) => (
-                                    <td key={cellIndex} className="border p-2">{(row as any)[header]}</td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-              </div>
+                <DatasetTable<ColumnType> columns={columns} data={rows}/>
             </CardContent>
         </Card>
     )
