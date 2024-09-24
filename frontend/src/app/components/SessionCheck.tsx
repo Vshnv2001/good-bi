@@ -12,7 +12,6 @@ const SessionCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       const exists = await doesSessionExist();
       setSessionExists(exists);
     };
-    console.log("hello")
     checkSession();
   }, []);
 
