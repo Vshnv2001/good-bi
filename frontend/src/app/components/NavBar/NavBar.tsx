@@ -43,16 +43,16 @@ const NavBar = () => {
                 <SheetContent side="left">
                     <nav className="grid gap-6 text-lg font-normal mt-8">
                         <Link
-                            href="/dashboard"
-                            className={`${currentPath === "/dashboard" ? "" : "text-muted-foreground"} hover:text-foreground`}
+                            href="/projects"
+                            className={`${currentPath === "/projects" ? "" : "text-muted-foreground"} hover:text-foreground`}
                         >
-                            Dashboards
+                            Projects
                         </Link>
                         <Link
                             href="/dataset"
-                            className={`${currentPath === "/dataset" ? "" : "text-muted-foreground"} hover:text-foreground`}
+                            className={`${currentPath.includes("/dataset") ? "" : "text-muted-foreground"} hover:text-foreground`}
                         >
-                            Dataset
+                            Datasets
                         </Link>
                     </nav>
                 </SheetContent>
@@ -67,14 +67,14 @@ const NavBar = () => {
             </Link>
             <nav className="hidden flex-col gap-6 text-base font-normal gap-6 md:flex md:w-full md:flex-row md:items-center md:justify-center">
                 <Link
-                    href="/dashboard"
-                    className={`${currentPath === "/dashboard" ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
+                    href="/projects"
+                    className={`${currentPath === "/projects" ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
                 >
-                    Dashboard
+                    Projects
                 </Link>
                 <Link
                     href="/dataset"
-                    className={`${currentPath === "/dataset" ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
+                    className={`${currentPath.includes("/dataset") ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
                 >
                     Dataset
                 </Link>
