@@ -38,7 +38,7 @@ const HeroCard = React.forwardRef<
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
-                <CardTitle>{data.title}</CardTitle>
+                <CardTitle className="text-base">{data.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-grow px-3 pb-3 max-h-full overflow-hidden w-full">
                 {
