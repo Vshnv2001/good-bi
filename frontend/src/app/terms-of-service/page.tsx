@@ -2,8 +2,21 @@
 
 import LandingNavBar from "@/app/components/Landing/LandingNavBar";
 import LandingFooter from "@/app/components/Landing/LandingFooter";
+import {useRouter} from "next/navigation";
+import {useEffect} from "react";
+import {doesSessionExist} from "@/lib/utils";
 
 export default function TermsOfService() {
+  const router = useRouter();
+
+  useEffect(() => {
+    doesSessionExist().then((hasSession) => {
+      if (hasSession) {
+        router.replace("/projects");
+      }
+    })
+  }, [router]);
+
   return (
     <>
       <LandingNavBar/>
@@ -14,7 +27,8 @@ export default function TermsOfService() {
           <div>
             <h2>About</h2>
             <p>
-              Welcome to GoodBI (&quot;GoodBI&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). By accessing or using
+              Welcome to GoodBI (&quot;GoodBI&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). By accessing
+              or using
               GoodBI, you agree to comply with and be bound by these Terms of Service. If you do not agree to these
               terms, please do not use GoodBI.
             </p>

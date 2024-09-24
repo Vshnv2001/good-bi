@@ -1,7 +1,7 @@
 'use client'
 
-import {ReactNode} from "react";
-import {cn} from "@/lib/utils";
+import {ReactNode, useEffect} from "react";
+import {cn, doesSessionExist} from "@/lib/utils";
 import AnimatedLogoCloud from "@/app/components/Landing/AnimatedLogoCloud";
 import LandingNavBar from "@/app/components/Landing/LandingNavBar";
 import ProductSection from "@/app/components/Landing/ProductSection";
@@ -15,8 +15,19 @@ import Link from "next/link";
 import Particles from "@/app/components/Landing/Particles";
 import LandingFooter from "@/app/components/Landing/LandingFooter";
 import FAQSection from "@/app/components/Landing/FAQSection";
+import {useRouter} from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    doesSessionExist().then((hasSession) => {
+      if (hasSession) {
+        router.replace("/projects");
+      }
+    })
+  }, [router]);
+
   return (
     <>
       <LandingNavBar/>
@@ -60,7 +71,7 @@ export default function Home() {
           </SectionContainer>
         </div>
       </main>
-      <LandingFooter />
+      <LandingFooter/>
     </>
   );
 }
