@@ -60,7 +60,7 @@ export default function Login() {
       } else {
           // sign in successful. The session tokens are automatically handled by
           // the frontend SDK.
-          window.location.href = "/dashboard"
+          window.location.href = "/projects"
       }
   } catch (err: any) {
       if (err.isSuperTokensGeneralError === true) {

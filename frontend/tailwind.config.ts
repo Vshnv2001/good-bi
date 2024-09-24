@@ -96,9 +96,13 @@ const config: Config = {
       },
       height: {
         '4.5': '1.125rem',
+        '83': '20.75rem',
       },
       width: {
         '4.5': '1.125rem',
+      },
+      padding: {
+        '19': '4.75rem',
       },
       keyframes: {
         "accordion-down": {
