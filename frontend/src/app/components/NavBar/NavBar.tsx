@@ -5,7 +5,7 @@ import {usePathname} from 'next/navigation'
 import Link from "next/link"
 import Image from 'next/image';
 
-import {Menu, CircleUser, Share, LogOut, HelpCircle} from "lucide-react";
+import {Menu, CircleUser, Share, LogOut, HelpCircle, Facebook, FacebookIcon} from "lucide-react";
 
 import {Button} from "@/components/ui/button"
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Session from "supertokens-web-js/recipe/session";
+import {Dialog, DialogContent, DialogHeader, DialogTrigger} from "@/components/ui/dialog";
 
 const NavBar = () => {
   const currentPath = usePathname();
@@ -92,15 +93,15 @@ const NavBar = () => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator/>
-            <DropdownMenuItem>
-              <HelpCircle className="size-4 mr-1.5"/>
-              Need help? Email us.
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={signOut} asChild>
+            <DropdownMenuItem asChild>
               <a href="mailto:cs3216-staff@googlegroups.com">
-                <Share className="size-4 mr-1.5"/>
-                Share GoodBI
+                <HelpCircle className="size-4 mr-1.5"/>
+                Need help? Email us.
               </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <FacebookIcon className="size-4 mr-1.5"/>
+              Share on Facebook
             </DropdownMenuItem>
             <DropdownMenuSeparator/>
             <DropdownMenuItem onClick={signOut}>
@@ -110,6 +111,7 @@ const NavBar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
     </header>
   );
 };
