@@ -45,7 +45,7 @@ const DashboardCard = React.forwardRef<
                             <EllipsisVertical className="text-gray-500 w-5 h-5" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <Link href={`/projects/${data.projectId}/insights/${data.id}/update`}>
+                            <Link href={`/projects/${data.projectId}/dashboard/insights/${data.id}/update`}>
                                 <DropdownMenuItem>Edit</DropdownMenuItem>
                             </Link>
                             <DropdownMenuItem onClick={() => deleteInsight(data.projectId, data.id)}>Delete</DropdownMenuItem>
