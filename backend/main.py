@@ -383,6 +383,27 @@ async def get_insights(
 
     return JSONResponse(content=insights)
 
+@app.post("/api/insights/update")
+async def update_project(
+    title: str = Form(...),
+    insight_id: str = Form(...),
+    project_id: str = Form(...),
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    await db.execute(text(f"""
+        UPDATE "{user_id}.user_data".insights
+        SET title = :title, updated_at = CURRENT_TIMESTAMP 
+        WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
+    """), {'title': title, 'insight_id': insight_id, 'project_id': project_id, 'user_id': user_id})
+
+    await db.commit()
+
+    return JSONResponse(content={"message": "Insight updated successfully"}) 
+
 @app.post("/api/insights/delete")
 async def delete_insight(
     insight_id: str = Form(...),
