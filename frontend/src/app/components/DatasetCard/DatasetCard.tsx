@@ -8,9 +8,10 @@ import { Dataset } from "@/app/types/Dataset";
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
 import axios from "axios";
-import { Trash } from "lucide-react";
-import {Table, TableHead, TableRow} from "@/components/ui/table";
+import {ArrowDown, ArrowUp, ArrowUpDown, Trash} from "lucide-react";
 import {DataTableDemo} from "@/app/components/DatasetCard/DatasetTable";
+import {ColumnDef} from "@tanstack/react-table";
+import * as React from "react";
 interface DatasetCardProps {
     dataset: Dataset;
     datasets: Dataset[];
@@ -19,6 +20,68 @@ interface DatasetCardProps {
 
 
 export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps) {
+
+    const keys = ['id', 'amount', 'status', 'email'] as const;
+    type ColumnType = Record<typeof keys[number], string>;
+
+    const data: ColumnType[] = [
+        {
+            id: "m5gr84i9",
+            amount: "316",
+            status: "success",
+            email: "ken99@yahoo.com",
+        },
+        {
+            id: "3u1reuv4",
+            amount: "242",
+            status: "success",
+            email: "Abe45@gmail.com",
+        },
+        {
+            id: "derv1ws0",
+            amount: "837",
+            status: "processing",
+            email: "Monserrat44@gmail.com",
+        },
+        {
+            id: "5kma53ae",
+            amount: "874",
+            status: "success",
+            email: "Silas22@gmail.com",
+        },
+        {
+            id: "bhqecj4p",
+            amount: "721",
+            status: "failed",
+            email: "carmella@hotmail.com",
+        },
+    ]
+
+    const columns: ColumnDef<ColumnType>[] = keys.map((key) => {
+        return {
+            accessorKey: key,
+            header: ({ column }) => {
+                return (
+                  <button
+                    className="inline-flex hover:text-gray-800 transition-colors duration-100"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                  >
+                      {key}
+                      {!column.getIsSorted()
+                        ? <ArrowUpDown className="ml-1 size-4" />
+                        : column.getIsSorted() === 'asc'
+                          ? <ArrowUp className="ml-1 size-4" />
+                          : <ArrowDown className="ml-1 size-4" />
+                      }
+                  </button>
+                )
+            },
+            cell: ({ row }) => (
+              <div>{row.getValue(key)}</div>
+            ),
+        }
+    })
+
     const [headers, setHeaders] = useState<string[]>([]);
     const [rows, setRows] = useState<string[][]>([]);
     function deleteFile() {
@@ -89,7 +152,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
                 <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile} />
             </CardHeader>
             <CardContent>
-                <DataTableDemo />
+                <DataTableDemo<ColumnType> columns={columns} data={data} />
                 <p className="mb-4 italic">{dataset.datasetDescription}</p>
               <div className="max-w-full overflow-scroll">
 
