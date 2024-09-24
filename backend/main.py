@@ -255,8 +255,6 @@ async def create_insight(
     chart_type: str = Form(...),
     start_date: str = Form(...),
     end_date: str = Form(...),
-    y_range_start: float = Form(...),
-    y_range_end: float = Form(...),
     title: str = Form(...),
     kpi_description: str = Form(...),
     project_id: str = Form(...),
@@ -268,14 +266,14 @@ async def create_insight(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     await db.execute(text(f"""
         INSERT INTO "{user_id}.user_data".insights
-        (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date, y_range_start, y_range_end)
-        VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date, :y_range_start, :y_range_end)
-    """), {'insight_id': str(uuid.uuid4()), 'user_id': user_id, 'project_id': project_id, 'dataset_id': dataset_id, 'title': title, 'kpi_description': kpi_description, 'chart_type': chart_type, 'start_date': datetime.strptime(start_date, '%m-%d-%Y'), 'end_date': datetime.strptime(end_date, '%m-%d-%Y'), 'y_range_start': y_range_start, 'y_range_end': y_range_end})
+        (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date)
+        VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date)
+    """), {'insight_id': str(uuid.uuid4()), 'user_id': user_id, 'project_id': project_id, 'dataset_id': dataset_id, 'title': title, 'kpi_description': kpi_description, 'chart_type': chart_type, 'start_date': datetime.strptime(start_date, '%m-%d-%Y'), 'end_date': datetime.strptime(end_date, '%m-%d-%Y')})
 
     await db.commit()
 
@@ -290,7 +288,7 @@ async def get_insights(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     result = await db.execute(text(f"""

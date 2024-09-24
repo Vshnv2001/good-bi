@@ -104,9 +104,6 @@ const FormSchema = z.object({
       required_error: "Please select a date range",
     }
   ),
-  yRange: z.coerce.number({
-    required_error: "Please enter a valid y range.",
-  }),
   title: z.string({
     required_error: "Please enter a title.",
   }),
@@ -298,20 +295,6 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="yRange"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <FormLabel>Y range</FormLabel>
-                        <Input
-                          type="number"
-                          {...field}
-                        />
                         <FormMessage />
                       </FormItem>
                     )}
