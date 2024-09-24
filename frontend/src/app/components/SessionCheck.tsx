@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Session from 'supertokens-web-js/recipe/session';
-import { doesSessionExist } from '../../lib/utils';
+import { doesSessionExist } from '@/lib/utils';
 
 const SessionCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sessionExists, setSessionExists] = useState<boolean | null>(null);
