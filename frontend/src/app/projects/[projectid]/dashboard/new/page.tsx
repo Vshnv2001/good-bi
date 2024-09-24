@@ -80,10 +80,22 @@ export default function NewDashboard({ params }: { params: { projectid: string }
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/insights`, {
+    let formData = new FormData();
+
+    formData.append('dataset_id', '7bf63769-f738-4bab-8d86-bfd18fa1341f')
+    formData.append('chart_type', data.chartType);
+    formData.append('start_date', format(data.dateRange.start, "MM-dd-yyyy"))
+    formData.append('end_date', format(data.dateRange.end, "MM-dd-yyyy"))
+    // Replace y_range with actual values
+    formData.append('y_range_start', '0')
+    formData.append('y_range_end', '999')
+    formData.append('title', data.title)
+    formData.append('kpi_description', data.kpiDescription)
+    formData.append('project_id', params.projectid)
+    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
       method: 'POST',
-      body: JSON.stringify(data)
-    })
+      body: formData
+    });
 
     if (res.status == 200) {
       let responseData = await res.json()

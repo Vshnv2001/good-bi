@@ -48,7 +48,12 @@ export default function Dashboard({ params }: { params: { projectid: string } })
 
   useEffect(() => {
     async function fetchDashboards() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/insights`)
+      let formData = new FormData();
+      formData.append('project_id', params.projectid);
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights`, {
+        method: 'POST',
+        body: formData
+      });
 
       if (res.status == 200) {
         let data = await res.json()
@@ -97,9 +102,14 @@ export default function Dashboard({ params }: { params: { projectid: string } })
   }, []);
 
   async function deleteInsight(projectId: string, insightId: string) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${projectId}/insights/${insightId}/delete`, {
-      method: 'POST'
-    })
+    let formData = new FormData();
+    console.log(projectId)
+    formData.append('insight_id', insightId);
+    formData.append('project_id', projectId);
+    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
+      method: 'POST',
+      body: formData
+    });
 
     if (res.status == 200) {
       setInsights(insights => insights.filter(insight => insight.id != insightId));

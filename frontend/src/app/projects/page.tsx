@@ -28,12 +28,14 @@ export default function Projects() {
 
     useEffect(() => {
         async function fetchProjects() {
-            let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects`)
+            let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, {
+                method: 'GET'
+            });
 
             if (res.status == 200) {
-                let data = await res.json()
-                setProjects(data)
-                setFilteredProjects(data)
+                let data = await res.json();
+                setProjects(data);
+                setFilteredProjects(data);
             }
         }
         fetchProjects()
@@ -57,12 +59,16 @@ export default function Projects() {
     }
 
     async function deleteProject(projectId: string) {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${projectId}/delete`, {
-            method: 'POST'
-        })
+        let formData = new FormData();
+        formData.append('project_id', projectId);
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/delete`, {
+            method: 'POST',
+            body: formData
+        });
 
         if (res.status == 200) {
             setProjects(projects => projects.filter(project => project.id != projectId));
+            setFilteredProjects(filteredProjects => filteredProjects.filter(project => project.id != projectId));
             let responseData = await res.json()
         }
     }

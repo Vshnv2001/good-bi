@@ -40,10 +40,13 @@ export default function UpdateProject({ params }: { params: { projectid: string 
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/update`, {
+    let formData = new FormData();
+    formData.append('name', data.name)
+    formData.append('project_id', params.projectid);
+    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/update`, {
       method: 'POST',
-      body: JSON.stringify(data)
-    })
+      body: formData
+    });
 
     if (res.status == 200) {
       let responseData = await res.json()

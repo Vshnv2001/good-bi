@@ -8,8 +8,6 @@ import {
   CardContent,
 } from "@/components/ui/card"
 
-import { z } from "zod"
-
 import { NavBar } from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
@@ -18,34 +16,6 @@ import SessionCheck from "@/app/components/SessionCheck";
 import GBBarChart from "@/app/components/Charts/BarChart";
 import { BarChartData, ChartType } from "@/app/types/ChartData";
 import { ChartConfig } from "@/components/ui/chart";
-
-const FormSchema = z.object({
-  dataset: z
-    .string({
-      required_error: "Please select a dataset.",
-    }),
-  chartType: z.string({
-    required_error: "Please select a chart type.",
-  }),
-  dateRange: z.object(
-    {
-      start: z.date(),
-      end: z.date(),
-    },
-    {
-      required_error: "Please select a date range",
-    }
-  ),
-  yRange: z.coerce.number({
-    required_error: "Please enter a valid y range.",
-  }),
-  title: z.string({
-    required_error: "Please enter a title.",
-  }),
-  kpiDescription: z.string({
-    required_error: "Please provide a KPI description.",
-  })
-})
 
 const chartConfig = {
   desktop: {

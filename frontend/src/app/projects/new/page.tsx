@@ -40,10 +40,12 @@ export default function NewProject() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    let formData = new FormData();
+    formData.append('name', data.name)
+    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, {
+        method: 'POST',
+        body: formData
+    });
 
     if (res.status == 200) {
       let responseData = await res.json()
