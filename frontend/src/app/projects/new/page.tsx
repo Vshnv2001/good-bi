@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -12,12 +14,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
-import axios from 'axios';
 
 import { NavBar } from "@/app/components/NavBar";
 
@@ -43,8 +51,8 @@ export default function NewProject() {
     let formData = new FormData();
     formData.append('name', data.name)
     let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, {
-        method: 'POST',
-        body: formData
+      method: 'POST',
+      body: formData
     });
 
     if (res.status == 200) {
@@ -57,11 +65,17 @@ export default function NewProject() {
     <SessionCheck>
       <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
         <NavBar />
-        <div className="mx-4 my-2 flex flex-row gap-1 items-center">
-          <span className="text-sm text-gray-500 font-normal">Project</span>
-          <ChevronRight className="text-gray-500 h-3 w-3" />
-          <span className="text-sm text-gray-500 font-normal">New project</span>
-        </div>
+        <Breadcrumb className="mx-4 my-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/projects">Project</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>New project</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <main className="flex mb-3 flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
           <div className="px-4 pt-7 flex flex-col w-full max-w-sm gap-y-10 items-center align-center flex-grow min-h-0">
             <h1 className="text-center flex text-3xl font-normal text-gray-800">Create a new project</h1>

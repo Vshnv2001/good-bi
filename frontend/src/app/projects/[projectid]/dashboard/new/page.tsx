@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { ChevronRight, CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -28,6 +30,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
@@ -107,11 +117,17 @@ export default function NewDashboard({ params }: { params: { projectid: string }
     <SessionCheck>
       <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
         <NavBar />
-        <div className="mx-4 my-2 flex flex-row gap-1 items-center">
-          <span className="text-sm text-gray-500 font-normal">Dashboard</span>
-          <ChevronRight className="text-gray-500 h-3 w-3" />
-          <span className="text-sm text-gray-500 font-normal">New insight</span>
-        </div>
+        <Breadcrumb className="mx-4 my-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/projects/${params.projectid}/dashboard`}>Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>New insight</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <main className="flex mb-3 flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
           <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
             <h1 className="pb-5 text-center text-3xl font-normal text-gray-800">Create a new insight</h1>
