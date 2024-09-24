@@ -114,8 +114,23 @@ const FormSchema = z.object({
 
 export default function NewDashboard({ params }: { params: { projectid: string } }) {
   const router = useRouter();
+
+  const [datasets, setDatasets] = useState<string[]>([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [insightFormData, setInsightFormData] = useState<FormData>();
+
+  useEffect(() => {
+    async function fetchProjects() {
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasetnames`);
+
+      if (res.status == 200) {
+        let data = await res.json();
+
+        setDatasets(data.data);
+      }
+    }
+    fetchProjects()
+  }, []);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
@@ -222,9 +237,11 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="1">1</SelectItem>
-                            <SelectItem value="2">2</SelectItem>
-                            <SelectItem value="3">3</SelectItem>
+                            {datasets.map((dataset) => {
+                              return (
+                                <SelectItem key={dataset} value={dataset}>{dataset}</SelectItem>
+                              )
+                            })}
                           </SelectContent>
                         </Select>
                         <FormMessage />
