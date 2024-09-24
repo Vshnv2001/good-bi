@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, ChangeEvent } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 import Link from "next/link"
 
@@ -22,7 +22,6 @@ import SessionCheck from "../components/SessionCheck";
 
 
 export default function Projects() {
-    const [searchQuery, setSearchQuery] = useState('');
     const [filteredProjects, setFilteredProjects] = useState<ProjectCardData[]>([]);
     const [projects, setProjects] = useState<ProjectCardData[]>([]);
 
@@ -40,22 +39,21 @@ export default function Projects() {
         fetchProjects()
     }, []);
 
-    const debouncedSearch = debounce((query: string) => {
-        console.log(query)
-        setSearchQuery(query);
+    const debouncedSearch = useCallback(
+        debounce((query: string) => {
+            const filtered = projects.filter((project) =>
+                project.name.toLowerCase().includes(query.toLowerCase())
+            );
 
-        console.log(searchQuery)
+            setFilteredProjects(filtered);
+        }, 300),
+        [projects]
+    );
 
-        const filteredProjects = projects.filter((project) =>
-            project.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-
-        setFilteredProjects(filteredProjects);
-    }, 300);
-
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        debouncedSearch(e.target.value);
-    }
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const query = e.target.value;
+        debouncedSearch(query);
+    };
 
     async function deleteProject(projectId: string) {
         let formData = new FormData();
@@ -87,7 +85,7 @@ export default function Projects() {
                                         type="search"
                                         placeholder="Search"
                                         onChange={handleInputChange}
-                                        className="pl-10 rounded-xl text-base placeholder:text-gray-500 border border-gray-200/70 bg-white shadow-none md:w-56"
+                                        className="pl-10 md:w-56"
                                     />
                                 </div>
                             </form>

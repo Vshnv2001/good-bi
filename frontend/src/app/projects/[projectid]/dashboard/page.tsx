@@ -18,9 +18,13 @@ import '/node_modules/react-resizable/css/styles.css';
 import { usePathname } from "next/navigation";
 import { DashboardCardData } from "@/app/types/DashboardCardData";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+
+import { debounce } from "lodash";
+
 import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "@/app/components/SessionCheck";
+
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -44,10 +48,11 @@ const layouts = {
 
 export default function Dashboard({ params }: { params: { projectid: string } }) {
   const [insights, setInsights] = useState<DashboardCardData[]>([]);
+  const [filteredInsights, setFilteredInsights] = useState<DashboardCardData[]>([]);
   const [layouts, setLayouts] = useState({ sm: [], md: [], lg: [] });
 
   useEffect(() => {
-    async function fetchDashboards() {
+    async function fetchInsights() {
       let formData = new FormData();
       formData.append('project_id', params.projectid);
       let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights`, {
@@ -57,7 +62,9 @@ export default function Dashboard({ params }: { params: { projectid: string } })
 
       if (res.status == 200) {
         let data = await res.json()
+
         setInsights(data);
+        setFilteredInsights(data);
 
         let smLayouts = data.map((data: DashboardCardData, index: number) => {
           return {
@@ -98,8 +105,24 @@ export default function Dashboard({ params }: { params: { projectid: string } })
         setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
       }
     }
-    fetchDashboards()
+    fetchInsights()
   }, []);
+
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      const filtered = insights.filter((insight) =>
+        insight.title.toLowerCase().includes(query.toLowerCase())
+      );
+
+      setFilteredInsights(filtered);
+    }, 300),
+    [insights]
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    debouncedSearch(query);
+  };
 
   async function deleteInsight(projectId: string, insightId: string) {
     let formData = new FormData();
@@ -131,6 +154,7 @@ export default function Dashboard({ params }: { params: { projectid: string } })
                   <Input
                     type="search"
                     placeholder="Search"
+                    onChange={handleInputChange}
                     className="pl-10 md:w-56"
                   />
                 </div>
@@ -155,7 +179,7 @@ export default function Dashboard({ params }: { params: { projectid: string } })
               draggableCancel=".react-resizable-handle-custom"
             >
               {
-                insights.map((data) => {
+                filteredInsights.map((data) => {
                   return (
                     <DashboardCard key={data.key} data={data} deleteInsight={deleteInsight} />
                   )
