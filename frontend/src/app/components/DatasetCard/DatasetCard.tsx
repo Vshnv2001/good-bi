@@ -123,8 +123,7 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
             </CardHeader>
             <CardContent>
                 {dataset.datasetDescription && <p className="mb-4 italic">{dataset.datasetDescription}</p>}
-                <DatasetTable<ColumnType> columns={columns}
-                                          data={rows.concat(rows).concat(rows).concat(rows).concat(rows)}/>
+                <DatasetTable<ColumnType> columns={columns} data={rows}/>
             </CardContent>
         </Card>
     )
