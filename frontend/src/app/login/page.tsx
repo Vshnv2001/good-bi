@@ -9,19 +9,32 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import {LucideChevronLeft} from "lucide-react";
-import { signIn } from "supertokens-web-js/recipe/emailpassword";
+import {signIn} from "supertokens-web-js/recipe/emailpassword";
+import {useEffect} from "react";
+import {doesSessionExist} from "@/lib/utils";
+import {useRouter} from "next/navigation";
 
 const FormSchema = z.object({
   email: z
     .string()
-    .min(1, { message: "Please enter an email." })
-    .email({ message: "Invalid email." }),
+    .min(1, {message: "Please enter an email."})
+    .email({message: "Invalid email."}),
   password: z
     .string()
-    .min(1, { message: "Please enter a password." }),
+    .min(1, {message: "Please enter a password."}),
 })
 
 export default function Login() {
+  const router = useRouter()
+
+  useEffect(() => {
+    doesSessionExist().then((hasSession) => {
+      if (hasSession) {
+        router.replace('/projects')
+      }
+    })
+  }, [router]);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       email: "",
@@ -31,44 +44,43 @@ export default function Login() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data, null, 2));
     try {
       const response = await signIn({
-          formFields: [{
-              id: "email",
-              value: data.email
-          }, {
-              id: "password",
-              value: data.password
-          }]
+        formFields: [{
+          id: "email",
+          value: data.email
+        }, {
+          id: "password",
+          value: data.password
+        }]
       })
 
       if (response.status === "FIELD_ERROR") {
-          response.formFields.forEach(formField => {
-              if (formField.id === "email") {
-                  // Email validation failed (for example incorrect email syntax).
-                  window.alert(formField.error)
-              }
-          })
+        response.formFields.forEach(formField => {
+          if (formField.id === "email") {
+            // Email validation failed (for example incorrect email syntax).
+            window.alert(formField.error)
+          }
+        })
       } else if (response.status === "WRONG_CREDENTIALS_ERROR") {
-          window.alert("Email password combination is incorrect.")
+        window.alert("Email password combination is incorrect.")
       } else if (response.status === "SIGN_IN_NOT_ALLOWED") {
-          // the reason string is a user friendly message
-          // about what went wrong. It can also contain a support code which users
-          // can tell you so you know why their sign in was not allowed.
-          window.alert(response.reason)
+        // the reason string is a user friendly message
+        // about what went wrong. It can also contain a support code which users
+        // can tell you so you know why their sign in was not allowed.
+        window.alert(response.reason)
       } else {
-          // sign in successful. The session tokens are automatically handled by
-          // the frontend SDK.
-          window.location.href = "/projects"
+        // sign in successful. The session tokens are automatically handled by
+        // the frontend SDK.
+        window.location.href = "/projects"
       }
-  } catch (err: any) {
+    } catch (err: any) {
       if (err.isSuperTokensGeneralError === true) {
-          // this may be a custom error message sent from the API by you.
-          window.alert(err.message);
+        // this may be a custom error message sent from the API by you.
+        window.alert(err.message);
       } else {
-          window.alert("Oops! Something went wrong.");
-        }
+        window.alert("Oops! Something went wrong.");
+      }
     }
   }
 
@@ -80,7 +92,7 @@ export default function Login() {
                     transition-colors duration-100 hover:text-primary-700`
         }
       >
-        <LucideChevronLeft className="h-4.5 w-4.5" />
+        <LucideChevronLeft className="h-4.5 w-4.5"/>
         Back to GoodBI
       </Link>
       <div className="max-w-lg px-4 w-full place-self-center">
@@ -139,11 +151,13 @@ export default function Login() {
         </Form>
         <p className="mt-8 text-center text-sm text-gray-500 max-w-64 mx-auto">
           By proceeding, you agree to our{" "}
-          <Link href="/privacy-policy" target="_blank" className="underline transition-colors duration-100 hover:text-gray-700">
+          <Link href="/privacy-policy" target="_blank"
+                className="underline transition-colors duration-100 hover:text-gray-700">
             Privacy Policy
           </Link>
           {' '}and{' '}
-          <Link href="/terms-of-service" target="_blank" className="underline transition-colors duration-100 hover:text-gray-700">
+          <Link href="/terms-of-service" target="_blank"
+                className="underline transition-colors duration-100 hover:text-gray-700">
             Terms of Service
           </Link>
           .

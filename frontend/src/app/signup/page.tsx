@@ -10,6 +10,9 @@ import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import {LucideChevronLeft} from "lucide-react";
 import { signUp } from "supertokens-web-js/recipe/emailpassword";
+import {useRouter} from "next/navigation";
+import {useEffect} from "react";
+import {doesSessionExist} from "@/lib/utils";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Please enter a name." }),
@@ -23,6 +26,16 @@ const FormSchema = z.object({
 })
 
 export default function Signup() {
+  const router = useRouter()
+
+  useEffect(() => {
+    doesSessionExist().then((hasSession) => {
+      if (hasSession) {
+        router.replace('/projects')
+      }
+    })
+  }, [router]);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       name: "",
