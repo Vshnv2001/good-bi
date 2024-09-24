@@ -15,7 +15,7 @@ import { DatasetCard } from "@/app/components/DatasetCard";
 import { useEffect, useState } from "react";
 import NewDataSetForm from "@/app/components/DatasetCard/NewDataSetForm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Dataset } from "@/app/interfaces/dataset"
+import { Dataset } from "@/app/types/Dataset";
 import { Spinner } from '@/components/ui/spinner';
 
 export default function DatasetPage() {

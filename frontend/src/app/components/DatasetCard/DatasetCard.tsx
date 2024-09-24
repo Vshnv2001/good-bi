@@ -4,7 +4,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Dataset } from "@/app/interfaces/dataset"
+import { Dataset } from "@/app/types/Dataset";
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
 import axios from "axios";
@@ -14,7 +14,6 @@ interface DatasetCardProps {
     datasets: Dataset[];
     setDatasets: (datasets: Dataset[]) => void;
 }
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 
 export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps) {

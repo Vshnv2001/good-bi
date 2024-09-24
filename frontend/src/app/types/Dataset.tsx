@@ -1,4 +1,4 @@
-export interface Dataset {
+export type Dataset = {
     fileId: string;
     datasetName: string;
     datasetDescription: string;
