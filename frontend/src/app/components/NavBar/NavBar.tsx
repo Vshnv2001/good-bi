@@ -28,7 +28,7 @@ const NavBar = () => {
     }
 
     return (
-        <header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 justify-between">
+        <header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 justify-between z-50">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button

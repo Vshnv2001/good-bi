@@ -63,7 +63,7 @@ export default function UpdateProject({ params }: { params: { projectid: string 
           <ChevronRight className="text-gray-500 h-3 w-3" />
           <span className="text-sm text-gray-500 font-normal">Edit project</span>
         </div>
-        <main className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
+        <main className="flex mb-3 flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
           <div className="px-4 pt-7 flex flex-col w-full max-w-sm gap-y-10 items-center align-center flex-grow min-h-0">
             <h1 className="text-center flex text-3xl font-normal text-gray-800">Edit project</h1>
             <div className="sm:px-3 pb-7 flex flex-grow w-full">

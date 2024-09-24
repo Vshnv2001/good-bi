@@ -121,7 +121,7 @@ export default function Dashboard({ params }: { params: { projectid: string } })
     <SessionCheck>
       <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
         <NavBar />
-        <main className="flex max-h-[calc(100vh_-_theme(spacing.20))] flex-1 flex-col bg-gray-100 mx-4 mt-3 rounded-2xl border border-gray-200/70">
+        <main className="flex flex-1 flex-col bg-gray-100 mx-4 my-3 rounded-2xl border border-gray-200/70">
           <div className="mx-4 my-3 flex flex-col gap-4 md:h-10 md:flex-row md:gap-0 md:items-center md:justify-between">
             <h1 className="text-3xl font-normal text-gray-800">Dashboard</h1>
             <div className="flex flex-col md:flex-row justify-between gap-2">
