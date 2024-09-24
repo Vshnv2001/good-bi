@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { useRef, useEffect, useState, useCallback } from "react";
 
-import { ChevronRight, CalendarDays } from "lucide-react";
+import { Pencil, RotateCw, ThumbsDown, ThumbsUp, CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card"
 
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
@@ -50,6 +54,38 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import { useRouter } from "next/navigation";
+
+
+import GBBarChart from "@/app/components/Charts/BarChart";
+import { BarChartData, ChartType } from "@/app/types/ChartData";
+import { ChartConfig } from "@/components/ui/chart";
+
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "#2563eb",
+  },
+  mobile: {
+    label: "Mobile",
+    color: "#60a5fa",
+  },
+} satisfies ChartConfig;
+
+const browserData = [
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
+]
+
+const barChartData = {
+  chartConfig: chartConfig,
+  data: browserData,
+  xAxisDataKey: "month",
+  dataKeys: ["desktop", "mobile"]
+} as BarChartData;
 
 const FormSchema = z.object({
   dataset: z
@@ -81,6 +117,8 @@ const FormSchema = z.object({
 
 export default function NewDashboard({ params }: { params: { projectid: string } }) {
   const router = useRouter();
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [insightFormData, setInsightFormData] = useState<FormData>();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
@@ -105,15 +143,19 @@ export default function NewDashboard({ params }: { params: { projectid: string }
     formData.append('title', data.title)
     formData.append('kpi_description', data.kpiDescription)
     formData.append('project_id', params.projectid)
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
-      method: 'POST',
-      body: formData
-    });
 
-    if (res.status == 200) {
-      let responseData = await res.json()
-      router.push(`/projects/${params.projectid}/dashboard`)
-    }
+    setInsightFormData(formData);
+    setIsFormSubmitted(true);
+
+    // let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
+    //   method: 'POST',
+    //   body: formData
+    // });
+
+    // if (res.status == 200) {
+    //   let responseData = await res.json()
+    //   router.push(`/projects/${params.projectid}/dashboard`)
+    // }
   }
 
   return (
@@ -132,7 +174,36 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           </BreadcrumbList>
         </Breadcrumb>
         <main className="flex mb-3 flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
-          <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
+          {isFormSubmitted ? <div className="px-3 pt-7 w-full max-w-sm items-center align-center min-h-0">
+            <h1 className="pb-3.5 text-center text-3xl font-normal text-gray-800">Preview</h1>
+            <div className="sm:px-4 py-3.5 flex flex-grow w-full">
+              <Card className="h-83 w-full">
+                <CardContent className="relative flex flex-grow px-3 py-3 h-full overflow-hidden w-full">
+                  <GBBarChart chartData={barChartData} />
+                  <div className="absolute flex flex-col gap-2 top-3 right-3">
+                    <div className="bg-white border rounded-lg h-8 w-8 flex items-center justify-center">
+                      <Pencil className="h-5 w-5" />
+                    </div>
+                    <div className="bg-white border rounded-lg h-8 w-8 flex items-center justify-center">
+                      <ThumbsUp className="h-5 w-5" />
+                    </div>
+                    <div className="bg-white border rounded-lg h-8 w-8 flex items-center justify-center">
+                      <ThumbsDown className="h-5 w-5" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 items-center justify-center">
+              <RotateCw className="h-4 w-4" />
+              <span>Regenerate</span>
+            </div>
+            <div className="pb-7">
+              <Button className="w-full">
+                Confirm
+              </Button>
+            </div>
+          </div> : <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
             <h1 className="pb-5 text-center text-3xl font-normal text-gray-800">Create a new insight</h1>
             <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
               <Form {...form}>
@@ -286,7 +357,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
               <span className="underline decoration-inherit">Terms of Service</span>
               <span>.</span>
             </div>
-          </div>
+          </div>}
         </main>
       </div>
     </SessionCheck>
