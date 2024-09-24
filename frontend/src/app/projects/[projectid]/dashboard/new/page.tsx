@@ -49,6 +49,7 @@ import { NavBar } from "@/app/components/NavBar";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   dataset: z
@@ -79,6 +80,8 @@ const FormSchema = z.object({
 })
 
 export default function NewDashboard({ params }: { params: { projectid: string } }) {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       dateRange: {
@@ -109,7 +112,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
     if (res.status == 200) {
       let responseData = await res.json()
-      window.location.href = `/projects/${params.projectid}/dashboard`
+      router.push(`/projects/${params.projectid}/dashboard`)
     }
   }
 

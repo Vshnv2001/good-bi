@@ -31,6 +31,7 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   name: z.string({
@@ -39,6 +40,8 @@ const FormSchema = z.object({
 })
 
 export default function UpdateProject({ params }: { params: { projectid: string } }) {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
 
@@ -57,7 +60,7 @@ export default function UpdateProject({ params }: { params: { projectid: string 
 
     if (res.status == 200) {
       let responseData = await res.json()
-      window.location.href = '/projects'
+      router.push('/projects');
     }
   }
 
