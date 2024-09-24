@@ -14,38 +14,6 @@ from supertokens_python import init, InputAppInfo, SupertokensConfig
 from supertokens_python.recipe import emailpassword, session
 from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
-
-init(
-    app_info=InputAppInfo(
-        app_name="goodbi",
-        api_domain="http://localhost:3000",
-        website_domain="http://localhost:3000",
-        api_base_path="/api/auth",
-        website_base_path="/auth"
-    ),
-    supertokens_config=SupertokensConfig(
-        connection_uri="https://st-dev-d077cc10-75bf-11ef-822f-59b1a0e8c720.aws.supertokens.io",
-        api_key="FNvAao5-YkZKaRMPzgOhiVOek8",
-    ),
-    framework='fastapi',
-    recipe_list=[
-        session.init(), # initializes session features
-        emailpassword.init()
-    ],
-    mode='asgi' # use wsgi if you are running using gunicorn
-)
-import pandas as pd
-from supertokens_python.recipe.session.framework.fastapi import verify_session
-from supertokens_python.recipe.session import SessionContainer
-from fastapi import Depends
-from utils.db_utils import get_db
-import csv
-import io
-from sqlalchemy import text
-from supertokens_python import init, InputAppInfo, SupertokensConfig
-from supertokens_python.recipe import emailpassword, session
-from sqlalchemy.ext.asyncio import AsyncSession
-from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 
 
