@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronRight, CalendarDays } from "lucide-react";
+import {ChevronRight, CalendarDays} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -19,26 +19,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+import {Textarea} from "@/components/ui/textarea"
 
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
+import {cn} from "@/lib/utils"
+import {Calendar} from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { format } from "date-fns"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {format} from "date-fns"
+import {useForm} from "react-hook-form"
+import {z} from "zod"
 
-import { NavBar } from "@/app/components/NavBar";
+import {NavBar} from "@/app/components/NavBar";
 
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import PrivacyModal from "@/app/components/PrivacyModal";
+import TermsOfServiceModal from "@/app/components/TermsOfServiceModal";
 
 const FormSchema = z.object({
   dataset: z
@@ -68,7 +78,7 @@ const FormSchema = z.object({
   })
 })
 
-export default function NewDashboard({ params }: { params: { projectid: string } }) {
+export default function NewDashboard({params}: { params: { projectid: string } }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       dateRange: {
@@ -106,13 +116,14 @@ export default function NewDashboard({ params }: { params: { projectid: string }
   return (
     <SessionCheck>
       <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
-        <NavBar />
+        <NavBar/>
         <div className="mx-4 my-2 flex flex-row gap-1 items-center">
           <span className="text-sm text-gray-500 font-normal">Dashboard</span>
-          <ChevronRight className="text-gray-500 h-3 w-3" />
+          <ChevronRight className="text-gray-500 h-3 w-3"/>
           <span className="text-sm text-gray-500 font-normal">New insight</span>
         </div>
-        <main className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
+        <main
+          className="flex max-h-[calc(100vh_-_6.5rem)] flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto">
           <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
             <h1 className="pb-5 text-center text-3xl font-normal text-gray-800">Create a new insight</h1>
             <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
@@ -121,13 +132,14 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                   <FormField
                     control={form.control}
                     name="dataset"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <FormItem className="space-y-1">
                         <FormLabel>Dataset</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} >
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                              <SelectValue className="" placeholder="Select" />
+                            <SelectTrigger
+                              className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
+                              <SelectValue className="" placeholder="Select"/>
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -136,20 +148,21 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                             <SelectItem value="3">3</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage/>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="chartType"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <FormItem className="space-y-1">
                         <FormLabel>Type of chart</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} >
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                              <SelectValue className="" placeholder="Select chart type" />
+                            <SelectTrigger
+                              className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
+                              <SelectValue className="" placeholder="Select chart type"/>
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -158,18 +171,19 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                             <SelectItem value="line">Line</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage/>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="dateRange"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <FormItem className="space-y-1">
                         <FormLabel>Date range</FormLabel>
                         <Popover>
-                          <PopoverTrigger asChild className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none">
+                          <PopoverTrigger asChild
+                                          className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none">
                             <FormControl>
                               <Button
                                 variant={"outline"}
@@ -188,7 +202,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                                     format(field.value.start, "LLL dd y")
                                   )
                                 )}
-                                <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarDays className="ml-auto h-4 w-4 opacity-50"/>
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -208,49 +222,49 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage />
+                        <FormMessage/>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="yRange"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <FormItem className="space-y-1">
                         <FormLabel>Y range</FormLabel>
                         <Input
                           type="number"
                           {...field}
                         />
-                        <FormMessage />
+                        <FormMessage/>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="title"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <FormItem className="space-y-1">
                         <FormLabel>Title</FormLabel>
                         <Input
                           type="text"
                           {...field}
                         />
-                        <FormMessage />
+                        <FormMessage/>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="kpiDescription"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <FormItem className="space-y-1">
                         <FormLabel>KPI description</FormLabel>
                         <Textarea
                           className="h-28 resize-none"
                           {...field}
                         />
-                        <FormMessage />
+                        <FormMessage/>
                       </FormItem>
                     )}
                   />
@@ -262,9 +276,13 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             </div>
             <div className="pt-3 pb-7 text-sm text-center text-gray-500">
               <span>GoodBI may share some information with third parties to generate insights. For more information, view our </span>
-              <span className="underline decoration-inherit">Privacy Policy</span>
+              <PrivacyModal>
+                <button className="underline decoration-inherit">Privacy Policy</button>
+              </PrivacyModal>
               <span> and </span>
-              <span className="underline decoration-inherit">Terms of Service</span>
+              <TermsOfServiceModal>
+                <button className="underline decoration-inherit">Terms of Service</button>
+              </TermsOfServiceModal>
               <span>.</span>
             </div>
           </div>
