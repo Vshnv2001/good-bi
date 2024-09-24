@@ -6,13 +6,8 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { format } from "date-fns"
-import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { NavBar } from "@/app/components/NavBar";
@@ -79,29 +74,7 @@ const barChartData = {
   dataKeys: ["desktop", "mobile"]
 } as BarChartData;
 
-export default function NewDashboard({ params }: { params: { projectid: string } }) {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    defaultValues: {
-      dateRange: {
-        start: new Date(),
-        end: new Date(),
-      },
-    },
-    resolver: zodResolver(FormSchema),
-  })
-
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/projects/${params.projectid}/insights`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-
-    if (res.status == 200) {
-      let responseData = await res.json()
-      window.location.href = `/projects/${params.projectid}/dashboard`
-    }
-  }
-
+export default function NewDashboard({ params }: { params: { projectid: string, insightid: string } }) {
   return (
     <SessionCheck>
       <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
