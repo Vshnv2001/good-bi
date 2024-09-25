@@ -433,7 +433,7 @@ async def user_query(
     )
     agent.state["user_id"] = user_id
     agent.get_relevant_columns(query, metadata)
-    agent.make_query(user_id)
+    agent.make_query()
     if not agent.state["sql_valid"]:
         return JSONResponse(content=agent.state["sql_issues"])
 
@@ -455,7 +455,10 @@ async def interpret_results(
     agent.interpret_results()
     if agent.state["error"] != "":
         return JSONResponse(content=agent.state["error"])
-    return JSONResponse(content=agent.state["interpreted_answer"])
+    try:
+        return JSONResponse(content=agent.state["interpreted_answer"]["answer"])
+    except:
+        return JSONResponse(content=agent.state["interpreted_answer"])
 
 
 @app.post("/api/{user_id}/visualize")
@@ -483,11 +486,15 @@ async def visualize_query(
         await user_query(query, auth_session, db)
 
     agent.format_data_for_visualization()
-    return JSONResponse(content={
-        "visualization": agent.state["visualization"],
-        "visualization_reason": agent.state["visualization_reason"],
-        "formatted_data_for_visualization": agent.state["formatted_data_for_visualization"]
-    })
+    return JSONResponse(
+        content={
+            "visualization": agent.state["visualization"],
+            "visualization_reason": agent.state["visualization_reason"],
+            "formatted_data_for_visualization": agent.state[
+                "formatted_data_for_visualization"
+            ],
+        }
+    )
 
 
 @app.post("/api/insights")

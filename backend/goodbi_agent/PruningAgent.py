@@ -29,8 +29,14 @@ does not contain a noun. Do not include columns that contain numbers.
 
 		{{
 		"table_name": string,
-		"columns": [string],
-		"noun_columns": [string]
+		"columns": [
+                {{
+                    "column_name": string,
+                    "column_data_type": string,
+                    "column_descriptor": string,
+                    "noun_column": [string]
+                }}
+            ]        
 		}}
 		
 	]

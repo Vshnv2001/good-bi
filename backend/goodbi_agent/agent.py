@@ -4,27 +4,46 @@ from .SQLAgent import SQLAgent
 from .MetadataAgent import MetadataAgent
 from .PruningAgent import PruningAgent
 from .InterpreterAgent import InterpreterAgent
+from .GraphTypeDeterminer import GraphTypeDeterminerAgent
 from .State import State
 
 
 class GoodBIAgent:
-    def __init__(self, user_id: str = None):
+    def __init__(self, max_results: int = 25, user_id: str = None):
         self.llm_manager = LLMManager()
-        self.sql_agent = SQLAgent(self.llm_manager)
+        self.sql_agent = SQLAgent(self.llm_manager, max_results)
         self.metadata_agent = MetadataAgent(self.llm_manager)
         self.pruning_agent = PruningAgent(self.llm_manager)
         self.interpreter_agent = InterpreterAgent(self.llm_manager)
         self.data_formatter = DataFormatter()
+        self.graph_type_agent = GraphTypeDeterminerAgent()
         self.state = State()
+        state = {
+            "question": "",
+            "user_id": user_id,
+            "parsed_question": {},
+            "sql_query": "",
+            "sql_valid": False,
+            "sql_issues": "",
+            "results": [],
+            "answer": "",
+            "error": "",
+            "visualization": "",
+            "visualization_reason": "",
+            "formatted_data_for_visualization": {},
+        }
+        self.state = state
         if user_id is not None:
             self.state["user_id"] = user_id
+        else:
+            self.state["user_id"] = ""
 
     def make_query(self):
         question = self.state["question"]
         relevant_tables = self.state["parsed_question"]["relevant_tables"]
         schema_name = self.state["user_id"]
         query = self.sql_agent.make_query(question, relevant_tables, schema_name)
-        self.state["sql_query"] = query["corrected_query"]
+        self.state["sql_query"] = query["query"]
         self.state["sql_valid"] = query["valid"]
         self.state["sql_issues"] = query["issues"]
 
@@ -41,9 +60,16 @@ class GoodBIAgent:
         return self.metadata_agent.save_metadata(metadata, db, user_id)
 
     def format_data_for_visualization(self):
-        return self.data_formatter.format_data_for_visualization(state=self.state)
+        results = self.data_formatter.format_data_for_visualization(state=self.state)
+        if "error" in results:
+            self.state["error"] = results["error"]
+        else:
+            self.state["formatted_data_for_visualization"] = results
 
     def interpret_results(self):
+        graph_type = self.graph_type_agent.determine_graph_type(self.state)
+        self.state["visualization"] = graph_type["graph_type"]
+        self.state["visualization_reason"] = graph_type["reason"]
         interpreted_output = self.interpreter_agent.interpret_output(state=self.state)
         self.state["interpreted_answer"] = interpreted_output
         self.state["error"] = interpreted_output["error"]

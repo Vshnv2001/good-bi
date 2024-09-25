@@ -4,11 +4,13 @@ from .LLMManager import LLMManager
 
 
 class SQLAgent:
-    def __init__(self, llm_manager=None):
+    def __init__(self, llm_manager=None, max_results: int = 25):
         if llm_manager is not None:
             self.llm_manager = llm_manager
+
         else:
             self.llm_manager = LLMManager()
+        self.max_results = max_results
         self.generation_prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -38,7 +40,9 @@ or
              
 For questions like "plot a distribution of the fares for men and women", count the frequency of each fare and plot it. The x axis should be the fare and the y axis should be the count of people who paid that fare.
 SKIP ALL ROWS WHERE ANY COLUMN IS NULL or "N/A" or "".
+Ensure that the conditions in the WHERE clause are valid with respect to the column types.
 Just give the query string. Do not format it. Make sure to use the correct spellings of nouns as provided in the unique nouns list.
+Limit the number of results to {max_results}.
 """,
                 ),
                 (
@@ -60,10 +64,13 @@ Generate an accurate SQL query to answer the user's question.""",
                 (
                     "system",
                     """You are an AI assistant that validates and fixes SQL queries. Your task is to:
-1. Check if the SQL query is valid.
-2. Ensure all table and column names are correctly spelled and exist in the schema.
-3. If there are any issues, fix them and provide the corrected SQL query.
-4. If no issues are found, return the original query.
+Check if the SQL query is valid.
+Single quotes not double quotes around empty strings, double quotes make delimited identifiers, and "" isn't a meaningful identifier.
+For numeric types, do not check for empty strings or "N/A".
+Ensure all table and column names are correctly spelled and exist in the schema.
+Ensure that the conditions in the WHERE clause are valid with respect to the column types.
+If there are any issues, fix them and provide the corrected SQL query.
+If no issues are found, return the original query.
 
 Respond in JSON format with the following structure. Only respond with the JSON:
 {{
@@ -123,6 +130,7 @@ Validate the SQL query and provide the corrected query if necessary.""",
             question=question,
             schema_name=schema_name,
             relevant_tables=relevant_tables,
+            max_results=self.max_results,
         )
         if response == "NOT_ENOUGH_INFO":
             # Return response as a JSON object
@@ -145,6 +153,9 @@ Validate the SQL query and provide the corrected query if necessary.""",
         if query["valid"]:
             validated_query = self._validate_sql_query(
                 question, relevant_tables, query["query"]
+            )
+            validated_query["query"] = validated_query["corrected_query"].replace(
+                "`", '"'
             )
             return validated_query
         else:
