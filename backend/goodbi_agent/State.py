@@ -12,7 +12,7 @@ class State(TypedDict):
     sql_valid: bool
     sql_issues: str
     results: List[Any]
-    answer: Annotated[str, operator.add]
+    interpreted_answer: Annotated[str, operator.add]
     error: str
     visualization: Annotated[str, operator.add]
     visualization_reason: Annotated[str, operator.add]

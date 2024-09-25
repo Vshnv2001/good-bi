@@ -435,7 +435,7 @@ async def user_query(
     agent.get_relevant_columns(query, metadata)
     agent.make_query(user_id)
     if not agent.state["sql_valid"]:
-        return JSONResponse(content=agent.state)
+        return JSONResponse(content=agent.state["sql_issues"])
 
     # Execute the query
     result = await db.execute(text(agent.state["sql_query"]))
@@ -443,6 +443,19 @@ async def user_query(
     result = [r._asdict() for r in result]
     agent.state["results"] = result
     return JSONResponse(content=result)
+
+
+@app.post("/api/{user_id}/interpret")
+async def interpret_results(
+    auth_session: SessionContainer = Depends(verify_session()),
+):
+    user_id = auth_session.get_user_id()
+    if user_id != agent.state["user_id"]:
+        return JSONResponse(content={"error": "User ID does not match"})
+    agent.interpret_results()
+    if agent.state["error"] != "":
+        return JSONResponse(content=agent.state["error"])
+    return JSONResponse(content=agent.state["interpreted_answer"])
 
 
 @app.post("/api/{user_id}/visualize")
@@ -470,7 +483,11 @@ async def visualize_query(
         await user_query(query, auth_session, db)
 
     agent.format_data_for_visualization()
-    return JSONResponse(content=agent.state)
+    return JSONResponse(content={
+        "visualization": agent.state["visualization"],
+        "visualization_reason": agent.state["visualization_reason"],
+        "formatted_data_for_visualization": agent.state["formatted_data_for_visualization"]
+    })
 
 
 @app.post("/api/insights")

@@ -3,6 +3,7 @@ from .LLMManager import LLMManager
 from .SQLAgent import SQLAgent
 from .MetadataAgent import MetadataAgent
 from .PruningAgent import PruningAgent
+from .InterpreterAgent import InterpreterAgent
 from .State import State
 
 
@@ -12,6 +13,7 @@ class GoodBIAgent:
         self.sql_agent = SQLAgent(self.llm_manager)
         self.metadata_agent = MetadataAgent(self.llm_manager)
         self.pruning_agent = PruningAgent(self.llm_manager)
+        self.interpreter_agent = InterpreterAgent(self.llm_manager)
         self.data_formatter = DataFormatter()
         self.state = State()
         if user_id is not None:
@@ -40,3 +42,8 @@ class GoodBIAgent:
 
     def format_data_for_visualization(self):
         return self.data_formatter.format_data_for_visualization(state=self.state)
+
+    def interpret_output(self):
+        interpreted_output = self.interpreter_agent.interpret_output(state=self.state)
+        self.state["interpreted_answer"] = interpreted_output
+        self.state["error"] = interpreted_output["error"]
