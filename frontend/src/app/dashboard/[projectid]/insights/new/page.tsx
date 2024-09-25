@@ -182,7 +182,7 @@ export default function NewDashboard({params}: { params: { projectid: string } }
 
     if (res.status == 200) {
       let responseData = await res.json()
-      router.push(`/projects/${params.projectid}/dashboard`)
+      router.push(`/dashboard`)
     }
   }
 
