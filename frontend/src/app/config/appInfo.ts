@@ -2,7 +2,7 @@
 export const appInfo = {
   // learn more about this on https://supertokens.com/docs/thirdpartyemailpassword/appinfo
   appName: "goodbi",
-  websiteDomain: process.env.NEXT_PUBLIC_FRONTEND_URL,
-  apiDomain: process.env.NEXT_PUBLIC_FRONTEND_URL,
+  websiteDomain: process.env.NEXT_PUBLIC_FRONTEND_URL ?? "http://localhost:3000",
+  apiDomain: process.env.NEXT_PUBLIC_FRONTEND_URL ?? "http://localhost:3000", 
   apiBasePath: "/api/auth",
 }
