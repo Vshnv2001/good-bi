@@ -118,10 +118,6 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem>
-                            <PlusCircle className="size-4 mr-1.5" />
-                            Add data
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
                             <Trash className="size-4 mr-1.5" onClick={deleteFile}/>
                             Delete
                         </DropdownMenuItem>

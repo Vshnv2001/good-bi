@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -121,7 +121,10 @@ export default function NewDataset() {
                   name="datasetName"
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel>Dataset Name</FormLabel>
+                      <FormLabel>Dataset name</FormLabel>
+                      <FormDescription className="!mt-0">
+                        Choose an existing dataset to add to, or create a new dataset.
+                      </FormDescription>
                       <FormControl>
                         <CustomCombobox
                           className="w-full"
@@ -147,7 +150,7 @@ export default function NewDataset() {
                   name="datasetDescription"
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel>Dataset Description</FormLabel>
+                      <FormLabel>Dataset description</FormLabel>
                       <FormControl>
                         <Textarea
                           className="h-28 resize-y"
