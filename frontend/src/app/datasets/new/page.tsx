@@ -105,14 +105,14 @@ export default function NewDataset() {
             </BreadcrumbItem>
             <BreadcrumbSeparator/>
             <BreadcrumbItem>
-              <BreadcrumbPage>New dataset</BreadcrumbPage>
+              <BreadcrumbPage>Add data</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <main
           className="flex mb-3 flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto"
         >
-          <h1 className="pb-3.5 text-center text-3xl font-normal text-gray-800">Create new dataset</h1>
+          <h1 className="pb-3.5 text-center text-3xl font-normal text-gray-800">Add new data</h1>
           <div className="max-w-sm w-full px-4">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full mt-6">
