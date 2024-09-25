@@ -15,6 +15,9 @@ from supertokens_python.recipe import emailpassword, session
 from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
+from pydantic import BaseModel
+from typing import List
+
 from goodbi_agent.agent import GoodBIAgent
 
 init(
@@ -281,7 +284,7 @@ async def get_projects(
 
 
 @app.get("/api/project/{project_id}")
-async def get_projects(
+async def get_project(
     project_id: str,
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
@@ -393,6 +396,8 @@ async def create_insight(
     )
     await db.commit()
 
+    insight_id = str(uuid.uuid4())
+
     await db.execute(
         text(
             f"""
@@ -402,7 +407,7 @@ async def create_insight(
     """
         ),
         {
-            "insight_id": str(uuid.uuid4()),
+            "insight_id": insight_id,
             "user_id": user_id,
             "project_id": project_id,
             "dataset_id": dataset_id,
@@ -412,6 +417,63 @@ async def create_insight(
             "start_date": datetime.strptime(start_date, "%m-%d-%Y"),
             "end_date": datetime.strptime(end_date, "%m-%d-%Y"),
         },
+    )
+
+    await db.commit()
+
+    await db.execute(
+        text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}.user_data.layouts";')
+    )
+    await db.commit()
+
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".sm (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".md (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".lg (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.commit()
+
+    await db.execute(
+        text(
+            f"""
+        INSERT INTO "{user_id}.user_data.layouts".sm 
+        (insight_id, user_id, project_id, x, y, w, h)
+        VALUES (:insight_id, :user_id, :project_id, 0, COALESCE((SELECT MAX(y + h) FROM "{user_id}.user_data.layouts".sm WHERE project_id = :project_id), 0), 1, 1)
+    """
+        ),
+        {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
+    )
+
+    await db.execute(
+        text(
+            f"""
+        INSERT INTO "{user_id}.user_data.layouts".md 
+        (insight_id, user_id, project_id, x, y, w, h)
+        VALUES (:insight_id, :user_id, :project_id, 0, COALESCE((SELECT MAX(y + h) FROM "{user_id}.user_data.layouts".md WHERE project_id = :project_id), 0), 1, 1)
+    """
+        ),
+        {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
+    )
+
+    await db.execute(
+        text(
+            f"""
+        INSERT INTO "{user_id}.user_data.layouts".lg 
+        (insight_id, user_id, project_id, x, y, w, h)
+        VALUES (:insight_id, :user_id, :project_id, 0, COALESCE((SELECT MAX(y + h) FROM "{user_id}.user_data.layouts".lg WHERE project_id = :project_id), 0), 1, 1)
+    """
+        ),
+        {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
     )
 
     await db.commit()
@@ -614,7 +676,7 @@ async def get_insights(
 
 
 @app.get("/api/insight/{insight_id}")
-async def get_insights(
+async def get_insight(
     insight_id: str,
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
@@ -654,7 +716,7 @@ async def get_insights(
 
 
 @app.post("/api/insights/update")
-async def update_project(
+async def update_insight(
     title: str = Form(...),
     insight_id: str = Form(...),
     project_id: str = Form(...),
@@ -699,7 +761,40 @@ async def delete_insight(
         text(
             f"""
         DELETE FROM "{user_id}.user_data".insights
-         WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
+
+        WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
+    """
+        ),
+        {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
+    )
+
+    await db.commit()
+
+    await db.execute(
+        text(
+            f"""
+        DELETE FROM "{user_id}.user_data.layouts".sm 
+        WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
+    """
+        ),
+        {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
+    )
+
+    await db.execute(
+        text(
+            f"""
+        DELETE FROM "{user_id}.user_data.layouts".md 
+        WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
+    """
+        ),
+        {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
+    )
+
+    await db.execute(
+        text(
+            f"""
+        DELETE FROM "{user_id}.user_data.layouts".lg 
+        WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
     """
         ),
         {"insight_id": insight_id, "project_id": project_id, "user_id": user_id},
@@ -708,6 +803,274 @@ async def delete_insight(
     await db.commit()
 
     return JSONResponse(content={"message": "Insight deleted successfully"})
+
+
+class ItemLayout(BaseModel):
+    i: str
+    w: int
+    h: int
+    x: int
+    y: int
+    minH: int
+    minW: int
+
+
+class Layouts(BaseModel):
+    lg: List[ItemLayout]
+    md: List[ItemLayout]
+    sm: List[ItemLayout]
+
+
+@app.get("/api/layouts/{project_id}")
+async def get_insights_layout(
+    project_id: str,
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    await db.execute(
+        text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}.user_data.layouts";')
+    )
+    await db.commit()
+
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".sm (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".md (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".lg (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.commit()
+
+    def create_layout_item_object(sm_layout_item):
+        return {
+            "i": str(sm_layout_item["insight_id"]),
+            "x": sm_layout_item["x"],
+            "y": sm_layout_item["y"],
+            "w": sm_layout_item["w"],
+            "h": sm_layout_item["h"],
+            "minH": 1,
+            "minW": 1,
+        }
+
+    result = await db.execute(
+        text(
+            f"""
+        SELECT * 
+        FROM "{user_id}.user_data.layouts".sm
+        WHERE project_id = :project_id AND user_id = :user_id
+    """
+        ),
+        {"project_id": project_id, "user_id": user_id},
+    )
+
+    sm_layout_items = result.fetchall()
+    sm_layout_items = [r._asdict() for r in sm_layout_items]
+
+    sm_layout_items = list(map(create_layout_item_object, sm_layout_items))
+
+    result = await db.execute(
+        text(
+            f"""
+        SELECT * 
+        FROM "{user_id}.user_data.layouts".md
+        WHERE project_id = :project_id AND user_id = :user_id
+    """
+        ),
+        {"project_id": project_id, "user_id": user_id},
+    )
+
+    md_layout_items = result.fetchall()
+    md_layout_items = [r._asdict() for r in md_layout_items]
+
+    md_layout_items = list(map(create_layout_item_object, md_layout_items))
+
+    result = await db.execute(
+        text(
+            f"""
+        SELECT * 
+        FROM "{user_id}.user_data.layouts".lg
+        WHERE project_id = :project_id AND user_id = :user_id
+    """
+        ),
+        {"project_id": project_id, "user_id": user_id},
+    )
+
+    lg_layout_items = result.fetchall()
+    lg_layout_items = [r._asdict() for r in lg_layout_items]
+
+    lg_layout_items = list(map(create_layout_item_object, lg_layout_items))
+
+    return JSONResponse(
+        content={"sm": sm_layout_items, "md": md_layout_items, "lg": lg_layout_items}
+    )
+
+
+@app.post("/api/layouts/{project_id}")
+async def update_insights_layout(
+    project_id: str,
+    layouts: Layouts,
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    await db.execute(
+        text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}.user_data.layouts";')
+    )
+    await db.commit()
+
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".sm (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".md (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".lg (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.commit()
+
+    for layout in layouts.sm:
+        await db.execute(
+            text(
+                f"""
+            INSERT INTO "{user_id}.user_data.layouts".sm 
+            (insight_id, user_id, project_id, x, y, w, h)
+            VALUES (:insight_id, :user_id, :project_id, :x, :y, :w, :h)
+            ON CONFLICT (insight_id)
+            DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
+        """
+            ),
+            {
+                "x": layout.x,
+                "y": layout.y,
+                "h": layout.h,
+                "w": layout.w,
+                "insight_id": layout.i,
+                "project_id": project_id,
+                "user_id": user_id,
+            },
+        )
+
+    await db.commit()
+
+    for layout in layouts.md:
+        await db.execute(
+            text(
+                f"""
+            INSERT INTO "{user_id}.user_data.layouts".md 
+            (insight_id, user_id, project_id, x, y, w, h)
+            VALUES (:insight_id, :user_id, :project_id, :x, :y, :w, :h)
+            ON CONFLICT (insight_id)
+            DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
+        """
+            ),
+            {
+                "x": layout.x,
+                "y": layout.y,
+                "h": layout.h,
+                "w": layout.w,
+                "insight_id": layout.i,
+                "project_id": project_id,
+                "user_id": user_id,
+            },
+        )
+
+    await db.commit()
+
+    for layout in layouts.lg:
+        await db.execute(
+            text(
+                f"""
+            INSERT INTO "{user_id}.user_data.layouts".lg 
+            (insight_id, user_id, project_id, x, y, w, h)
+            VALUES (:insight_id, :user_id, :project_id, :x, :y, :w, :h)
+            ON CONFLICT (insight_id)
+            DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
+        """
+            ),
+            {
+                "x": layout.x,
+                "y": layout.y,
+                "h": layout.h,
+                "w": layout.w,
+                "insight_id": layout.i,
+                "project_id": project_id,
+                "user_id": user_id,
+            },
+        )
+
+    await db.commit()
+
+    return JSONResponse(content={"message": "Layout updated successfully"})
+
+
+@app.post("/api/layouts/{breakpoint}/{project_id}")
+async def update_insights_layout(
+    breakpoint: str,
+    project_id: str,
+    layouts: List[ItemLayout],
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    await db.execute(
+        text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}.user_data.layouts";')
+    )
+    await db.commit()
+
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data.layouts".{breakpoint} (insight_id UUID PRIMARY KEY, user_id UUID, project_id UUID, x INT, y INT, w INT, h INT, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+        )
+    )
+    await db.commit()
+
+    for layout in layouts:
+        await db.execute(
+            text(
+                f"""
+            INSERT INTO "{user_id}.user_data.layouts".{breakpoint} 
+            (insight_id, user_id, project_id, x, y, w, h)
+            VALUES (:insight_id, :user_id, :project_id, :x, :y, :w, :h)
+            ON CONFLICT (insight_id)
+            DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
+        """
+            ),
+            {
+                "x": layout.x,
+                "y": layout.y,
+                "h": layout.h,
+                "w": layout.w,
+                "insight_id": layout.i,
+                "project_id": project_id,
+                "user_id": user_id,
+            },
+        )
+
+    await db.commit()
+
+    return JSONResponse(content={"message": "Layout updated successfully"})
 
 
 @app.get("/health_check")
