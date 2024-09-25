@@ -30,6 +30,7 @@ import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   title: z.string({
@@ -51,10 +52,10 @@ export default function UpdateInsight({ params }: { params: { projectid: string,
 
   useEffect(() => {
     async function fetchInsight() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insight/${params.insightid}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insight/${params.insightid}`);
 
       if (res.status == 200) {
-        let data = await res.json();
+        const data = await res.json();
 
         reset({
           title: data.title
@@ -65,17 +66,18 @@ export default function UpdateInsight({ params }: { params: { projectid: string,
   }, []);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('title', data.title)
     formData.append('insight_id', params.insightid)
     formData.append('project_id', params.projectid);
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/update`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/update`, {
       method: 'POST',
       body: formData
     });
 
     if (res.status == 200) {
-      let responseData = await res.json()
+      const responseData = await res.json()
+      toast("Insight has been updated.")
       router.push(`/dashboard`);
     }
   }

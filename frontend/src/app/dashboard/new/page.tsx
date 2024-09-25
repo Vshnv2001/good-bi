@@ -33,6 +33,7 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string({
@@ -51,15 +52,16 @@ export default function NewProject() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('name', data.name)
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, {
       method: 'POST',
       body: formData
     });
 
     if (res.status == 200) {
-      let responseData = await res.json()
+      const responseData = await res.json()
+      toast("New project has been created.")
       router.push('/dashboard');
     }
   }

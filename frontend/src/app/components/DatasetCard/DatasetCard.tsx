@@ -6,9 +6,13 @@ import {
 } from "@/components/ui/card"
 import { Dataset } from "@/app/types/Dataset";
 import { useEffect, useState } from "react"
-import Papa from "papaparse"
 import axios from "axios";
-import { Trash } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
+import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
+import { ColumnDef } from "@tanstack/react-table";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+
 interface DatasetCardProps {
     dataset: Dataset;
     datasets: Dataset[];
@@ -16,18 +20,20 @@ interface DatasetCardProps {
 }
 
 
-export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps) {
+export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) {
+
     const [headers, setHeaders] = useState<string[]>([]);
-    const [rows, setRows] = useState<string[][]>([]);
+    const [rows, setRows] = useState<Record<string, string>[]>([]);
+
     function deleteFile() {
         axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets/${dataset.datasetName}`)
-        .then((res) => {
-            console.log(res);
-            setDatasets(datasets.filter(d => d.datasetName !== dataset.datasetName));
-        })
-        .catch((err) => {
-            console.error(err);
-        })
+            .then((res) => {
+                console.log(res);
+                setDatasets(datasets.filter(d => d.datasetName !== dataset.datasetName));
+            })
+            .catch((err) => {
+                console.error(err);
+            })
     }
 
 
@@ -46,7 +52,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
                 let headers = Object.keys(data[0])
                 headers = headers.filter(header => !header.includes('user_id') && !header.includes('file_id') && !header.includes('description') && !header.includes('created_at'));
                 setHeaders(headers);
-                setRows(data.slice(0, 3));
+                setRows(data);
             } else {
                 console.error("Dataset JSON is undefined");
             }
@@ -56,35 +62,46 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
         } else {
             console.error("Invalid data type");
         }
-    }, [ dataset.datasetJson])
+    }, [dataset.datasetJson])
 
+    const keys = [...headers] as const;
+    type ColumnType = Record<string, string>;
+    const columns: ColumnDef<ColumnType>[] = keys.map((key) => {
+        return {
+            accessorKey: key,
+            header: ({column}) => {
+                return (
+                    <button
+                        className="inline-flex items-center gap-1 hover:text-gray-800 transition-colors duration-100"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        {key}
+                        {!column.getIsSorted()
+                            ? <ArrowUpDown className="shrink-0 size-4"/>
+                            : column.getIsSorted() === 'asc'
+                                ? <ArrowUp className="shrink-0 size-4"/>
+                                : <ArrowDown className="shrink-0 size-4"/>
+                        }
+                    </button>
+                )
+            },
+            cell: ({row}) => (
+                <div>{row.getValue(key)}</div>
+            ),
+        }
+    })
 
     return (
-        <Card className="m-4">
-            <CardHeader className="flex flex-row justify-between">
+        <Card className="mb-4">
+            <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
-                <Trash className="cursor-pointer size-5 mt-3 hover:text-red-500" onClick={deleteFile} />
+                <Button variant="ghost" size="icon" className="[&_svg]:hover:text-red-500">
+                    <Trash className="size-5" onClick={deleteFile}/>
+                </Button>
             </CardHeader>
             <CardContent>
-                <p className="mb-4 italic">{dataset.datasetDescription}</p>
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr>
-                        {headers.map((header, index) => (
-                                <th key={index} className="border p-2 text-left">{header}</th>
-                        ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {rows.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {headers.map((header, cellIndex) => (
-                                    <td key={cellIndex} className="border p-2">{(row as any)[header]}</td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                {dataset.datasetDescription && <p className="mb-4 italic">{dataset.datasetDescription}</p>}
+                <DatasetTable<ColumnType> columns={columns} data={rows}/>
             </CardContent>
         </Card>
     )
