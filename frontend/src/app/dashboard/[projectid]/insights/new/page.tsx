@@ -53,14 +53,6 @@ import { NavBar } from "@/app/components/NavBar";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
 import PrivacyModal from "@/app/components/PrivacyModal";
 import TermsOfServiceModal from "@/app/components/TermsOfServiceModal";
 import { useRouter } from "next/navigation";
@@ -127,7 +119,7 @@ export default function NewDashboard({params}: { params: { projectid: string } }
   const router = useRouter();
 
   const [datasets, setDatasets] = useState<string[]>([]);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(true);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [insightFormData, setInsightFormData] = useState<FormData>();
 
   useEffect(() => {
