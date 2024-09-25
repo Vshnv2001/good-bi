@@ -1,6 +1,6 @@
 # GoodBI
 
-GoodBI is the ultimate AI business intelligence platform, and can be found at [https://google.com](https://google.com).
+GoodBI is the ultimate AI business intelligence platform, and can be found at [https://good-bi.vercel.app](https://good-bi.vercel.app).
 
 ## Our group
 
