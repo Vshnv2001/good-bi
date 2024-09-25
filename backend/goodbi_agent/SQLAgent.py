@@ -13,7 +13,7 @@ class SQLAgent:
                     """You are an AI assistant that generates SQL queries based on user questions, database schema, and unique nouns found in the relevant tables. Generate a valid SQL query to answer the user's question.
 
 If there is not enough information to write a SQL query, respond with "NOT_ENOUGH_INFO".
-
+A schema name will be provided as well, which should be used to identify the relevant tables and columns.
 Here are some examples:
 
 1. What is the top selling product?
@@ -40,12 +40,11 @@ Just give the query string. Do not format it. Make sure to use the correct spell
                 ),
                 (
                     "human",
-                    """===User question:
+                    """===User question: {question}
 
-{question}
+===Schema name: {schema_name}
 
 ===Relevant tables and columns:
-
 {relevant_tables}
 
 Generate an accurate SQL query to answer the user's question.""",
@@ -113,10 +112,13 @@ Validate the SQL query and provide the corrected query if necessary.""",
             ]
         )
 
-    def generate_sql_query(self, question: str, relevant_tables: list):
+    def _generate_sql_query(
+        self, question: str, relevant_tables: list, schema_name: str = ""
+    ):
         response = self.llm_manager.invoke(
             self.generation_prompt,
             question=question,
+            schema_name=schema_name,
             relevant_tables=relevant_tables,
         )
         if response == "NOT_ENOUGH_INFO":
@@ -124,7 +126,7 @@ Validate the SQL query and provide the corrected query if necessary.""",
             return {"valid": False, "issues": "Not enough information", "query": ""}
         return {"valid": True, "issues": None, "query": response}
 
-    def validate_sql_query(self, question: str, relevant_tables: list, sql_query: str):
+    def _validate_sql_query(self, question: str, relevant_tables: list, sql_query: str):
         output_parser = JsonOutputParser()
         response = self.llm_manager.invoke(
             self.validation_prompt,
@@ -134,3 +136,14 @@ Validate the SQL query and provide the corrected query if necessary.""",
         )
         parsed_response = output_parser.parse(response)
         return parsed_response
+
+    def make_query(self, question: str, relevant_tables: list, schema_name: str = ""):
+        query = self._generate_sql_query(question, relevant_tables, schema_name)
+        if query["valid"]:
+            validated_query = self._validate_sql_query(
+                question, relevant_tables, query["query"]
+            )
+            return validated_query
+        else:
+            # Query is not valid
+            return query
