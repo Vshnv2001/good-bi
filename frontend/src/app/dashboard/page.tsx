@@ -199,6 +199,7 @@ export default function Dashboard() {
         setSelectedProject(updatedFilteredProjects[0]);
       } else {
         setSelectedProject(null);
+        setFilteredInsights([]);
       }
 
       let responseData = await res.json()
@@ -301,7 +302,7 @@ export default function Dashboard() {
                   />
                 </div>
               </form>
-              <Button asChild>
+              <Button asChild={selectedProject != null} disabled={selectedProject == null}>
                 <Link href={`/dashboard/${selectedProject?.id}/insights/new`}>
                   Create New
                 </Link>
