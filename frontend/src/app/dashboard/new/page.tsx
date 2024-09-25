@@ -33,6 +33,7 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string({
@@ -60,6 +61,7 @@ export default function NewProject() {
 
     if (res.status == 200) {
       const responseData = await res.json()
+      toast("New project has been created.")
       router.push('/dashboard');
     }
   }
