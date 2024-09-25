@@ -40,24 +40,6 @@ import { ProjectCardData } from "../types/ProjectCardData";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const layouts = {
-  sm: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
-  ],
-  md: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
-  ],
-  lg: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
-  ]
-};
-
 export default function Dashboard() {
   const router = useRouter();
 
@@ -157,8 +139,6 @@ export default function Dashboard() {
 
   const handleGridLayoutChange = async (currentLayout: Layout[], allLayouts: Layouts) => {
     setLayouts(allLayouts);
-
-    console.log(allLayouts)
 
     if (selectedProject) {
       if (allLayouts.sm && allLayouts.md && allLayouts.lg && allLayouts.sm.length == allLayouts.md.length && allLayouts.sm.length == allLayouts.lg.length) {
