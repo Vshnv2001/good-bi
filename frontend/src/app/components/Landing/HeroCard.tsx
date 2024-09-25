@@ -31,27 +31,14 @@ interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
     deleteInsight: (projectId: string, insightId: string) => void
 }
 
-const DashboardCard = React.forwardRef<
+const HeroCard = React.forwardRef<
     HTMLDivElement,
     DashboardCardProps
->(({ data, deleteInsight, children, className, ...props }, ref) => {
+>(({ data, children, className, ...props }, ref) => {
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
-                <CardTitle>{data.title}</CardTitle>
-                <div className="flex items-center md:ml-auto">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <EllipsisVertical className="text-gray-500 w-5 h-5" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <Link href={`/dashboard/${data.projectId}/insights/${data.id}/update`}>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem onClick={() => deleteInsight(data.projectId, data.id)}>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+                <CardTitle className="text-base">{data.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-grow px-3 pb-3 max-h-full overflow-hidden w-full">
                 {
@@ -68,6 +55,6 @@ const DashboardCard = React.forwardRef<
         </Card>
     );
 });
-DashboardCard.displayName = "DashboardCard"
+HeroCard.displayName = "DashboardCard"
 
-export default DashboardCard;
+export default HeroCard;

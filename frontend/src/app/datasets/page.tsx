@@ -1,14 +1,9 @@
 "use client";
 
-import Link from "next/link"
-
 import { Search } from "lucide-react";
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
 import { NavBar } from "@/app/components/NavBar";
-
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import { DatasetCard } from "@/app/components/DatasetCard";
@@ -19,7 +14,6 @@ import { Dataset } from "@/app/types/Dataset";
 import { Spinner } from '@/components/ui/spinner';
 
 export default function DatasetPage() {
-
     const [datasets, setDatasets] = useState<Dataset[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -30,7 +24,7 @@ export default function DatasetPage() {
     }, []);
 
     console.log(datasets);
-    
+
     return (
         <div className="flex min-h-screen max-w-7xl mx-auto flex-col">
         <NavBar />
@@ -61,7 +55,7 @@ export default function DatasetPage() {
             </div>
             </div>
             <div className="mx-4 pb-4 flex-grow overflow-y-auto">
-                {isLoading ? 
+                {isLoading ?
                     <div className="flex justify-center items-center h-full mt-10">
                         <Spinner size="large" />
                     </div>

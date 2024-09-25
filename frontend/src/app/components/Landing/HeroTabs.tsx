@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { DashboardCard } from "@/app/components/DashboardCard";
-import { Bar, BarChart, PieChart, Pie, CartesianGrid, XAxis, YAxis, Line, LineChart, LabelList } from "recharts";
 import { ChartConfig } from "@/components/ui/chart";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import { BarChartData, ChartType, LineChartData, PieChartData } from '@/app/types/ChartData';
 import { DashboardCardData } from '@/app/types/DashboardCardData';
+import HeroCard from "@/app/components/Landing/HeroCard";
 
 const buttonShapeTabs = ['Dashboard']
 
@@ -175,7 +174,7 @@ const HeroDashboard = () => {
       {
         cardData.map((data) => {
           return (
-            <DashboardCard key={data.key} data={data} deleteInsight={() => {}} />
+            <HeroCard key={data.key} data={data} deleteInsight={() => {}} />
           )
         })
       }
