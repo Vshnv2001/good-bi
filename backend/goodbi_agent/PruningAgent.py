@@ -1,6 +1,5 @@
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from sqlalchemy.ext.asyncio import AsyncSession
 from .LLMManager import LLMManager
 
 
