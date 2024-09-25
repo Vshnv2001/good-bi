@@ -65,6 +65,8 @@ export default function Dashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [breakpoint, setBreakpoint] = useState<string | null>("");
+
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ProjectCardData[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectCardData | null>(null);
@@ -151,18 +153,35 @@ export default function Dashboard() {
   const handleGridLayoutChange = async (currentLayout: Layout[], allLayouts: Layouts) => {
     setLayouts(allLayouts);
 
-    if (selectedProject && allLayouts.sm && allLayouts.md && allLayouts.lg && allLayouts.sm.length == allLayouts.md.length && allLayouts.sm.length == allLayouts.lg.length) {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${selectedProject.id}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(allLayouts)
-      });
+    console.log(allLayouts)
 
-      if (res.status == 200) {
-        const data = await res.json();
+    if (selectedProject) {
+      if (allLayouts.sm && allLayouts.md && allLayouts.lg && allLayouts.sm.length == allLayouts.md.length && allLayouts.sm.length == allLayouts.lg.length) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${selectedProject.id}`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(allLayouts)
+        });
+
+        if (res.status == 200) {
+          const data = await res.json();
+        }
+      } else if (breakpoint) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${breakpoint}/${selectedProject.id}`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(currentLayout)
+        });
+
+        if (res.status == 200) {
+          const data = await res.json();
+        }
       }
     }
   }
@@ -305,6 +324,7 @@ export default function Dashboard() {
               rowHeight={275}
               compactType="horizontal"
               onLayoutChange={handleGridLayoutChange}
+              onBreakpointChange={setBreakpoint}
             >
               {
                 filteredInsights.map((data) => {
