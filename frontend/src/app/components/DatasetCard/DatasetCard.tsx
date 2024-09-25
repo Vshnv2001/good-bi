@@ -33,11 +33,10 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
 
     useEffect(() => {
         // console.log("Parsing CSV");
-        if (!dataset.datasetFile && !dataset.datasetJson) {
-            console.error("datasetFile is undefined or null");
+        if (!dataset.datasetJson) {
+            console.error("datasetJson is undefined or null");
             return;
         }
-        console.log("datasetFile:", dataset.datasetFile);
 
         const parseJSON = async () => {
             if (dataset.datasetJson && dataset.datasetJson.length > 0) { // Check if datasetJson is defined and not empty
@@ -57,7 +56,7 @@ export function DatasetCard({ dataset, datasets, setDatasets }: DatasetCardProps
         } else {
             console.error("Invalid data type");
         }
-    }, [dataset.datasetFile, dataset.datasetJson])
+    }, [ dataset.datasetJson])
 
 
     return (
