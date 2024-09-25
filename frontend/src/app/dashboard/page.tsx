@@ -218,6 +218,7 @@ export default function Dashboard() {
 
     if (res.status == 200) {
       setInsights(insights => insights.filter(insight => insight.id != insightId));
+      setFilteredInsights(filteredInsights => filteredInsights.filter(insight => insight.id != insightId))
       let responseData = await res.json()
     }
   }
