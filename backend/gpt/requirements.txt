@@ -1,5 +1,0 @@
-langchain==0.3.0
-openai==1.46.0
-python-dotenv==1.0.1
-langchain_experimental==0.3.0
-psycopg2==2.9.9
