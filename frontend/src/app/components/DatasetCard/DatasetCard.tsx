@@ -7,11 +7,26 @@ import {
 import { Dataset } from "@/app/types/Dataset";
 import { useEffect, useState } from "react"
 import axios from "axios";
-import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
+import {
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    Edit,
+    EllipsisIcon,
+    EllipsisVerticalIcon,
+    PlusCircle,
+    Trash
+} from "lucide-react";
 import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
 import { ColumnDef } from "@tanstack/react-table";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 interface DatasetCardProps {
     dataset: Dataset;
@@ -95,9 +110,24 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
         <Card className="mb-4">
             <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle className="text-xl">{dataset.datasetName}</CardTitle>
-                <Button variant="ghost" size="icon" className="[&_svg]:hover:text-red-500">
-                    <Trash className="size-5" onClick={deleteFile}/>
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <EllipsisVerticalIcon className="size-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                            <PlusCircle className="size-4 mr-1.5" />
+                            Add data
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Trash className="size-4 mr-1.5" onClick={deleteFile}/>
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
             </CardHeader>
             <CardContent>
                 {dataset.datasetDescription && <p className="mb-4 italic">{dataset.datasetDescription}</p>}
