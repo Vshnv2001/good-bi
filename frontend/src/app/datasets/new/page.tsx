@@ -16,6 +16,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { CustomCombobox } from "@/components/ui/customCombobox";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   datasetName: z.string().min(1, {
@@ -41,6 +43,30 @@ export default function NewDataset() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values)
   }
+
+  const [options, setOptions] = useState<{
+    label: string,
+    value: string
+  }[]>([])
+
+  useEffect(() => {
+    async function fetchProject() {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`);
+
+      if (res.status == 200) {
+        return res.json();
+      }
+    }
+
+    fetchProject().then((res) => {
+      setOptions(res.data.map((r: { datasetName: string }) => {
+        return {
+          label: r.datasetName,
+          value: r.datasetName
+        }
+      }))
+    })
+  }, []);
 
   return (
     <SessionCheck>
@@ -71,12 +97,22 @@ export default function NewDataset() {
                     <FormItem>
                       <FormLabel>Dataset Name</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          {...field}
+                        <CustomCombobox
+                          className="w-full"
+                          options={options}
+                          mode="single"
+                          onChange={(value) => form.setValue("datasetName", typeof value === 'string' ? value : value.join(''))}
+                          onCreate={(value) => {
+                            setOptions(options.concat({
+                              label: value, value: value
+                            }))
+                            form.setValue("datasetName", value)
+                          }}
+                          selected={field.value}
+                          placeholder="Select dataset"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
@@ -92,14 +128,14 @@ export default function NewDataset() {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
                   name="file"
-                  render={({ field: { value, onChange, ...fieldProps } }) => (
+                  render={({field: {value, onChange, ...fieldProps}}) => (
                     <FormItem>
                       <FormLabel>CSV file</FormLabel>
                       <FormControl>
@@ -112,7 +148,7 @@ export default function NewDataset() {
                           }
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
