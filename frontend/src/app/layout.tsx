@@ -24,19 +24,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Script async src={"https://www.googletagmanager.com/gtag/js?id=G-4XH651C6CN"} />
-      <Script id='' strategy='lazyOnload'>
-          {`
+    <Script async src={"https://www.googletagmanager.com/gtag/js?id=G-4XH651C6CN"}/>
+    <Script id='' strategy='lazyOnload'>
+      {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'G-4XH651C6CN');
           `}
-      </Script>
-      <SuperTokensInit>
-        <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
-      </SuperTokensInit>
-      <Toaster />
+    </Script>
+    <SuperTokensInit>
+      <body className={`${inter.variable} font-sans antialiased`}>
+      <div id="fb-root"></div>
+      <Script async defer crossOrigin="anonymous"
+              src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v20.0"></Script>
+      {children}
+      </body>
+    </SuperTokensInit>
+    <Toaster/>
     </html>
   )
 }

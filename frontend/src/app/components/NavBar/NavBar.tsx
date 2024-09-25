@@ -1,14 +1,14 @@
 "use client";
 
-import {usePathname} from 'next/navigation'
+import { usePathname } from 'next/navigation'
 
 import Link from "next/link"
 import Image from 'next/image';
 
-import {Menu, CircleUser, Share, LogOut, HelpCircle, Facebook, FacebookIcon} from "lucide-react";
+import { Menu, CircleUser, Share, LogOut, HelpCircle, Facebook, FacebookIcon } from "lucide-react";
 
-import {Button} from "@/components/ui/button"
-import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Session from "supertokens-web-js/recipe/session";
-import {Dialog, DialogContent, DialogHeader, DialogTrigger} from "@/components/ui/dialog";
 
 const NavBar = () => {
   const currentPath = usePathname();
@@ -101,7 +100,10 @@ const NavBar = () => {
             </DropdownMenuItem>
             <DropdownMenuItem>
               <FacebookIcon className="size-4 mr-1.5"/>
-              Share on Facebook
+              <div className="fb-share-button" data-href="https://good-bi.vercel.app" data-layout="" data-size=""><a
+                target="_blank"
+                href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgood-bi.vercel.app%2F&amp;src=sdkpreparse"
+                className="fb-xfbml-parse-ignore">Share on Facebook</a></div>
             </DropdownMenuItem>
             <DropdownMenuSeparator/>
             <DropdownMenuItem onClick={signOut}>
