@@ -69,6 +69,7 @@ import { useRouter } from "next/navigation";
 import GBBarChart from "@/app/components/Charts/BarChart";
 import { BarChartData, ChartType } from "@/app/types/ChartData";
 import { ChartConfig } from "@/components/ui/chart";
+import { toast } from "sonner";
 
 const chartConfig = {
   desktop: {
@@ -182,6 +183,7 @@ export default function NewDashboard({params}: { params: { projectid: string } }
 
     if (res.status == 200) {
       let responseData = await res.json()
+      toast("New insight has been created.")
       router.push(`/dashboard`)
     }
   }

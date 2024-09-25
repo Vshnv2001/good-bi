@@ -40,6 +40,7 @@ import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "@/app/components/SessionCheck";
 import { ProjectCardData } from "../types/ProjectCardData";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -194,7 +195,7 @@ export default function Dashboard() {
       const updatedFilteredProjects = filteredProjects.filter(project => project.id != projectId);
       setProjects(projects => projects.filter(project => project.id != projectId));
       setFilteredProjects(updatedFilteredProjects);
-      
+
       if (updatedFilteredProjects.length > 0) {
         setSelectedProject(updatedFilteredProjects[0]);
       } else {
