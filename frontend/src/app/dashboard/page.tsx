@@ -204,6 +204,8 @@ export default function Dashboard() {
       }
 
       const responseData = await res.json()
+
+      toast("Project has been deleted.")
     }
   }
 
@@ -221,6 +223,8 @@ export default function Dashboard() {
       setInsights(insights => insights.filter(insight => insight.id != insightId));
       setFilteredInsights(filteredInsights => filteredInsights.filter(insight => insight.id != insightId))
       const responseData = await res.json()
+
+      toast("Insight has been deleted.")
     }
   }
 

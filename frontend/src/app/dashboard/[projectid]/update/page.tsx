@@ -33,6 +33,7 @@ import SessionCheck from "@/app/components/SessionCheck";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string({
@@ -78,6 +79,7 @@ export default function UpdateProject({ params }: { params: { projectid: string 
 
     if (res.status == 200) {
       const responseData = await res.json()
+      toast("Project has been updated.")
       router.push('/dashboard');
     }
   }
