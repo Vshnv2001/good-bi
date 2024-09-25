@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { frontendConfig } from './config/frontend';
 import { SuperTokensInit } from "./components/supertokensInit";
 import { Toaster } from "@/components/ui/sonner";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,6 +24,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <Script async src={"https://www.googletagmanager.com/gtag/js?id=G-4XH651C6CN"} />
+      <Script id='' strategy='lazyOnload'>
+          {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-4XH651C6CN');
+          `}
+      </Script>
       <SuperTokensInit>
         <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
       </SuperTokensInit>
