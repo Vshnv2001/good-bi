@@ -2,13 +2,12 @@
 
 import Link from "next/link"
 
-import { Check, ChevronDown, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -29,19 +28,15 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { DashboardCardData } from "@/app/types/DashboardCardData";
 
 import { useState, useEffect, useCallback } from "react";
 
 import { debounce } from "lodash";
 
-import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "@/app/components/SessionCheck";
 import { ProjectCardData } from "../types/ProjectCardData";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -113,50 +108,22 @@ export default function Dashboard() {
       }
     }
 
+    async function fetchLayouts(projectId: string) {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${projectId}`, {
+        method: 'GET'
+      });
+
+      if (res.status == 200) {
+        const data = await res.json()
+        setLayouts(data);
+      }
+    }
+
     if (selectedProject) {
       fetchInsights(selectedProject.id)
+      fetchLayouts(selectedProject.id)
     }
   }, [selectedProject]);
-
-  useEffect(() => {
-    const smLayouts = filteredInsights.map((data: DashboardCardData, index: number) => {
-      return {
-        i: data.key,
-        x: 0,
-        y: index,
-        w: 1,
-        h: 1,
-        minH: 1,
-        minW: 1
-      }
-    });
-
-    const mdLayouts = filteredInsights.map((data: DashboardCardData, index: number) => {
-      return {
-        i: data.key,
-        x: index % 2,
-        y: Math.floor(index / 2),
-        w: 1,
-        h: 1,
-        minH: 1,
-        minW: 1
-      }
-    });
-
-    const lgLayouts = filteredInsights.map((data: DashboardCardData, index: number) => {
-      return {
-        i: data.key,
-        x: index % 3,
-        y: Math.floor(index / 3),
-        w: 1,
-        h: 1,
-        minH: 1,
-        minW: 1
-      }
-    });
-
-    setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
-  }, [filteredInsights])
 
   useEffect(() => {
     setFilteredProjects(projects.filter((project) =>
@@ -181,8 +148,23 @@ export default function Dashboard() {
     debouncedSearch(query);
   };
 
-  const handleGridLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
+  const handleGridLayoutChange = async (currentLayout: Layout[], allLayouts: Layouts) => {
+    setLayouts(allLayouts);
 
+    if (selectedProject && allLayouts.sm && allLayouts.md && allLayouts.lg && allLayouts.sm.length == allLayouts.md.length && allLayouts.sm.length == allLayouts.lg.length) {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${selectedProject.id}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(allLayouts)
+      });
+
+      if (res.status == 200) {
+        const data = await res.json();
+      }
+    }
   }
 
   async function deleteProject(projectId: string) {
@@ -211,7 +193,6 @@ export default function Dashboard() {
 
   async function deleteInsight(projectId: string, insightId: string) {
     const formData = new FormData();
-    console.log(projectId)
     formData.append('insight_id', insightId);
     formData.append('project_id', projectId);
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
@@ -324,7 +305,6 @@ export default function Dashboard() {
               rowHeight={275}
               compactType="horizontal"
               onLayoutChange={handleGridLayoutChange}
-              draggableCancel=".react-resizable-handle-custom"
             >
               {
                 filteredInsights.map((data) => {
