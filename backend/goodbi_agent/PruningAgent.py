@@ -4,8 +4,11 @@ from .LLMManager import LLMManager
 
 
 class PruningAgent:
-    def __init__(self):
-        self.llm_manager = LLMManager()
+    def __init__(self, llm_manager=None):
+        if llm_manager is not None:
+            self.llm_manager = llm_manager
+        else:
+            self.llm_manager = LLMManager()
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 (

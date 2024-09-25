@@ -8,9 +8,12 @@ from sqlalchemy import inspect, text
 
 
 class MetadataAgent:
-    def __init__(self):
+    def __init__(self, llm_manager=None):
         # Initialize LangChain or any other necessary components
-        self.llm_manager = LLMManager()
+        if llm_manager is not None:
+            self.llm_manager = llm_manager
+        else:
+            self.llm_manager = LLMManager()
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 (

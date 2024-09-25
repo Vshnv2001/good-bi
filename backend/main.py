@@ -15,9 +15,7 @@ from supertokens_python.recipe import emailpassword, session
 from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
-from goodbi_agent.MetadataAgent import MetadataAgent
-from goodbi_agent.SQLAgent import SQLAgent
-from goodbi_agent.PruningAgent import PruningAgent
+from goodbi_agent.agent import GoodBIAgent
 
 init(
     app_info=InputAppInfo(
@@ -37,6 +35,7 @@ init(
 )
 
 app = FastAPI()
+agent = GoodBIAgent()
 app.add_middleware(get_middleware())
 
 app.add_middleware(
@@ -157,7 +156,7 @@ async def create_dataset(
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
 
-    metadata_agent = MetadataAgent()
+    metadata_agent = agent
     metadata = metadata_agent.get_table_metadata(df)
     print(f"Metadata: {metadata}")
     user_id = auth_session.get_user_id()
@@ -428,23 +427,50 @@ async def user_query(
 ):
     user_id = auth_session.get_user_id()
 
-    pruning_agent = PruningAgent()
-    query_agent = SQLAgent()
     # get metadata
     metadata = await db.execute(
         text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
     )
-
-    relevant_tables = pruning_agent.get_relevant_columns(query, metadata)
-    sql_query = query_agent.make_query(query, relevant_tables, user_id)
-    if not sql_query["valid"]:
-        return JSONResponse(content=sql_query)
+    agent.state["user_id"] = user_id
+    agent.get_relevant_columns(query, metadata)
+    agent.make_query(user_id)
+    if not agent.state["sql_valid"]:
+        return JSONResponse(content=agent.state)
 
     # Execute the query
-    result = await db.execute(text(query))
+    result = await db.execute(text(agent.state["sql_query"]))
     result = result.fetchall()
     result = [r._asdict() for r in result]
+    agent.state["results"] = result
     return JSONResponse(content=result)
+
+
+@app.post("/api/{user_id}/visualize")
+async def visualize_query(
+    query: str = Form(...),
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+):
+    user_id = auth_session.get_user_id()
+    if user_id != agent.state["user_id"]:
+        agent.state = {
+            "question": "",
+            "user_id": user_id,
+            "parsed_question": {},
+            "sql_query": "",
+            "sql_valid": False,
+            "sql_issues": "",
+            "results": [],
+            "answer": "",
+            "error": "",
+            "visualization": "",
+            "visualization_reason": "",
+            "formatted_data_for_visualization": {},
+        }
+        await user_query(query, auth_session, db)
+
+    agent.format_data_for_visualization()
+    return JSONResponse(content=agent.state)
 
 
 @app.post("/api/insights")
