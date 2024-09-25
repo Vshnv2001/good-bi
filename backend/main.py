@@ -217,6 +217,39 @@ async def get_projects(
 
     return JSONResponse(content=projects)
 
+@app.get("/api/project/{project_id}")
+async def get_projects(
+    project_id: str,
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    result = await db.execute(text(f"""
+        SELECT * 
+        FROM "{user_id}.user_data".projects
+        WHERE project_id = :project_id AND user_id = :user_id LIMIT 1
+    """), {'project_id': project_id, 'user_id': user_id})
+
+    projects = result.fetchall()
+
+    if len(projects) == 1:
+        projects = [r._asdict() for r in projects]
+
+        def create_project_card_object(project):
+            return {
+                "id": str(project['project_id']),
+                "name": project['name'],
+                "lastUpdated": str(project['updated_at'])
+            }
+        
+        projects = list(map(create_project_card_object, projects))
+
+        return JSONResponse(content=projects[0])
+
+    return JSONResponse(content={})
+
 @app.post("/api/projects/update")
 async def update_project(
     name: str = Form(...),
@@ -261,8 +294,6 @@ async def create_insight(
     chart_type: str = Form(...),
     start_date: str = Form(...),
     end_date: str = Form(...),
-    y_range_start: float = Form(...),
-    y_range_end: float = Form(...),
     title: str = Form(...),
     kpi_description: str = Form(...),
     project_id: str = Form(...),
@@ -274,14 +305,14 @@ async def create_insight(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     await db.execute(text(f"""
         INSERT INTO "{user_id}.user_data".insights
-        (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date, y_range_start, y_range_end)
-        VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date, :y_range_start, :y_range_end)
-    """), {'insight_id': str(uuid.uuid4()), 'user_id': user_id, 'project_id': project_id, 'dataset_id': dataset_id, 'title': title, 'kpi_description': kpi_description, 'chart_type': chart_type, 'start_date': datetime.strptime(start_date, '%m-%d-%Y'), 'end_date': datetime.strptime(end_date, '%m-%d-%Y'), 'y_range_start': y_range_start, 'y_range_end': y_range_end})
+        (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date)
+        VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date)
+    """), {'insight_id': str(uuid.uuid4()), 'user_id': user_id, 'project_id': project_id, 'dataset_id': dataset_id, 'title': title, 'kpi_description': kpi_description, 'chart_type': chart_type, 'start_date': datetime.strptime(start_date, '%m-%d-%Y'), 'end_date': datetime.strptime(end_date, '%m-%d-%Y')})
 
     await db.commit()
 
@@ -296,7 +327,7 @@ async def get_insights(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, y_range_start DOUBLE PRECISION, y_range_end DOUBLE PRECISION, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
     await db.commit()
 
     result = await db.execute(text(f"""
@@ -388,6 +419,61 @@ async def get_insights(
     insights = list(map(create_dashboard_card_object, insights))
 
     return JSONResponse(content=insights)
+
+@app.get("/api/insight/{insight_id}")
+async def get_insights(
+    insight_id: str,
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    result = await db.execute(text(f"""
+        SELECT * 
+        FROM "{user_id}.user_data".insights
+        WHERE insight_id = :insight_id AND user_id = :user_id LIMIT 1
+    """), {'insight_id': insight_id, 'user_id': user_id})
+
+    insights = result.fetchall()
+    
+    if len(insights) == 1:
+        insights = [r._asdict() for r in insights]
+    
+        def create_dashboard_card_object(insight):
+            return {
+                "id": str(insight['insight_id']),
+                "key": str(insight['insight_id']),
+                "title": insight['title'],
+                "projectId": str(insight['project_id'])
+            }
+        
+        insights = list(map(create_dashboard_card_object, insights))
+
+        return JSONResponse(content=insights[0])
+
+    return JSONResponse(content={})
+
+@app.post("/api/insights/update")
+async def update_project(
+    title: str = Form(...),
+    insight_id: str = Form(...),
+    project_id: str = Form(...),
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    await db.execute(text(f"""
+        UPDATE "{user_id}.user_data".insights
+        SET title = :title, updated_at = CURRENT_TIMESTAMP 
+        WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
+    """), {'title': title, 'insight_id': insight_id, 'project_id': project_id, 'user_id': user_id})
+
+    await db.commit()
+
+    return JSONResponse(content={"message": "Insight updated successfully"}) 
 
 @app.post("/api/insights/delete")
 async def delete_insight(

@@ -29,7 +29,7 @@ const NavBar = () => {
   }
 
   return (
-    <header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 justify-between">
+    <header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 justify-between z-50">
       <Sheet>
         <SheetTrigger asChild>
           <Button
@@ -44,14 +44,14 @@ const NavBar = () => {
         <SheetContent side="left">
           <nav className="grid gap-6 text-lg font-normal mt-8">
             <Link
-              href="/projects"
-              className={`${currentPath === "/projects" ? "" : "text-muted-foreground"} hover:text-foreground`}
+              href="/dashboard"
+              className={`${currentPath.includes("/dashboard") ? "" : "text-muted-foreground"} hover:text-foreground`}
             >
-              Projects
+              Dashboard
             </Link>
             <Link
-              href="/dataset"
-              className={`${currentPath.includes("/dataset") ? "" : "text-muted-foreground"} hover:text-foreground`}
+              href="/datasets"
+              className={`${currentPath.includes("/datasets") ? "" : "text-muted-foreground"} hover:text-foreground`}
             >
               Datasets
             </Link>
@@ -59,7 +59,7 @@ const NavBar = () => {
         </SheetContent>
       </Sheet>
       <Link
-        href="/projects"
+        href="/dashboard"
         className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold md:flex"
       >
         <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" width="32" height="32"/>
@@ -69,16 +69,16 @@ const NavBar = () => {
       <nav
         className="hidden flex-col gap-6 text-base font-normal gap-6 md:flex md:w-full md:flex-row md:items-center md:justify-center">
         <Link
-          href="/projects"
-          className={`${currentPath === "/projects" ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
+          href="/dashboard"
+          className={`${currentPath.includes("/dashboard") ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
         >
-          Projects
+          Dashboard
         </Link>
         <Link
-          href="/dataset"
-          className={`${currentPath.includes("/dataset") ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
+          href="/datasets"
+          className={`${currentPath.includes("/datasets") ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
         >
-          Dataset
+          Datasets
         </Link>
 
       </nav>
