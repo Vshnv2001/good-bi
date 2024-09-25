@@ -133,7 +133,7 @@ export function CustomCombobox({
                         {option.label}
                       </CommandItem>
                     ))}
-                    {(query.trim() && options.filter(x => x.value.toLowerCase() === query.trim().toLowerCase()).length === 0) && (
+                    {(query.trim() && !["Create New Dataset", "insights", "user_metadata"].includes(query) && options.filter(x => x.value.toLowerCase() === query.trim().toLowerCase()).length === 0) && (
                       <CommandItem
                         className="px-8"
                         value={query}
@@ -144,7 +144,7 @@ export function CustomCombobox({
                         }
                       }}
                       >
-                        Create {query}
+                        Create &apos;{query}&apos;
                       </CommandItem>)}
                   </CommandList>
                 </CommandGroup>
