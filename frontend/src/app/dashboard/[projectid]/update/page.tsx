@@ -54,10 +54,10 @@ export default function UpdateProject({ params }: { params: { projectid: string 
 
   useEffect(() => {
     async function fetchProject() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/project/${params.projectid}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/project/${params.projectid}`);
 
       if (res.status == 200) {
-        let data = await res.json();
+        const data = await res.json();
 
         reset({
           name: data.name
@@ -68,16 +68,16 @@ export default function UpdateProject({ params }: { params: { projectid: string 
   }, []);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('name', data.name)
     formData.append('project_id', params.projectid);
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/update`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/update`, {
       method: 'POST',
       body: formData
     });
 
     if (res.status == 200) {
-      let responseData = await res.json()
+      const responseData = await res.json()
       router.push('/dashboard');
     }
   }
