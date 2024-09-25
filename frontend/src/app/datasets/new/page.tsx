@@ -18,13 +18,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { CustomCombobox } from "@/components/ui/customCombobox";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   datasetName: z.string().min(1, {
     message: "Please provide a dataset name."
   }),
   datasetDescription: z.string(),
-  file: z.instanceof(File, {
+  datasetFile: z.instanceof(File, {
     message: 'Please provide a CSV file.'
   }).refine((file) => file.size > 0, {
     message: 'File must not be empty.'
@@ -40,8 +44,30 @@ export default function NewDataset() {
     }
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+  const router = useRouter();
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const formData = {
+      ...values,
+      file_id: uuidv4()
+    }
+
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        toast('Added new data')
+        router.push('/datasets');
+      } else {
+        toast.error('Failed to submit dataset');
+      }
+    } catch (error) {
+      toast.error('Error submitting dataset');
+    }
   }
 
   const [options, setOptions] = useState<{
@@ -134,7 +160,7 @@ export default function NewDataset() {
                 />
                 <FormField
                   control={form.control}
-                  name="file"
+                  name="datasetFile"
                   render={({field: {value, onChange, ...fieldProps}}) => (
                     <FormItem>
                       <FormLabel>CSV file</FormLabel>
