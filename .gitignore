@@ -4,6 +4,8 @@
 /frontend/.pnp.js
 /frontend/.yarn/install-state.gz
 
+.env
+
 # testing
 /frontend/coverage
 

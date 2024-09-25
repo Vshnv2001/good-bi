@@ -15,7 +15,7 @@ from supertokens_python.recipe import emailpassword, session
 from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
-
+from goodbi_agent.MetadataAgent import MetadataAgent
 
 init(
     app_info=InputAppInfo(
@@ -71,6 +71,7 @@ async def get_dataset_names(auth_session: SessionContainer = Depends(verify_sess
     """), {'user_id': user_id})
     tables = result.fetchall()
     tables = [table[0] for table in tables]
+    tables.remove("user_tables_metadata")
     return JSONResponse(content={"data": tables})
 
 @app.get("/api/datasets")
@@ -91,6 +92,8 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
     
     for table_name in tables:
         # Query to get the first three rows from the table
+        if table_name == "user_tables_metadata":
+            continue
         result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3'))
         rows = result.fetchall()
         
@@ -123,9 +126,12 @@ async def create_dataset(
 
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
-
+    
+    metadata_agent = MetadataAgent()
+    metadata = metadata_agent.get_table_metadata(df)
+    print(f"Metadata: {metadata}")
     user_id = auth_session.get_user_id()
-    # user_id = "test"
+    await metadata_agent.save_metadata(metadata, db, user_id)
     print(f"User ID: {user_id}")
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
