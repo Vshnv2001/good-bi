@@ -76,7 +76,7 @@ export default function Dashboard() {
 
   const [insights, setInsights] = useState<DashboardCardData[]>([]);
   const [filteredInsights, setFilteredInsights] = useState<DashboardCardData[]>([]);
-  const [layouts, setLayouts] = useState({ sm: [], md: [], lg: [] });
+  const [layouts, setLayouts] = useState<Layouts>({ sm: [], md: [], lg: [] });
 
   useEffect(() => {
     async function fetchProjects() {
@@ -110,44 +110,6 @@ export default function Dashboard() {
 
         setInsights(data);
         setFilteredInsights(data);
-
-        const smLayouts = data.map((data: DashboardCardData, index: number) => {
-          return {
-            i: data.key,
-            x: 0,
-            y: index,
-            w: 1,
-            h: 1,
-            minH: 1,
-            minW: 1
-          }
-        });
-
-        const mdLayouts = data.map((data: DashboardCardData, index: number) => {
-          return {
-            i: data.key,
-            x: index % 2,
-            y: Math.floor(index / 2),
-            w: 1,
-            h: 1,
-            minH: 1,
-            minW: 1
-          }
-        });
-
-        const lgLayouts = data.map((data: DashboardCardData, index: number) => {
-          return {
-            i: data.key,
-            x: index % 3,
-            y: Math.floor(index / 3),
-            w: 1,
-            h: 1,
-            minH: 1,
-            minW: 1
-          }
-        });
-
-        setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
       }
     }
 
@@ -157,9 +119,50 @@ export default function Dashboard() {
   }, [selectedProject]);
 
   useEffect(() => {
+    const smLayouts = filteredInsights.map((data: DashboardCardData, index: number) => {
+      return {
+        i: data.key,
+        x: 0,
+        y: index,
+        w: 1,
+        h: 1,
+        minH: 1,
+        minW: 1
+      }
+    });
+
+    const mdLayouts = filteredInsights.map((data: DashboardCardData, index: number) => {
+      return {
+        i: data.key,
+        x: index % 2,
+        y: Math.floor(index / 2),
+        w: 1,
+        h: 1,
+        minH: 1,
+        minW: 1
+      }
+    });
+
+    const lgLayouts = filteredInsights.map((data: DashboardCardData, index: number) => {
+      return {
+        i: data.key,
+        x: index % 3,
+        y: Math.floor(index / 3),
+        w: 1,
+        h: 1,
+        minH: 1,
+        minW: 1
+      }
+    });
+
+    setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
+  }, [filteredInsights])
+
+  useEffect(() => {
     setFilteredProjects(projects.filter((project) =>
       project.name.toLowerCase().includes(searchQuery.toLowerCase())
     ));
+
   }, [searchQuery]);
 
   const debouncedSearch = useCallback(
@@ -179,8 +182,7 @@ export default function Dashboard() {
   };
 
   const handleGridLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
-    console.log(currentLayout);
-    console.log(allLayouts);
+
   }
 
   async function deleteProject(projectId: string) {
@@ -270,21 +272,21 @@ export default function Dashboard() {
                         router.push(`/dashboard/${selectedProject?.id}/update`);
                         setOpen(false);
                       }}>
-                        <Pencil className="size-4 mr-1.5"/>
+                        <Pencil className="size-4 mr-1.5" />
                         Edit project
                       </CommandItem>}
                       {selectedProject && <CommandItem className="text-destructive" onSelect={() => {
                         deleteProject(selectedProject!.id);
                         setOpen(false);
                       }}>
-                        <Trash2 className="size-4 mr-1.5"/>
+                        <Trash2 className="size-4 mr-1.5" />
                         Delete project
                       </CommandItem>}
                       <CommandItem onSelect={() => {
                         router.push('/dashboard/new');
                         setOpen(false);
                       }}>
-                        <Plus className="size-4 mr-1.5"/>
+                        <Plus className="size-4 mr-1.5" />
                         New project
                       </CommandItem>
                     </CommandGroup>
