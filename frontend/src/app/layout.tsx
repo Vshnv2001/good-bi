@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { frontendConfig } from './config/frontend';
 import { SuperTokensInit } from "./components/supertokensInit";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,6 +26,7 @@ export default function RootLayout({
       <SuperTokensInit>
         <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
       </SuperTokensInit>
+      <Toaster />
     </html>
   )
 }
