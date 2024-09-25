@@ -8,8 +8,6 @@ import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 import { DatasetCard } from "@/app/components/DatasetCard";
 import { useEffect, useState } from "react";
-import NewDataSetForm from "@/app/components/DatasetCard/NewDataSetForm";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Dataset } from "@/app/types/Dataset";
 import { Spinner } from '@/components/ui/spinner';
 import { debounce } from "lodash";
