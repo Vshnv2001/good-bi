@@ -30,7 +30,7 @@ export default function Login() {
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
       if (hasSession) {
-        router.replace('/projects')
+        router.replace('/dashboard')
       }
     })
   }, [router]);
@@ -72,7 +72,7 @@ export default function Login() {
       } else {
         // sign in successful. The session tokens are automatically handled by
         // the frontend SDK.
-        window.location.href = "/projects"
+        window.location.href = "/dashboard"
       }
     } catch (err: any) {
       if (err.isSuperTokensGeneralError === true) {
