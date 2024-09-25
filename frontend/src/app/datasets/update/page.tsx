@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -21,15 +21,10 @@ const formSchema = z.object({
   datasetName: z.string().min(1, {
     message: "Please provide a dataset name."
   }),
-  datasetDescription: z.string(),
-  file: z.instanceof(File, {
-    message: 'Please provide a CSV file.'
-  }).refine((file) => file.size > 0, {
-    message: 'File must not be empty.'
-  })
+  datasetDescription: z.string()
 })
 
-export default function NewDataset() {
+export default function EditDataset() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,14 +48,14 @@ export default function NewDataset() {
             </BreadcrumbItem>
             <BreadcrumbSeparator/>
             <BreadcrumbItem>
-              <BreadcrumbPage>New dataset</BreadcrumbPage>
+              <BreadcrumbPage>Edit dataset</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <main
           className="flex mb-3 flex-1 flex-col bg-gray-100 mx-4 rounded-2xl border border-gray-200/70 items-center justify-center overflow-y-auto"
         >
-          <h1 className="pb-3.5 text-center text-3xl font-normal text-gray-800">Create new dataset</h1>
+          <h1 className="pb-3.5 text-center text-3xl font-normal text-gray-800">Edit dataset</h1>
           <div className="max-w-sm w-full px-4">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full mt-6">
@@ -76,7 +71,6 @@ export default function NewDataset() {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -92,32 +86,11 @@ export default function NewDataset() {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="file"
-                  render={({ field: { value, onChange, ...fieldProps } }) => (
-                    <FormItem>
-                      <FormLabel>CSV file</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...fieldProps}
-                          type="file"
-                          accept="text/csv"
-                          onChange={(event) =>
-                            onChange(event.target.files && event.target.files[0])
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
                 <Button type="submit">
-                  Create dataset
+                  Edit dataset
                 </Button>
               </form>
             </Form>
