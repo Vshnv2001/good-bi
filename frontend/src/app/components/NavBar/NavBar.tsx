@@ -50,8 +50,8 @@ const NavBar = () => {
               Dashboard
             </Link>
             <Link
-              href="/dataset"
-              className={`${currentPath.includes("/dataset") ? "" : "text-muted-foreground"} hover:text-foreground`}
+              href="/datasets"
+              className={`${currentPath.includes("/datasets") ? "" : "text-muted-foreground"} hover:text-foreground`}
             >
               Datasets
             </Link>
@@ -75,10 +75,10 @@ const NavBar = () => {
           Dashboard
         </Link>
         <Link
-          href="/dataset"
-          className={`${currentPath.includes("/dataset") ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
+          href="/datasets"
+          className={`${currentPath.includes("/datasets") ? "text-foreground" : "text-muted-foreground"} transition-colors hover:text-foreground`}
         >
-          Dataset
+          Datasets
         </Link>
 
       </nav>
