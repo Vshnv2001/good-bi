@@ -2,12 +2,26 @@
 
 import Link from "next/link"
 
-import { Search } from "lucide-react";
+import { Check, ChevronDown, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
-import { Responsive, WidthProvider } from "react-grid-layout";
+import { Layout, Layouts, Responsive, WidthProvider } from "react-grid-layout";
 
 import { NavBar } from "@/app/components/NavBar";
 import { DashboardCard } from "@/app/components/DashboardCard";
@@ -15,7 +29,7 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { DashboardCardData } from "@/app/types/DashboardCardData";
 
 import { useState, useEffect, useCallback } from "react";
@@ -24,6 +38,8 @@ import { debounce } from "lodash";
 
 import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "@/app/components/SessionCheck";
+import { ProjectCardData } from "../types/ProjectCardData";
+import { cn } from "@/lib/utils";
 
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -46,15 +62,43 @@ const layouts = {
   ]
 };
 
-export default function Dashboard({ params }: { params: { projectid: string } }) {
+export default function Dashboard() {
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false)
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [projects, setProjects] = useState<ProjectCardData[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<ProjectCardData[]>([]);
+  const [selectedProject, setSelectedProject] = useState<ProjectCardData | null>(null);
+
   const [insights, setInsights] = useState<DashboardCardData[]>([]);
   const [filteredInsights, setFilteredInsights] = useState<DashboardCardData[]>([]);
   const [layouts, setLayouts] = useState({ sm: [], md: [], lg: [] });
 
   useEffect(() => {
-    async function fetchInsights() {
+    async function fetchProjects() {
+      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
+
+      if (res.status == 200) {
+        let data: ProjectCardData[] = await res.json();
+
+        setProjects(data);
+        setFilteredProjects(data);
+
+        if (data.length > 0) {
+          setSelectedProject(data[0]);
+        }
+      }
+    }
+    fetchProjects()
+  }, []);
+
+  useEffect(() => {
+    async function fetchInsights(projectId: string) {
       let formData = new FormData();
-      formData.append('project_id', params.projectid);
+      formData.append('project_id', projectId);
       let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights`, {
         method: 'POST',
         body: formData
@@ -105,8 +149,17 @@ export default function Dashboard({ params }: { params: { projectid: string } })
         setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
       }
     }
-    fetchInsights()
-  }, []);
+
+    if (selectedProject) {
+      fetchInsights(selectedProject.id)
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
+    setFilteredProjects(projects.filter((project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ));
+  }, [searchQuery]);
 
   const debouncedSearch = useCallback(
     debounce((query: string) => {
@@ -123,6 +176,26 @@ export default function Dashboard({ params }: { params: { projectid: string } })
     const query = e.target.value;
     debouncedSearch(query);
   };
+
+  const handleGridLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
+    console.log(currentLayout);
+    console.log(allLayouts);
+  }
+
+  async function deleteProject(projectId: string) {
+    let formData = new FormData();
+    formData.append('project_id', projectId);
+    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/delete`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.status == 200) {
+      setProjects(projects => projects.filter(project => project.id != projectId));
+      setFilteredProjects(filteredProjects => filteredProjects.filter(project => project.id != projectId));
+      let responseData = await res.json()
+    }
+  }
 
   async function deleteInsight(projectId: string, insightId: string) {
     let formData = new FormData();
@@ -146,7 +219,68 @@ export default function Dashboard({ params }: { params: { projectid: string } })
         <NavBar />
         <main className="flex flex-1 flex-col bg-gray-100 mx-4 my-3 rounded-2xl border border-gray-200/70">
           <div className="mx-4 my-3 flex flex-col gap-4 md:h-10 md:flex-row md:gap-0 md:items-center md:justify-between">
-            <h1 className="text-3xl font-normal text-gray-800">Dashboard</h1>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <div className="flex flex-row gap-3 text-gray-800 items-center">
+                  <h1 className="text-3xl font-normal">{selectedProject ? selectedProject.name : "Select Project"}</h1>
+                  <ChevronDown className="h-6 w-6" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-[200px] p-0">
+                <Command shouldFilter={false}>
+                  <CommandInput value={searchQuery} onValueChange={setSearchQuery} placeholder="Search projects" />
+                  <CommandList>
+                    <CommandGroup>
+                      {
+                        filteredProjects.length === 0 ?
+                          <div className="text-center text-sm px-1 py-2">
+                            <span>No projects found.</span>
+                          </div>
+                          :
+                          filteredProjects.map((project) => (
+                            <CommandItem
+                              key={project.id}
+                              value={project.id}
+                              onSelect={() => {
+                                setSelectedProject(project);
+                                setOpen(false);
+                              }}
+                            >
+                              {project.name}
+                            </CommandItem>
+                          ))
+                      }
+                    </CommandGroup>
+                  </CommandList>
+                  <CommandSeparator />
+                  <CommandList>
+                    <CommandGroup>
+                      {selectedProject && <CommandItem onSelect={() => {
+                        router.push(`/dashboard/${selectedProject?.id}/update`);
+                        setOpen(false);
+                      }}>
+                        <Pencil className="size-4 mr-1.5"/>
+                        Edit project
+                      </CommandItem>}
+                      {selectedProject && <CommandItem onSelect={() => {
+                        deleteProject(selectedProject!.id);
+                        setOpen(false);
+                      }}>
+                        <Trash2 className="size-4 mr-1.5"/>
+                        Delete project
+                      </CommandItem>}
+                      <CommandItem onSelect={() => {
+                        router.push('/dashboard/new');
+                        setOpen(false);
+                      }}>
+                        <Plus className="size-4 mr-1.5"/>
+                        New project
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             <div className="flex flex-col md:flex-row justify-between gap-2">
               <form>
                 <div className="relative flex flex-col justify-center">
@@ -160,7 +294,7 @@ export default function Dashboard({ params }: { params: { projectid: string } })
                 </div>
               </form>
               <Button asChild>
-                <Link href={`${usePathname()}/new`}>
+                <Link href={`/dashboard/${selectedProject?.id}/insights/new`}>
                   Create New
                 </Link>
               </Button>
@@ -176,6 +310,7 @@ export default function Dashboard({ params }: { params: { projectid: string } })
               margin={[16, 16]}
               rowHeight={275}
               compactType="horizontal"
+              onLayoutChange={handleGridLayoutChange}
               draggableCancel=".react-resizable-handle-custom"
             >
               {

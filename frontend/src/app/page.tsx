@@ -23,7 +23,7 @@ export default function Home() {
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
       if (hasSession) {
-        router.replace("/projects");
+        router.replace("/dashboard");
       }
     })
   }, [router]);

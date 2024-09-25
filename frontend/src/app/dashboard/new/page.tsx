@@ -60,7 +60,7 @@ export default function NewProject() {
 
     if (res.status == 200) {
       let responseData = await res.json()
-      router.push('/projects');
+      router.push('/dashboard');
     }
   }
 
@@ -71,7 +71,7 @@ export default function NewProject() {
         <Breadcrumb className="mx-4 my-2">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Project</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

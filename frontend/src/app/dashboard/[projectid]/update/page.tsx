@@ -78,7 +78,7 @@ export default function UpdateProject({ params }: { params: { projectid: string 
 
     if (res.status == 200) {
       let responseData = await res.json()
-      router.push('/projects');
+      router.push('/dashboard');
     }
   }
 
@@ -89,7 +89,7 @@ export default function UpdateProject({ params }: { params: { projectid: string 
         <Breadcrumb className="mx-4 my-2">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Project</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

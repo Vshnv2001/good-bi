@@ -193,7 +193,7 @@ export default function NewDashboard({params}: { params: { projectid: string } }
         <Breadcrumb className="mx-4 my-2">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/projects/${params.projectid}/dashboard`}>Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href={`/dashboard`}>Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

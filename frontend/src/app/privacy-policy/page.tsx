@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
       if (hasSession) {
-        router.replace("/projects");
+        router.replace("/dashboard");
       }
     })
   }, [router]);
