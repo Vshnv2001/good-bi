@@ -48,7 +48,9 @@ export function CustomCombobox({
                                }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState<string>('');
-
+  console.log(query)
+  console.log(options.filter(x => x.value.toLowerCase() === query.toLowerCase()).length === 0)
+  console.log((query && options.filter(x => x.value.toLowerCase() === query.toLowerCase()).length === 0))
   return (
     <div className={cn('block', className)}>
       <Popover open={open} onOpenChange={setOpen}>
@@ -86,6 +88,7 @@ export function CustomCombobox({
           <Command
             filter={(value, search) => {
               if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+              if (search === query) return 1;
               return 0;
             }}
             // shouldFilter={true}
@@ -130,16 +133,19 @@ export function CustomCombobox({
                         {option.label}
                       </CommandItem>
                     ))}
-                    {(query && !options.map(x => x.value).includes(query)) && <CommandItem className="px-8" onSelect={() => {
-                      if (onCreate) {
-                        onCreate(query)
-                        setQuery('')
-                      }
-                    }}
-
-                    >
+                    {(query.trim() && options.filter(x => x.value.toLowerCase() === query.trim().toLowerCase()).length === 0) && (
+                      <CommandItem
+                        className="px-8"
+                        value={query}
+                        onSelect={() => {
+                        if (onCreate) {
+                          onCreate(query)
+                          setQuery('')
+                        }
+                      }}
+                      >
                         Create {query}
-                    </CommandItem>}
+                      </CommandItem>)}
                   </CommandList>
                 </CommandGroup>
               </div>
