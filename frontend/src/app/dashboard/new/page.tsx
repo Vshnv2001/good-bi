@@ -37,7 +37,7 @@ import { useRouter } from "next/navigation";
 const FormSchema = z.object({
   name: z.string({
     required_error: "Please enter a project name.",
-  })
+  }).min(1, "Please enter a project name.")
 })
 
 export default function NewProject() {

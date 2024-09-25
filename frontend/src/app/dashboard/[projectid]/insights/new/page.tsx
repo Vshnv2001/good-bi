@@ -101,10 +101,10 @@ const FormSchema = z.object({
   dataset: z
     .string({
       required_error: "Please select a dataset.",
-    }),
+    }).min(1, "Please select a dataset."),
   chartType: z.string({
     required_error: "Please select a chart type.",
-  }),
+  }).min(1, "Please select a chart type."),
   dateRange: z.object(
     {
       start: z.date(),
@@ -116,10 +116,10 @@ const FormSchema = z.object({
   ),
   title: z.string({
     required_error: "Please enter a title.",
-  }),
+  }).min(1, "Please enter a title."),
   kpiDescription: z.string({
-    required_error: "Please provide a KPI description.",
-  })
+    required_error: "Please enter a KPI description.",
+  }).min(1, "Please enter a KPI description.")
 })
 
 export default function NewDashboard({params}: { params: { projectid: string } }) {

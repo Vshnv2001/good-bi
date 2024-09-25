@@ -191,8 +191,16 @@ export default function Dashboard() {
     });
 
     if (res.status == 200) {
+      const updatedFilteredProjects = filteredProjects.filter(project => project.id != projectId);
       setProjects(projects => projects.filter(project => project.id != projectId));
-      setFilteredProjects(filteredProjects => filteredProjects.filter(project => project.id != projectId));
+      setFilteredProjects(updatedFilteredProjects);
+      
+      if (updatedFilteredProjects.length > 0) {
+        setSelectedProject(updatedFilteredProjects[0]);
+      } else {
+        setSelectedProject(null);
+      }
+
       let responseData = await res.json()
     }
   }
@@ -262,7 +270,7 @@ export default function Dashboard() {
                         <Pencil className="size-4 mr-1.5"/>
                         Edit project
                       </CommandItem>}
-                      {selectedProject && <CommandItem onSelect={() => {
+                      {selectedProject && <CommandItem className="text-destructive" onSelect={() => {
                         deleteProject(selectedProject!.id);
                         setOpen(false);
                       }}>

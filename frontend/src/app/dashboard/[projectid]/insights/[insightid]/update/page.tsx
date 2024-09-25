@@ -34,7 +34,7 @@ import { useEffect } from "react";
 const FormSchema = z.object({
   title: z.string({
     required_error: "Please enter an insight title.",
-  })
+  }).min(1, "Please enter an insight title.")
 })
 
 export default function UpdateInsight({ params }: { params: { projectid: string, insightid: string } }) {
