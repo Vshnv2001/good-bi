@@ -40,28 +40,10 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
 
     useEffect(() => {
         // console.log("Parsing CSV");
-        if (!dataset.datasetFile && !dataset.datasetJson) {
-            console.error("datasetFile is undefined or null");
+        if (!dataset.datasetJson) {
+            console.error("datasetJson is undefined or null");
             return;
         }
-        console.log("datasetFile:", dataset.datasetFile);
-
-        const parseCSV = async () => {
-            if (dataset.datasetFile) { // Check if datasetFile is defined
-                Papa.parse(dataset.datasetFile, {
-                    header: true,
-                    complete: (results: Papa.ParseResult<any>) => {
-                        let headers = Object.keys(results.data[0])
-                        headers = headers.filter(header => !header.includes('user_id') && !header.includes('file_id') && !header.includes('description') && !header.includes('created_at'));
-                        setHeaders(headers);
-                        setRows(results.data.slice(0, 3)) // Get first 3 rows
-                    }
-                });
-            } else {
-                console.error("Dataset file is undefined");
-            }
-
-        };
 
         const parseJSON = async () => {
             if (dataset.datasetJson && dataset.datasetJson.length > 0) { // Check if datasetJson is defined and not empty
@@ -76,15 +58,12 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
                 console.error("Dataset JSON is undefined");
             }
         };
-
-        if (dataset.datasetFile) {
-            parseCSV()
-        } else if (dataset.datasetJson) {
+        if (dataset.datasetJson) {
             parseJSON()
         } else {
             console.error("Invalid data type");
         }
-    }, [dataset.datasetFile, dataset.datasetJson])
+    }, [ dataset.datasetJson])
 
     const keys = [...headers] as const;
     type ColumnType = Record<string, string>;
