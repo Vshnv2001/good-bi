@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/card"
 import { Dataset } from "@/app/types/Dataset";
 import { useEffect, useState } from "react"
-import Papa from "papaparse"
 import axios from "axios";
 import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
 import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
@@ -53,7 +52,7 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
                 let headers = Object.keys(data[0])
                 headers = headers.filter(header => !header.includes('user_id') && !header.includes('file_id') && !header.includes('description') && !header.includes('created_at'));
                 setHeaders(headers);
-                setRows(data.slice(0, 3));
+                setRows(data);
             } else {
                 console.error("Dataset JSON is undefined");
             }
@@ -63,7 +62,7 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
         } else {
             console.error("Invalid data type");
         }
-    }, [ dataset.datasetJson])
+    }, [dataset.datasetJson])
 
     const keys = [...headers] as const;
     type ColumnType = Record<string, string>;
@@ -73,15 +72,15 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
             header: ({column}) => {
                 return (
                     <button
-                        className="inline-flex hover:text-gray-800 transition-colors duration-100"
+                        className="inline-flex items-center gap-1 hover:text-gray-800 transition-colors duration-100"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
                         {key}
                         {!column.getIsSorted()
-                            ? <ArrowUpDown className="ml-1 size-4"/>
+                            ? <ArrowUpDown className="shrink-0 size-4"/>
                             : column.getIsSorted() === 'asc'
-                                ? <ArrowUp className="ml-1 size-4"/>
-                                : <ArrowDown className="ml-1 size-4"/>
+                                ? <ArrowUp className="shrink-0 size-4"/>
+                                : <ArrowDown className="shrink-0 size-4"/>
                         }
                     </button>
                 )
