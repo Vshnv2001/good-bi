@@ -3,6 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import {cn} from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dropdown } from "react-day-picker";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { FacebookIcon, LinkedinIcon } from "lucide-react";
 
 const LandingFooter = ({className}: { className?: string }) => {
   return (
@@ -36,11 +45,30 @@ const LandingFooter = ({className}: { className?: string }) => {
         </nav>
       </div>
       <div className="text-sm mt-4 text-gray-500 px-4 max-w-7xl mx-auto border-t">
-        <div className="flex flex-col-reverse items-center min-[400px]:flex-row gap-y-3 justify-between mt-4">
+        <div className="flex flex-col-reverse items-center sm:flex-row gap-y-3 justify-between mt-4">
           <span className="block">
             &copy; {new Date().getFullYear()} GoodBI.
           </span>
           <div className="flex gap-3 text-right">
+            <DropdownMenu>
+              <DropdownMenuTrigger>Share</DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>
+                  <FacebookIcon className="size-4 mr-1.5"/>
+                  <div className="fb-share-button" data-href="https://good-bi.vercel.app" data-layout="" data-size=""><a
+                    target="_blank"
+                    href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgood-bi.vercel.app%2F&amp;src=sdkpreparse"
+                    className="fb-xfbml-parse-ignore">Share on Facebook</a></div>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" asChild>
+                  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://good-bi.vercel.app" target="_blank">
+                    <LinkedinIcon className="size-4 mr-1.5"/>
+                    Share on LinkedIn
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <span className="text-sm text-gray-300">|</span>
             <Link href="/privacy-policy" className="hover:underline">
               Privacy Policy
             </Link>
