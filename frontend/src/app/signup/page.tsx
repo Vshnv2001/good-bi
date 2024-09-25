@@ -31,7 +31,7 @@ export default function Signup() {
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
       if (hasSession) {
-        router.replace('/projects')
+        router.replace('/dashboard')
       }
     })
   }, [router]);
