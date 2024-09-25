@@ -33,7 +33,7 @@ import { DashboardCardData } from "@/app/types/DashboardCardData";
 
 import { useState, useEffect, useCallback } from "react";
 
-import { debounce } from "lodash";
+import { debounce, filter } from "lodash";
 
 import SessionCheck from "@/app/components/SessionCheck";
 import { ProjectCardData } from "../types/ProjectCardData";
@@ -110,6 +110,12 @@ export default function Dashboard() {
       }
     }
 
+    if (selectedProject) {
+      fetchInsights(selectedProject.id)
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
     async function fetchLayouts(projectId: string) {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${projectId}`, {
         method: 'GET'
@@ -122,10 +128,9 @@ export default function Dashboard() {
     }
 
     if (selectedProject) {
-      fetchInsights(selectedProject.id)
       fetchLayouts(selectedProject.id)
     }
-  }, [selectedProject]);
+  }, [filteredInsights]);
 
   useEffect(() => {
     setFilteredProjects(projects.filter((project) =>
