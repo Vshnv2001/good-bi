@@ -22,9 +22,9 @@ class GoodBIAgent:
     def make_query(self):
         question = self.state["question"]
         relevant_tables = self.state["parsed_question"]["relevant_tables"]
-        schema_name = self.state["parsed_question"]["user_id"]
+        schema_name = self.state["user_id"]
         query = self.sql_agent.make_query(question, relevant_tables, schema_name)
-        self.state["sql_query"] = query["query"]
+        self.state["sql_query"] = query["corrected_query"]
         self.state["sql_valid"] = query["valid"]
         self.state["sql_issues"] = query["issues"]
 
@@ -43,7 +43,7 @@ class GoodBIAgent:
     def format_data_for_visualization(self):
         return self.data_formatter.format_data_for_visualization(state=self.state)
 
-    def interpret_output(self):
+    def interpret_results(self):
         interpreted_output = self.interpreter_agent.interpret_output(state=self.state)
         self.state["interpreted_answer"] = interpreted_output
         self.state["error"] = interpreted_output["error"]
