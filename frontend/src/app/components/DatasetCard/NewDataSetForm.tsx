@@ -98,6 +98,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
     }
     const file_id = uuidv4();
     formData.append('file_id', file_id);
+    console.log(formData.entries());
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`, formData, {
         headers: {
@@ -114,7 +115,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
         }
         if (isNewDataset) {
           setDataSets([...dataSets, newDataset]);
-        } 
+        }
         setDatasetName('');
         setDatasetDescription('');
         setFile(null);
@@ -199,7 +200,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
       </div>
       <form onSubmit={(event) => {handleSubmit(event); closeModal()}}>
         {/* File Upload Area */}
-        <div 
+        <div
             className="border-2 border-dashed border-gray-300 mx-4 rounded-lg p-6 mb-4 text-center cursor-pointer"
             onDragOver={handleDragOver}
             onDrop={handleDrop}
@@ -216,7 +217,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
             </label>
         </div>
         <h2 className="text-lg mx-4 my-2 font-bold">Column Descriptors</h2>
-        {columns.length > 0 && 
+        {columns.length > 0 &&
         columns.map((column: string) => {
           return (
             <div key={column} className="flex flex-col mx-4">
@@ -232,8 +233,8 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
         })
         }
         <div className="flex justify-end space-x-4 mt-4">
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={!datasetName || !file}
             className="text-white bg-primary-700 hover:bg-primary-600"
           >

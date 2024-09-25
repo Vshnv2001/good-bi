@@ -37,6 +37,7 @@ import { debounce, filter } from "lodash";
 
 import SessionCheck from "@/app/components/SessionCheck";
 import { ProjectCardData } from "../types/ProjectCardData";
+import { toast } from "sonner";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
