@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Session from 'supertokens-web-js/recipe/session';
-import { doesSessionExist } from '../../lib/utils';
+import { doesSessionExist } from '@/lib/utils';
+import {useRouter} from "next/navigation";
 
 const SessionCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sessionExists, setSessionExists] = useState<boolean | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -18,7 +20,7 @@ const SessionCheck: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }
 
   if (!sessionExists) {
-    return <div>Session does not exist. Please log in.</div>;
+    router.push("/login");
   }
 
   return <>{children}</>;

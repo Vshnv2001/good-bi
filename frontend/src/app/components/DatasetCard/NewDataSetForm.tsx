@@ -61,6 +61,8 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
   const [existingDatasetNames, setExistingDatasetNames] = useState<string[]>(['New Dataset']);
   const [isNewDataset, setIsNewDataset] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [datasetJson, setDatasetJson] = useState<any>(null);
+
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/datasetnames`)
       .then((res) => {
@@ -80,6 +82,8 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
           let headers = Object.keys(results.data[0])
           headers = headers.filter(header => header !== 'user_id');
           setColumns(headers);
+          setDatasetJson(results.data); // Set the parsed JSON data
+          setFile(file);
       }
     });
   }
@@ -105,7 +109,8 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
         const newDataset = {
           datasetName: datasetName,
           datasetDescription: datasetDescription,
-          datasetFile: file
+          datasetJson: datasetJson,
+          file_id: file_id
         }
         if (isNewDataset) {
           setDataSets([...dataSets, newDataset]);
@@ -113,6 +118,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
         setDatasetName('');
         setDatasetDescription('');
         setFile(null);
+        setDatasetJson(null); // Reset JSON data
         setSubmitted(true);
       } else {
         console.error('Failed to submit dataset');
@@ -125,8 +131,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files ? e.target.files[0] : null);
     if (e.target.files && e.target.files.length > 0) {
-      const columns = getColumns(e.target.files[0]);
-      console.log(columns);
+      getColumns(e.target.files[0]);
     }
   };
 
@@ -139,6 +144,7 @@ export default function NewDataSetForm({dataSets, setDataSets, closeModal}: {dat
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       setFile(files[0]);
+      getColumns(files[0]);
     }
   };
 
