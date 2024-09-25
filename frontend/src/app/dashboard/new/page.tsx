@@ -51,15 +51,15 @@ export default function NewProject() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('name', data.name)
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/new`, {
       method: 'POST',
       body: formData
     });
 
     if (res.status == 200) {
-      let responseData = await res.json()
+      const responseData = await res.json()
       router.push('/dashboard');
     }
   }

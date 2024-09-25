@@ -40,6 +40,7 @@ import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "@/app/components/SessionCheck";
 import { ProjectCardData } from "../types/ProjectCardData";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -79,10 +80,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function fetchProjects() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
 
       if (res.status == 200) {
-        let data: ProjectCardData[] = await res.json();
+        const data: ProjectCardData[] = await res.json();
 
         setProjects(data);
         setFilteredProjects(data);
@@ -97,20 +98,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function fetchInsights(projectId: string) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('project_id', projectId);
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights`, {
         method: 'POST',
         body: formData
       });
 
       if (res.status == 200) {
-        let data = await res.json()
+        const data = await res.json()
 
         setInsights(data);
         setFilteredInsights(data);
 
-        let smLayouts = data.map((data: DashboardCardData, index: number) => {
+        const smLayouts = data.map((data: DashboardCardData, index: number) => {
           return {
             i: data.key,
             x: 0,
@@ -122,7 +123,7 @@ export default function Dashboard() {
           }
         });
 
-        let mdLayouts = data.map((data: DashboardCardData, index: number) => {
+        const mdLayouts = data.map((data: DashboardCardData, index: number) => {
           return {
             i: data.key,
             x: index % 2,
@@ -134,7 +135,7 @@ export default function Dashboard() {
           }
         });
 
-        let lgLayouts = data.map((data: DashboardCardData, index: number) => {
+        const lgLayouts = data.map((data: DashboardCardData, index: number) => {
           return {
             i: data.key,
             x: index % 3,
@@ -183,9 +184,9 @@ export default function Dashboard() {
   }
 
   async function deleteProject(projectId: string) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('project_id', projectId);
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/delete`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/delete`, {
       method: 'POST',
       body: formData
     });
@@ -194,7 +195,7 @@ export default function Dashboard() {
       const updatedFilteredProjects = filteredProjects.filter(project => project.id != projectId);
       setProjects(projects => projects.filter(project => project.id != projectId));
       setFilteredProjects(updatedFilteredProjects);
-      
+
       if (updatedFilteredProjects.length > 0) {
         setSelectedProject(updatedFilteredProjects[0]);
       } else {
@@ -202,16 +203,16 @@ export default function Dashboard() {
         setFilteredInsights([]);
       }
 
-      let responseData = await res.json()
+      const responseData = await res.json()
     }
   }
 
   async function deleteInsight(projectId: string, insightId: string) {
-    let formData = new FormData();
+    const formData = new FormData();
     console.log(projectId)
     formData.append('insight_id', insightId);
     formData.append('project_id', projectId);
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
       method: 'POST',
       body: formData
     });
@@ -219,7 +220,7 @@ export default function Dashboard() {
     if (res.status == 200) {
       setInsights(insights => insights.filter(insight => insight.id != insightId));
       setFilteredInsights(filteredInsights => filteredInsights.filter(insight => insight.id != insightId))
-      let responseData = await res.json()
+      const responseData = await res.json()
     }
   }
 

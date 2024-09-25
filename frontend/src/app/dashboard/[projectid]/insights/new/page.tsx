@@ -69,6 +69,7 @@ import { useRouter } from "next/navigation";
 import GBBarChart from "@/app/components/Charts/BarChart";
 import { BarChartData, ChartType } from "@/app/types/ChartData";
 import { ChartConfig } from "@/components/ui/chart";
+import { toast } from "sonner";
 
 const chartConfig = {
   desktop: {
@@ -131,10 +132,10 @@ export default function NewDashboard({params}: { params: { projectid: string } }
 
   useEffect(() => {
     async function fetchProjects() {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasetnames`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasetnames`);
 
       if (res.status == 200) {
-        let data = await res.json();
+        const data = await res.json();
 
         setDatasets(data.data);
       }
@@ -157,7 +158,7 @@ export default function NewDashboard({params}: { params: { projectid: string } }
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    let formData = new FormData();
+    const formData = new FormData();
 
     formData.append('dataset_id', '7bf63769-f738-4bab-8d86-bfd18fa1341f')
     formData.append('chart_type', data.chartType);
@@ -175,13 +176,14 @@ export default function NewDashboard({params}: { params: { projectid: string } }
   }
 
   async function onConfirm() {
-    let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/new`, {
       method: 'POST',
       body: insightFormData
     });
 
     if (res.status == 200) {
-      let responseData = await res.json()
+      const responseData = await res.json()
+      toast("New insight has been created.")
       router.push(`/dashboard`)
     }
   }
