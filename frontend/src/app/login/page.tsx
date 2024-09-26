@@ -8,11 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { LucideChevronLeft } from "lucide-react";
+import { Eye, EyeOff, LucideChevronLeft } from "lucide-react";
 import { signIn } from "supertokens-web-js/recipe/emailpassword";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { doesSessionExist } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { EyeClosedIcon } from "@radix-ui/react-icons";
 
 const FormSchema = z.object({
   email: z
@@ -26,6 +27,7 @@ const FormSchema = z.object({
 
 export default function Login() {
   const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
@@ -133,13 +135,22 @@ export default function Login() {
               control={form.control}
               name="password"
               render={({field}) => (
-                <FormItem className="space-y-1">
+                <FormItem className="space-y-1 relative">
                   <FormLabel className="font-normal text-base text-gray-800">Password</FormLabel>
                   <Input
-                    type="password"
-                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
+                    type={showPassword ? "text" : "password"}
+                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none pr-10"
                     {...field}
                   />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute text-muted-foreground bottom-0 right-1 border-0 bg-transparent hover:bg-transparent"
+                  >
+                    {showPassword ? <Eye className="size-[20px]" /> : <EyeOff className="size-[20px]" />}
+                  </Button>
                   <FormMessage/>
                 </FormItem>
               )}
