@@ -19,7 +19,7 @@ If the query output is not relevant to the question or if there is not enough in
 
     Sample JSON format:
        {{
-"ërror": string,
+"error": string,
 "answer": string,
 
 }}""",
