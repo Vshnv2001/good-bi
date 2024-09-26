@@ -5,11 +5,11 @@ from .LLMManager import LLMManager
 
 class SQLAgent:
     def __init__(self, llm_manager=None, max_results: int = 25):
-        if llm_manager is not None:
-            self.llm_manager = llm_manager
+        # if llm_manager is not None:
+        #     self.llm_manager = llm_manager
 
-        else:
-            self.llm_manager = LLMManager()
+        # else:
+        self.llm_manager = LLMManager(model="gpt-4o")
         self.max_results = max_results
         self.generation_prompt = ChatPromptTemplate.from_messages(
             [
