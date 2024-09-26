@@ -509,7 +509,7 @@ async def interpret_results(
     user_id = auth_session.get_user_id()
     if user_id != agent.state["user_id"]:
         return JSONResponse(content={"error": "User ID does not match"})
-    if agent.state['results'] == '':
+    if agent.state["results"] == "" or agent.state["results"] == []:
         return JSONResponse(content={"error": "Execute a query first"})
     agent.core_interpretation_pipeline()
     if agent.state["error"] != "":
@@ -527,7 +527,8 @@ async def visualize_query(
     db: AsyncSession = Depends(get_db),
 ):
     user_id = auth_session.get_user_id()
-    if user_id != agent.state["user_id"]:
+    # Check to ensure same user
+    if user_id != agent.state["user_id"] or agent.state["question"] != query:
         agent.state = {
             "question": "",
             "user_id": user_id,
