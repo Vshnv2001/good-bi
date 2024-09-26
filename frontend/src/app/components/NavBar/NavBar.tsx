@@ -18,15 +18,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Session from "supertokens-web-js/recipe/session";
-import Script from "next/script";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const NavBar = () => {
   const currentPath = usePathname();
+  const [name, setName] = useState("");
 
   const signOut = async () => {
     await Session.signOut();
     window.location.href = "/"
   }
+
+  useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/data`)
+      .then((res) => {
+        setName(res.data.name)
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }, []);
 
   return (
     <header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 justify-between z-50">
@@ -87,11 +100,14 @@ const NavBar = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
               <CircleUser className="h-5 w-5"/>
+              <Avatar>
+                <AvatarFallback>{name.split(/\s+/).map((word) => word[0].toUpperCase()).slice(0,2).join("")}</AvatarFallback>
+              </Avatar>
               <span className="sr-only">Toggle user menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{name}</DropdownMenuLabel>
             <DropdownMenuSeparator/>
             <DropdownMenuItem className="cursor-pointer" asChild>
               <a href="mailto:cs3216-staff@googlegroups.com">
