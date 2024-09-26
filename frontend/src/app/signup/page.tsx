@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -158,22 +158,26 @@ export default function Signup() {
               control={form.control}
               name="password"
               render={({field}) => (
-                <FormItem className="space-y-1 relative">
+                <FormItem className="space-y-1">
                   <FormLabel className="font-normal text-base text-gray-800">Password</FormLabel>
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none pr-10"
-                    {...field}
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute text-muted-foreground bottom-0 right-1 border-0 bg-transparent hover:bg-transparent"
-                  >
-                    {showPassword ? <Eye className="size-[20px]" /> : <EyeOff className="size-[20px]" />}
-                  </Button>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none pr-10 relative"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute text-muted-foreground bottom-0 right-1 border-0 bg-transparent hover:bg-transparent z-50"
+                      >
+                        {showPassword ? <Eye className="size-[20px]" /> : <EyeOff className="size-[20px]" />}
+                      </Button>
+                    </div>
+                  </FormControl>
                   <FormMessage/>
                 </FormItem>
               )}
