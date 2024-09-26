@@ -60,7 +60,7 @@ const NavBar = () => {
       </Sheet>
       <Link
         href="/dashboard"
-        className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold md:flex"
+        className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold font-logo md:flex"
       >
         <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" width="32" height="32"/>
         GoodBI

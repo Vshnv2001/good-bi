@@ -9,7 +9,7 @@ export default function NotFound() {
       <div className="max-w-sm mx-auto">
         <Link
           href="/"
-          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto -mt-8"
+          className="flex items-center gap-2 text-4xl text-primary-500 font-logo font-extrabold w-fit mx-auto -mt-8"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-12 w-10" width="28" height="28"/>
           GoodBI

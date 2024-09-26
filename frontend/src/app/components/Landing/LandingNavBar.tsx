@@ -27,7 +27,7 @@ const LandingNavBar = () => {
       <nav className="max-w-7xl mx-auto flex justify-between items-center py-3 px-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold"
+          className="flex items-center gap-2 text-2xl text-primary-500 font-logo font-extrabold"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-8 w-6" width="28" height="28"/>
           GoodBI

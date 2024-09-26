@@ -98,7 +98,7 @@ export default function Login() {
       <div className="max-w-lg px-4 w-full place-self-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto -mt-8"
+          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold font-logo w-fit mx-auto -mt-8"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-12 w-10" width="28" height="28"/>
           GoodBI
