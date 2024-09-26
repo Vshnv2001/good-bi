@@ -159,7 +159,7 @@ export default function Signup() {
                   <FormLabel className="font-normal text-base text-gray-800">Password</FormLabel>
                   <Input
                     type={showPassword ? "text" : "password"}
-                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
+                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none pr-10"
                     {...field}
                   />
                   <Button
