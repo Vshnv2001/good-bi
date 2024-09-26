@@ -7,8 +7,15 @@ import '/node_modules/react-resizable/css/styles.css';
 import { BarChartData, ChartType, LineChartData, PieChartData } from '@/app/types/ChartData';
 import { DashboardCardData } from '@/app/types/DashboardCardData';
 import HeroCard from "@/app/components/Landing/HeroCard";
+import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
+import { DatasetCard } from "@/app/components/DatasetCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
+import * as React from "react";
+import { ColumnDef } from "@tanstack/react-table";
 
-const buttonShapeTabs = ['Dashboard']
+const buttonShapeTabs = ['Dashboard', 'Datasets']
 
 interface TabProps {
   text: string
@@ -182,6 +189,175 @@ const HeroDashboard = () => {
   )
 }
 
+const HeroDatasets = () => {
+  const data = [
+    {
+      "track_name": "Seven (feat. Latto) (Explicit Ver.)",
+      "artist(s)_name": "Latto, Jung Kook",
+      "artist_count": "2",
+      "released_year": "2023",
+      "released_month": "7",
+      "released_day": "14",
+      "in_spotify_playlists": "553",
+      "in_spotify_charts": "147",
+      "streams": "141381703",
+      "in_apple_playlists": "43",
+      "in_apple_charts": "263",
+      "in_deezer_playlists": "45",
+      "in_deezer_charts": "10",
+      "in_shazam_charts": "826",
+      "bpm": "125",
+      "key": "B",
+      "mode": "Major",
+      "danceability_%": "80",
+      "valence_%": "89",
+      "energy_%": "83",
+      "acousticness_%": "31",
+      "instrumentalness_%": "0",
+      "liveness_%": "8",
+      "speechiness_%": "4",
+      "cover_url": "Not Found",
+      "user_id": "f40659b4-4812-4967-8ee5-2c9bfb273d4c",
+      "file_id": "99aaf172-98b5-439c-bbe0-f33554662cdc",
+      "description": "333",
+      "created_at": "2024-09-25 12:56:14.257649"
+    },
+    {
+      "track_name": "LALA",
+      "artist(s)_name": "Myke Towers",
+      "artist_count": "1",
+      "released_year": "2023",
+      "released_month": "3",
+      "released_day": "23",
+      "in_spotify_playlists": "1474",
+      "in_spotify_charts": "48",
+      "streams": "133716286",
+      "in_apple_playlists": "48",
+      "in_apple_charts": "126",
+      "in_deezer_playlists": "58",
+      "in_deezer_charts": "14",
+      "in_shazam_charts": "382",
+      "bpm": "92",
+      "key": "C#",
+      "mode": "Major",
+      "danceability_%": "71",
+      "valence_%": "61",
+      "energy_%": "74",
+      "acousticness_%": "7",
+      "instrumentalness_%": "0",
+      "liveness_%": "10",
+      "speechiness_%": "4",
+      "cover_url": "https://i.scdn.co/image/ab67616d0000b2730656d5ce813ca3cc4b677e05",
+      "user_id": "f40659b4-4812-4967-8ee5-2c9bfb273d4c",
+      "file_id": "99aaf172-98b5-439c-bbe0-f33554662cdc",
+      "description": "333",
+      "created_at": "2024-09-25 12:56:14.257649"
+    },
+    {
+      "track_name": "vampire",
+      "artist(s)_name": "Olivia Rodrigo",
+      "artist_count": "1",
+      "released_year": "2023",
+      "released_month": "6",
+      "released_day": "30",
+      "in_spotify_playlists": "1397",
+      "in_spotify_charts": "113",
+      "streams": "140003974",
+      "in_apple_playlists": "94",
+      "in_apple_charts": "207",
+      "in_deezer_playlists": "91",
+      "in_deezer_charts": "14",
+      "in_shazam_charts": "949",
+      "bpm": "138",
+      "key": "F",
+      "mode": "Major",
+      "danceability_%": "51",
+      "valence_%": "32",
+      "energy_%": "53",
+      "acousticness_%": "17",
+      "instrumentalness_%": "0",
+      "liveness_%": "31",
+      "speechiness_%": "6",
+      "cover_url": "https://i.scdn.co/image/ab67616d0000b273e85259a1cae29a8d91f2093d",
+      "user_id": "f40659b4-4812-4967-8ee5-2c9bfb273d4c",
+      "file_id": "99aaf172-98b5-439c-bbe0-f33554662cdc",
+      "description": "333",
+      "created_at": "2024-09-25 12:56:14.257649"
+    }
+  ]
+
+  const headers = [
+    "track_name",
+    "artist(s)_name",
+    "artist_count",
+    "released_year",
+    "released_month",
+    "released_day",
+    "in_spotify_playlists",
+    "in_spotify_charts",
+    "streams",
+    "in_apple_playlists",
+    "in_apple_charts",
+    "in_deezer_playlists",
+    "in_deezer_charts",
+    "in_shazam_charts",
+    "bpm",
+    "key",
+    "mode",
+    "danceability_%",
+    "valence_%",
+    "energy_%",
+    "acousticness_%",
+    "instrumentalness_%",
+    "liveness_%",
+    "speechiness_%",
+    "cover_url",
+    "user_id",
+    "file_id",
+    "description",
+    "created_at"
+  ]
+
+  type ColumnType = Record<string, string>;
+  const columns: ColumnDef<ColumnType>[] = headers.map((key) => {
+    return {
+      accessorKey: key,
+      header: ({column}) => {
+        return (
+          <button
+            className="inline-flex items-center gap-1 hover:text-gray-800 transition-colors duration-100"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {key}
+            {!column.getIsSorted()
+              ? <ArrowUpDown className="shrink-0 size-4"/>
+              : column.getIsSorted() === 'asc'
+                ? <ArrowUp className="shrink-0 size-4"/>
+                : <ArrowDown className="shrink-0 size-4"/>
+            }
+          </button>
+        )
+      },
+      cell: ({row}) => (
+        <div>{row.getValue(key)}</div>
+      ),
+    }
+  })
+
+  return (
+    <div className="px-3 pt-2">
+      <Card className="mb-4">
+        <CardHeader className="flex flex-row justify-between items-center">
+          <CardTitle className="text-base">Spotify Top Tracks</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DatasetTable<ColumnType> columns={columns} data={data}/>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 const HeroTabs = () => {
   const [selected, setSelected] = useState<string>('Dashboard')
   return (
@@ -189,6 +365,7 @@ const HeroTabs = () => {
       <div className="bg-gray-50 h-svh p-2 rounded-2xl shadow-lg">
         <Tabs selected={selected} setSelected={(val) => setSelected(val)} />
         {selected === 'Dashboard' && <HeroDashboard />}
+        {selected === 'Datasets' && <HeroDatasets />}
       </div>
     </div>
   )

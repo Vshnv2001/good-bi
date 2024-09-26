@@ -17,6 +17,9 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Dict, Any, List
+import os
+from supertokens_python import get_all_cors_headers
+load_dotenv()
 from supertokens_python.recipe.emailpassword.interfaces import APIInterface, APIOptions, SignUpPostOkResult
 from supertokens_python.recipe.emailpassword.types import FormField
 from supertokens_python.recipe.emailpassword import InputFormField
@@ -55,13 +58,13 @@ def override_email_password_apis(original_implementation: APIInterface):
         return response
 
     original_implementation.sign_up_post = sign_up_post
-    return original_implementation
+    return original_implementationfrom dotenv import load_dotenv
 
 init(
     app_info=InputAppInfo(
         app_name="goodbi",
-        api_domain="http://localhost:3000",
-        website_domain="http://localhost:3000",
+        api_domain=os.getenv("NEXT_PUBLIC_API_URL"),
+        website_domain=os.getenv("NEXT_PUBLIC_FRONTEND_URL"),
         api_base_path="/api/auth",
         website_base_path="/auth"
     ),
@@ -89,11 +92,10 @@ app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app/"],  # Add your frontend URLs
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"]
+    allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
 
 @app.get("/")
