@@ -22,7 +22,10 @@ const FormSchema = z.object({
     .email({ message: "Invalid email." }),
   password: z
     .string()
-    .min(1, { message: "Please enter a password." }),
+    .min(1, { message: "Please enter a password." })
+    .refine((val) => val.length >= 6 && ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(val), {
+      message: "Password should be at least 6 characters long, and contain a number."
+    })
 })
 
 export default function Signup() {
