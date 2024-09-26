@@ -1,6 +1,6 @@
 'use client'
 
-import {Responsive, WidthProvider} from "react-grid-layout";
+import { Responsive, WidthProvider } from "react-grid-layout";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 
@@ -20,15 +20,16 @@ const CustomisableFeature = () => {
       </div>
       <ResponsiveGridLayout
         className="layout [&_.react-grid-placeholder]:rounded-lg"
-        layouts={{ lg: layout }}
-        cols={{ lg: 2, md: 2, sm: 2, xs: 2, xxs: 2 }}
+        layouts={{lg: layout}}
+        cols={{lg: 2, md: 2, sm: 2, xs: 2, xxs: 2}}
         rowHeight={50}
         width={500}
         maxRows={2}
       >
         {["a", "b", "c"].map((letter) => {
           return (
-            <div key={letter} className="rounded-lg bg-white flex items-center justify-center border border-gray-200/70">
+            <div key={letter}
+                 className="rounded-lg bg-white flex items-center justify-center border border-gray-200/70">
               Insight {letter.toUpperCase()}
             </div>
           )
