@@ -298,7 +298,7 @@ export default function Dashboard() {
               </form>
               <Button asChild={selectedProject != null} disabled={selectedProject == null}>
                 <Link href={`/dashboard/${selectedProject?.id}/insights/new`}>
-                  Create New
+                  Add new insight
                 </Link>
               </Button>
             </div>

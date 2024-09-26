@@ -1,11 +1,7 @@
 "use client";
 
-import Link from "next/link"
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
-
-import { EllipsisVertical } from "lucide-react";
 
 import {
     Card,
@@ -13,12 +9,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 import { DashboardCardData } from "@/app/types/DashboardCardData";
 import { BarChartData, ChartType, LineChartData, PieChartData } from "@/app/types/ChartData";
