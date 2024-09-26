@@ -196,6 +196,9 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             dataKeys: dataKeys
           } as BarChartData;
 
+          formData.set('chart_type', ChartType.Bar);
+          formData.append('visualization_data', JSON.stringify(barChartData));
+
           setVisualizationType(ChartType.Bar);
           setVisualizationData(barChartData);
         } else if (returnedVisualizationType == "line") {
@@ -235,6 +238,9 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             dataKeys: dataKeys
           } as LineChartData;
 
+          formData.set('chart_type', ChartType.Line);
+          formData.append('visualization_data', JSON.stringify(lineChartData));
+
           setVisualizationType(ChartType.Line);
           setVisualizationData(lineChartData);
         } else if (returnedVisualizationType == "pie") {
@@ -272,9 +278,15 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             dataKey: 'value'
           } as PieChartData;
 
+          formData.set('chart_type', ChartType.Pie);
+          formData.append('visualization_data', JSON.stringify(pieChartData));
+
           setVisualizationType(ChartType.Pie);
           setVisualizationData(pieChartData);
         }
+      } else {
+        setVisualizationType(null);
+        setVisualizationData(null);
       }
     }
   }
