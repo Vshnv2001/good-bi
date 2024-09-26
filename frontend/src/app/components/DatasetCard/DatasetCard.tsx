@@ -58,7 +58,7 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
             }
         };
         if (dataset.datasetJson) {
-            parseJSON()
+            void parseJSON()
         } else {
             console.error("Invalid data type");
         }
