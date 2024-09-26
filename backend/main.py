@@ -17,10 +17,8 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List
-from dotenv import load_dotenv
 import os
 from supertokens_python import get_all_cors_headers
-load_dotenv()
 
 init(
     app_info=InputAppInfo(
@@ -47,7 +45,7 @@ app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app/"],  # Add your frontend URLs
+    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app"],  # Add your frontend URLs
     allow_credentials=True,
     allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Content-Type"] + get_all_cors_headers(),
