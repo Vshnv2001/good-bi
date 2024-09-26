@@ -8,10 +8,8 @@ import { BarChartData, ChartType, LineChartData, PieChartData } from '@/app/type
 import { DashboardCardData } from '@/app/types/DashboardCardData';
 import HeroCard from "@/app/components/Landing/HeroCard";
 import { DatasetTable } from "@/app/components/DatasetCard/DatasetTable";
-import { DatasetCard } from "@/app/components/DatasetCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 

@@ -3,8 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import {cn} from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dropdown } from "react-day-picker";
 import {
   DropdownMenu,
   DropdownMenuContent,
