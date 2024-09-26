@@ -70,6 +70,8 @@ For numeric types, do not check for empty strings or "N/A".
 Ensure all table and column names are correctly spelled and exist in the schema.
 Ensure that the conditions in the WHERE clause are valid with respect to the column types.
 If there are any issues, fix them and provide the corrected SQL query.
+Ensure that the correct table, schema, and column names are used.
+If the table name is incorrect, provide the correct table name.
 If no issues are found, return the original query.
 
 Respond in JSON format with the following structure. Only respond with the JSON:
@@ -110,6 +112,10 @@ For example:
 
 {question}
 
+===Schema name: 
+
+{schema_name}
+
 ===Relevant tables and columns:
 
 {relevant_tables}
@@ -137,13 +143,16 @@ Validate the SQL query and provide the corrected query if necessary.""",
             return {"valid": False, "issues": "Not enough information", "query": ""}
         return {"valid": True, "issues": None, "query": response}
 
-    def _validate_sql_query(self, question: str, relevant_tables: list, sql_query: str):
+    def _validate_sql_query(
+        self, question: str, schema_name: str, relevant_tables: list, sql_query: str
+    ):
         output_parser = JsonOutputParser()
         response = self.llm_manager.invoke(
             self.validation_prompt,
             question=question,
             relevant_tables=relevant_tables,
             sql_query=sql_query,
+            schema_name=schema_name,
         )
         parsed_response = output_parser.parse(response)
         return parsed_response
@@ -152,7 +161,7 @@ Validate the SQL query and provide the corrected query if necessary.""",
         query = self._generate_sql_query(question, relevant_tables, schema_name)
         if query["valid"]:
             validated_query = self._validate_sql_query(
-                question, relevant_tables, query["query"]
+                question, schema_name, relevant_tables, query["query"]
             )
             validated_query["query"] = validated_query["corrected_query"].replace(
                 "`", '"'

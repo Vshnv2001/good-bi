@@ -73,3 +73,18 @@ class GoodBIAgent:
         interpreted_output = self.interpreter_agent.interpret_output(state=self.state)
         self.state["interpreted_answer"] = interpreted_output
         self.state["error"] = interpreted_output["error"]
+
+    def core_sql_pipeline(self, user_id: str, query: str, metadata):
+        self.state["question"] = query
+        self.state["user_id"] = user_id
+        self.get_relevant_columns(query, metadata)
+        self.make_query()
+        print(self.state["sql_issues"])
+        print(self.state["sql_query"])
+
+    def core_visualization_pipeline(self):
+        self.interpret_results()
+        self.format_data_for_visualization()
+
+    def core_interpretation_pipeline(self):
+        self.interpret_results()

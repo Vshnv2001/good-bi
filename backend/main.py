@@ -495,12 +495,9 @@ async def user_query(
     metadata = await db.execute(
         text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
     )
-    agent.state["user_id"] = user_id
-    agent.get_relevant_columns(query, metadata)
-    agent.make_query()
-    if not agent.state["sql_valid"]:
-        return JSONResponse(content=agent.state["sql_issues"])
-
+    # if not agent.state["sql_valid"]:
+    #     return JSONResponse(content=agent.state["sql_issues"])
+    agent.core_sql_pipeline(user_id, query, metadata)
     # Execute the query
     result = await db.execute(text(agent.state["sql_query"]))
     result = result.fetchall()
@@ -516,7 +513,9 @@ async def interpret_results(
     user_id = auth_session.get_user_id()
     if user_id != agent.state["user_id"]:
         return JSONResponse(content={"error": "User ID does not match"})
-    agent.interpret_results()
+    if agent.state["results"] == "" or agent.state["results"] == []:
+        return JSONResponse(content={"error": "Execute a query first"})
+    agent.core_interpretation_pipeline()
     if agent.state["error"] != "":
         return JSONResponse(content=agent.state["error"])
     try:
@@ -532,7 +531,8 @@ async def visualize_query(
     db: AsyncSession = Depends(get_db),
 ):
     user_id = auth_session.get_user_id()
-    if user_id != agent.state["user_id"]:
+    # Check to ensure same user
+    if user_id != agent.state["user_id"] or agent.state["question"] != query:
         agent.state = {
             "question": "",
             "user_id": user_id,
@@ -547,9 +547,13 @@ async def visualize_query(
             "visualization_reason": "",
             "formatted_data_for_visualization": {},
         }
-        await user_query(query, auth_session, db)
+        agent.core_sql_pipeline(user_id, query)
+        result = await db.execute(text(agent.state["sql_query"]))
+        result = result.fetchall()
+        result = [r._asdict() for r in result]
+        agent.state["results"] = result
 
-    agent.format_data_for_visualization()
+    agent.core_visualization_pipeline()
     return JSONResponse(
         content={
             "visualization": agent.state["visualization"],

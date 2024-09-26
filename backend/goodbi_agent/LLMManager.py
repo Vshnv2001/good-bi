@@ -7,7 +7,7 @@ dotenv.load_dotenv()
 
 
 class LLMManager:
-    def __init__(self, model="gpt-4o-mini"):
+    def __init__(self, model="gpt-4o"):
         api_key = os.getenv("OPENAI_API_KEY")
         self.llm = ChatOpenAI(model=model, temperature=0, api_key=api_key)
 
