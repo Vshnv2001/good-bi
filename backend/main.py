@@ -16,8 +16,46 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List
+from typing import Dict, Any, List
+from supertokens_python.recipe.emailpassword.interfaces import APIInterface, APIOptions, SignUpPostOkResult
+from supertokens_python.recipe.emailpassword.types import FormField
+from supertokens_python.recipe.emailpassword import InputFormField
 
+def override_email_password_apis(original_implementation: APIInterface):
+    original_sign_up_post = original_implementation.sign_up_post
+
+    async def sign_up_post(form_fields: List[FormField], tenant_id: str, api_options: APIOptions, user_context: Dict[str, Any]):
+        # First we call the original implementation of sign_up_post.
+        response = await original_sign_up_post(form_fields, tenant_id, api_options, user_context)
+
+        # Post sign up response, we check if it was successful
+        if isinstance(response, SignUpPostOkResult):
+            user_id = response.user.user_id
+            __ = response.user.email
+            
+            name = ""
+
+            for field in form_fields:
+                if field.id == "name":
+                    name = field.value
+            
+            async for db_session in get_db():
+                async with db_session as session:
+                    await session.execute(text(f'CREATE TABLE IF NOT EXISTS users (user_id UUID PRIMARY KEY, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
+                    await session.commit()
+
+                    await session.execute(text(f"""
+                        INSERT INTO users
+                        (user_id, name)
+                        VALUES (:user_id, :name)
+                    """), {'user_id': user_id, 'name': name})
+
+                    await session.commit()
+
+        return response
+
+    original_implementation.sign_up_post = sign_up_post
+    return original_implementation
 
 init(
     app_info=InputAppInfo(
@@ -34,7 +72,14 @@ init(
     framework='fastapi',
     recipe_list=[
         session.init(), # initializes session features
-        emailpassword.init()
+        emailpassword.init(
+            sign_up_feature=emailpassword.InputSignUpFeature(
+                form_fields=[InputFormField(id='name')]
+            ),
+            override=emailpassword.InputOverrideConfig(
+                apis=override_email_password_apis
+            )
+        )
     ],
     mode='asgi' # use wsgi if you are running using gunicorn
 )
@@ -696,6 +741,24 @@ async def update_insights_layout(
     await db.commit()
 
     return JSONResponse(content={"message": "Layout updated successfully"}) 
+
+@app.get("/api/user/data")
+async def get_datasets(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+    
+    result = await db.execute(text(f"""
+        SELECT * 
+        FROM users 
+        WHERE user_id = :user_id 
+    """), {'user_id': user_id})
+    user_data_list = result.fetchall()
+    user_data_list = [r._asdict() for r in user_data_list]
+
+    user_data = user_data_list[0]
+    
+    # Return JSON response with user data
+    return JSONResponse(content={'name': user_data['name']})
 
 @app.get("/health_check")
 def health_check():

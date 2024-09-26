@@ -55,6 +55,9 @@ export default function Signup() {
           }, {
               id: "password",
               value: data.password
+          }, {
+              id: "name",
+              value: data.name
           }]
       })
 
