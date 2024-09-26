@@ -77,8 +77,14 @@ class GoodBIAgent:
     def core_sql_pipeline(self, user_id: str, query: str, metadata):
         self.state["question"] = query
         self.state["user_id"] = user_id
-        self.get_relevant_columns(query, metadata)
+
+        metadata = [r._asdict() for r in metadata]
+
+        self.get_relevant_columns(query, metadata[0]['column_names'])
         self.make_query()
+
+        print(self.state)
+
         print(self.state["sql_issues"])
         print(self.state["sql_query"])
 

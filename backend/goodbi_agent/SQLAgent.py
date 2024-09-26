@@ -43,7 +43,7 @@ or
              
 For questions like "plot a distribution of the fares for men and women", count the frequency of each fare and plot it. The x axis should be the fare and the y axis should be the count of people who paid that fare.
 SKIP ALL ROWS WHERE ANY COLUMN IS NULL or "N/A" or "".
-Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
+Ensure that the conditions in the WHERE clause are valid such that the comparison is done with a string value for all columns.
 Just give the query string. Do not format it. Make sure to use the correct spellings of nouns as provided in the unique nouns list.
 Limit the number of results to {max_results}.
 """,
@@ -69,12 +69,15 @@ Generate an accurate SQL query to answer the user's question.""",
                     """You are an AI assistant that validates and fixes SQL queries. Your task is to:
 Check if the SQL query is valid. If there are any issues, fix them and provide the corrected SQL query.
 
+There is one exception when checking if the SQL query is valid.
+- Ensure that the conditions in the WHERE clause involving comparisons must be done with a string value for all columns regardless of the data type.
+
 Check for the following issues:
 - Single quotes not double quotes around empty strings, double quotes ONLY make delimited identifiers, and "" isn't a meaningful identifier.
 - For numeric types, do not check for empty strings or "N/A".
 - Ensure all table and column names are correctly spelled and exist in the schema.
-- Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
-- Ensure that the correct table, schema, and column names are used. The correct format for table name is "schema_name.table_name".
+- Ensure that the conditions in the WHERE clause are valid such that the comparison must be done with a string value for all columns.
+- Ensure that the correct table, schema, and column names are used. The correct format for table name is "schema_name"."table_name".
 - The schema name and table name should not be modified, if it is dash-separated, it should remain dash-separated. 
 - If the table name is incorrect, provide the correct table name.
 - For every column, if the column name is incorrect, provide the correct column name.
@@ -133,6 +136,7 @@ Validate the SQL query and provide the corrected query.""",
             relevant_tables=relevant_tables,
             max_results=self.max_results,
         )
+        print('Generate', response)
         if response == "NOT_ENOUGH_INFO":
             # Return response as a JSON object
             return {"valid": False, "issues": "Not enough information", "query": ""}
@@ -150,18 +154,23 @@ Validate the SQL query and provide the corrected query.""",
             sql_query=sql_query,
             schema_name=schema_name,
         )
+        print('Validation', response)
         parsed_response = output_parser.parse(response)
         return parsed_response
 
     def make_query(self, question: str, relevant_tables: list, schema_name: str = ""):
         query = self._generate_sql_query(question, relevant_tables, schema_name)
+
         if query["valid"]:
             validated_query = self._validate_sql_query(
                 question, schema_name, relevant_tables, query["query"]
             )
-            validated_query["query"] = validated_query["corrected_query"].replace(
-                "`", '"'
-            )
+            if not validated_query['valid']:
+                validated_query["query"] = validated_query["corrected_query"].replace(
+                    "`", '"'
+                )
+            else:
+                validated_query["query"] =  query["query"].replace("`", '"')
             return validated_query
         else:
             # Query is not valid

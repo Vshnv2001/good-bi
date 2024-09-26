@@ -547,7 +547,12 @@ async def visualize_query(
             "visualization_reason": "",
             "formatted_data_for_visualization": {},
         }
-        agent.core_sql_pipeline(user_id, query)
+
+        metadata = await db.execute(
+            text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+        )
+        
+        agent.core_sql_pipeline(user_id, query, metadata)
         result = await db.execute(text(agent.state["sql_query"]))
         result = result.fetchall()
         result = [r._asdict() for r in result]

@@ -20,6 +20,9 @@ If the question is not relevant to the database or if there is not enough inform
 The "noun_columns" field should contain only the columns that are relevant to the question and contain nouns or names, for example, 
 the column "Artist name" contains nouns relevant to the question "What are the top selling artists?", but the column "Artist ID" is not relevant because it 
 does not contain a noun. Do not include columns that contain numbers.
+
+Output only the JSON and nothing else.
+
     Sample JSON format:
        {{
 
