@@ -101,7 +101,7 @@ const NavBar = () => {
             <Button variant="secondary" size="icon" className="rounded-full">
               <CircleUser className="h-5 w-5"/>
               <Avatar>
-                <AvatarFallback>{name.split(/\s+/).map((word) => word[0].toUpperCase()).slice(0,2).join("")}</AvatarFallback>
+                <AvatarFallback>{name ? name.split(/\s+/).map((word) => word[0].toUpperCase()).slice(0,2).join("") : ''}</AvatarFallback>
               </Avatar>
               <span className="sr-only">Toggle user menu</span>
             </Button>
