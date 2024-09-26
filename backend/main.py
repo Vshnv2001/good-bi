@@ -594,85 +594,14 @@ async def get_insights(
 
     insights = result.fetchall()
     insights = [r._asdict() for r in insights]
-
-    chart_config = {
-        "desktop": {
-            "label": "Desktop",
-            "color": "hsl(var(--chart-1))",
-        },
-        "mobile": {
-            "label": "Mobile",
-            "color": "hsl(var(--chart-2))",
-        },
-    }
-
-    # dbData equivalent in Python
-    db_data = [
-        {"month": "January", "desktop": 186, "mobile": 80},
-        {"month": "February", "desktop": 305, "mobile": 200},
-        {"month": "March", "desktop": 237, "mobile": 120},
-        {"month": "April", "desktop": 73, "mobile": 190},
-        {"month": "May", "desktop": 209, "mobile": 130},
-        {"month": "June", "desktop": 214, "mobile": 140},
-    ]
-
-    # browserChartConfig equivalent in Python
-    browser_chart_config = {
-        "visitors": {
-            "label": "Visitors",
-        },
-        "chrome": {
-            "label": "Chrome",
-            "color": "hsl(var(--chart-1))",
-        },
-        "safari": {
-            "label": "Safari",
-            "color": "hsl(var(--chart-2))",
-        },
-        "firefox": {
-            "label": "Firefox",
-            "color": "hsl(var(--chart-3))",
-        },
-        "edge": {
-            "label": "Edge",
-            "color": "hsl(var(--chart-4))",
-        },
-        "other": {
-            "label": "Other",
-            "color": "hsl(var(--chart-5))",
-        },
-    }
-
-    # browserChartData equivalent in Python
-    browser_chart_data = [
-        {"browser": "chrome", "visitors": 275, "fill": "var(--color-chrome)"},
-        {"browser": "safari", "visitors": 200, "fill": "var(--color-safari)"},
-        {"browser": "firefox", "visitors": 187, "fill": "var(--color-firefox)"},
-        {"browser": "edge", "visitors": 173, "fill": "var(--color-edge)"},
-        {"browser": "other", "visitors": 90, "fill": "var(--color-other)"},
-    ]
-
+    
     def create_dashboard_card_object(insight):
         return {
             "id": str(insight["insight_id"]),
             "key": str(insight["insight_id"]),
             "title": insight["title"],
             "chartType": insight["chart_type"],
-            "chartData": (
-                {
-                    "chartConfig": browser_chart_config,
-                    "data": browser_chart_data,
-                    "nameKey": "browser",
-                    "dataKey": "visitors",
-                }
-                if insight["chart_type"] == "pie"
-                else {
-                    "chartConfig": chart_config,
-                    "data": db_data,
-                    "xAxisDataKey": "month",
-                    "dataKeys": ["desktop", "mobile"],
-                }
-            ),
+            "chartData": insight["visualization_data"],
             "projectId": str(insight["project_id"]),
         }
 
