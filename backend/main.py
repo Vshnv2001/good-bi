@@ -389,6 +389,8 @@ async def create_insight(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
+    insight_id = str(uuid.uuid4())
+
     await db.execute(
         text(
             f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
@@ -521,7 +523,7 @@ async def interpret_results(
         return JSONResponse(content=agent.state["interpreted_answer"])
 
 
-@app.post("/api/{user_id}/visualize")
+@app.post("/api/visualize")
 async def visualize_query(
     query: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),

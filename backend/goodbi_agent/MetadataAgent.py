@@ -90,7 +90,7 @@ class MetadataAgent:
         # Serialize the JSON data
         serialized_metadata = {
             "table_name": metadata["table_name"],
-            "column_names": metadata["column_names"],
+            "column_names": json.dumps(metadata["column_names"]),
             "column_descriptors": json.dumps(metadata["column_descriptors"]),
             "column_types": json.dumps(metadata["column_types"]),
             "data_sample": json.dumps(metadata["data_sample"]),
