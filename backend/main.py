@@ -58,7 +58,7 @@ def override_email_password_apis(original_implementation: APIInterface):
         return response
 
     original_implementation.sign_up_post = sign_up_post
-    return original_implementationfrom dotenv import load_dotenv
+    return original_implementation
 
 init(
     app_info=InputAppInfo(
