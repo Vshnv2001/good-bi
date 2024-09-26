@@ -92,7 +92,6 @@ const config: Config = {
       // },
       fontFamily: {
         sans: ['var(--font-inter)'],
-        mono: ['var(--font-geist-mono)'],
         logo: ['var(--font-logo)'],
       },
       height: {
