@@ -1,18 +1,18 @@
 "use client"
 
 import Link from "next/link";
-import {Form, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {LucideChevronLeft} from "lucide-react";
+import { LucideChevronLeft } from "lucide-react";
 import { signUp } from "supertokens-web-js/recipe/emailpassword";
-import {useRouter} from "next/navigation";
-import {useEffect} from "react";
-import {doesSessionExist} from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { doesSessionExist } from "@/lib/utils";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Please enter a name." }),
@@ -108,7 +108,7 @@ export default function Signup() {
       <div className="max-w-lg px-4 w-full place-self-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto"
+          className="flex items-center gap-2 text-4xl text-primary-500 font-logo font-extrabold w-fit mx-auto"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-12 w-10" width="28" height="28"/>
           GoodBI

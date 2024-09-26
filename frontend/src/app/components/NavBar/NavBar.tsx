@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from "next/link"
 import Image from 'next/image';
 
-import { Menu, CircleUser, Share, LogOut, HelpCircle, Facebook, FacebookIcon, LinkedinIcon } from "lucide-react";
+import { Menu, CircleUser, LogOut, HelpCircle, FacebookIcon, LinkedinIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -73,7 +73,7 @@ const NavBar = () => {
       </Sheet>
       <Link
         href="/dashboard"
-        className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold md:flex"
+        className="flex items-center gap-2 text-2xl text-primary-500 font-extrabold font-logo md:flex"
       >
         <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" width="32" height="32"/>
         GoodBI
@@ -136,7 +136,6 @@ const NavBar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
     </header>
   );
 };
