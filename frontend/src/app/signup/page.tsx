@@ -1,18 +1,18 @@
 "use client"
 
 import Link from "next/link";
-import {Form, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {LucideChevronLeft} from "lucide-react";
+import { LucideChevronLeft } from "lucide-react";
 import { signUp } from "supertokens-web-js/recipe/emailpassword";
-import {useRouter} from "next/navigation";
-import {useEffect} from "react";
-import {doesSessionExist} from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { doesSessionExist } from "@/lib/utils";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Please enter a name." }),

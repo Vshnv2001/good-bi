@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from "next/link"
 import Image from 'next/image';
 
-import { Menu, CircleUser, Share, LogOut, HelpCircle, Facebook, FacebookIcon, LinkedinIcon } from "lucide-react";
+import { Menu, CircleUser, LogOut, HelpCircle, FacebookIcon, LinkedinIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -18,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Session from "supertokens-web-js/recipe/session";
-import Script from "next/script";
 
 const NavBar = () => {
   const currentPath = usePathname();
@@ -120,7 +119,6 @@ const NavBar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
     </header>
   );
 };
