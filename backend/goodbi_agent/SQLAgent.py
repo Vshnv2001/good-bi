@@ -21,17 +21,20 @@ If there is not enough information to write a SQL query, respond with "NOT_ENOUG
 A schema name will be provided as well, which should be used to identify the relevant tables and columns.
 Here are some examples:
 
-1. What is the top selling product?
-Answer: SELECT product_name, SUM(quantity) as total_quantity FROM sales WHERE product_name IS NOT NULL AND quantity IS NOT NULL AND product_name != "" AND quantity != "" AND product_name != "N/A" AND quantity != "N/A" GROUP BY product_name ORDER BY total_quantity DESC LIMIT 1
+1. What is the top selling product? schema_name: 59320165-aa75-409c-9c92-5a5ae59ea28, table_name: sales
+Answer: SELECT product_name, SUM(quantity) as total_quantity FROM "59320165-aa75-409c-9c92-5a5ae59ea28"."sales" WHERE product_name IS NOT NULL AND quantity IS NOT NULL AND product_name != '' AND quantity != '' AND product_name != 'N/A' AND quantity != 'N/A' GROUP BY product_name ORDER BY total_quantity DESC LIMIT 1
 
-2. What is the total revenue for each product?
-Answer: SELECT product_name, SUM(quantity * price) as total_revenue FROM sales WHERE product_name IS NOT NULL AND quantity IS NOT NULL AND price IS NOT NULL AND product_name != "" AND quantity != "" AND price != "" AND product_name != "N/A" AND quantity != "N/A" AND price != "N/A" GROUP BY product_name ORDER BY total_revenue DESC
+2. What is the total revenue for each product? schema_name: 2415r3qd-31edasc34-31rf3q-9464yh9, table_name: sales
+Answer: SELECT product_name, SUM(quantity * price) as total_revenue FROM "2415r3qd-31edasc34-31rf3q-9464yh9"."sales" WHERE product_name IS NOT NULL AND quantity IS NOT NULL AND price IS NOT NULL AND product_name != '' AND quantity != '' AND price != '' AND product_name != 'N/A' AND quantity != 'N/A' AND price != 'N/A' GROUP BY product_name ORDER BY total_revenue DESC
 
-3. What is the market share of each product?
-Answer: SELECT product_name, SUM(quantity) * 100.0 / (SELECT SUM(quantity) FROM sales) as market_share FROM sales WHERE product_name IS NOT NULL AND quantity IS NOT NULL AND product_name != "" AND quantity != "" AND product_name != "N/A" AND quantity != "N/A" GROUP BY product_name ORDER BY market_share DESC
+3. What is the market share of each product? schema_name: g34tfv42t-24erfvty35-898756yg, table_name: sales
+Answer: SELECT product_name, SUM(quantity) * 100.0 / (SELECT SUM(quantity) FROM "g34tfv42t-24erfvty35-898756yg"."sales") as market_share FROM "g34tfv42t-24erfvty35-898756yg"."sales" WHERE product_name IS NOT NULL AND quantity IS NOT NULL AND product_name != '' AND quantity != '' AND product_name != 'N/A' AND quantity != 'N/A' GROUP BY product_name ORDER BY market_share DESC
 
-4. Plot the distribution of income over time
-Answer: SELECT income, COUNT(*) as count FROM users WHERE income IS NOT NULL AND income != "" AND income != "N/A" GROUP BY income
+4. Give me a query of the tracks with the higher number of streams with the released year of 2023 from the Spotify dataset. schema_name: 32r32g533-14rf35532r-t6u56hrt, table_name: spotify
+Answer: SELECT track_name, streams FROM "32r32g533-14rf35532r-t6u56hrt"."Spotify" WHERE released_year = '2023' AND track_name IS NOT NULL AND streams IS NOT NULL AND track_name != '' AND track_name != 'N/A' ORDER BY streams DESC LIMIT 25
+
+5. Plot the distribution of income over time. schema_name: 32r32g533-14rf35532r-t6u56hrt, table_name: users
+Answer: SELECT income, COUNT(*) as count FROM "32r32g533-14rf35532r-t6u56hrt"."users" WHERE income IS NOT NULL AND income != '' AND income != 'N/A' GROUP BY income
 
 THE RESULTS SHOULD ONLY BE IN THE FOLLOWING FORMAT, SO MAKE SURE TO ONLY GIVE TWO OR THREE COLUMNS:
 [[x, y]]
@@ -40,7 +43,7 @@ or
              
 For questions like "plot a distribution of the fares for men and women", count the frequency of each fare and plot it. The x axis should be the fare and the y axis should be the count of people who paid that fare.
 SKIP ALL ROWS WHERE ANY COLUMN IS NULL or "N/A" or "".
-Ensure that the conditions in the WHERE clause are valid with respect to the column types.
+Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
 Just give the query string. Do not format it. Make sure to use the correct spellings of nouns as provided in the unique nouns list.
 Limit the number of results to {max_results}.
 """,
@@ -68,7 +71,7 @@ Check if the SQL query is valid.
 Single quotes not double quotes around empty strings, double quotes ONLY make delimited identifiers, and "" isn't a meaningful identifier.
 For numeric types, do not check for empty strings or "N/A".
 Ensure all table and column names are correctly spelled and exist in the schema.
-Ensure that the conditions in the WHERE clause are valid with respect to the column types.
+Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
 If there are any issues, fix them and provide the corrected SQL query.
 Ensure that the correct table, schema, and column names are used.
 The correct format for table name is "schema_name.table_name".
