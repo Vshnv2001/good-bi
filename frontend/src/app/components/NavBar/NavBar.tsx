@@ -21,6 +21,7 @@ import Session from "supertokens-web-js/recipe/session";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 const NavBar = () => {
   const currentPath = usePathname();
@@ -36,8 +37,8 @@ const NavBar = () => {
       .then((res) => {
         setName(res.data.name)
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
+        toast.error("Unable to fetch name.");
       })
   }, []);
 
