@@ -19,10 +19,12 @@ from pydantic import BaseModel
 from typing import Dict, Any, List
 import os
 from supertokens_python import get_all_cors_headers
-load_dotenv()
+from dotenv import load_dotenv
 from supertokens_python.recipe.emailpassword.interfaces import APIInterface, APIOptions, SignUpPostOkResult
 from supertokens_python.recipe.emailpassword.types import FormField
 from supertokens_python.recipe.emailpassword import InputFormField
+
+load_dotenv()
 
 def override_email_password_apis(original_implementation: APIInterface):
     original_sign_up_post = original_implementation.sign_up_post
