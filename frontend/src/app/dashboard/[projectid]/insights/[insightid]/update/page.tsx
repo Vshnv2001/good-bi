@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -30,6 +29,7 @@ import '/node_modules/react-resizable/css/styles.css';
 import SessionCheck from "@/app/components/SessionCheck";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   title: z.string({
@@ -76,6 +76,7 @@ export default function UpdateInsight({ params }: { params: { projectid: string,
 
     if (res.status == 200) {
       const responseData = await res.json()
+      toast("Insight has been updated.")
       router.push(`/dashboard`);
     }
   }

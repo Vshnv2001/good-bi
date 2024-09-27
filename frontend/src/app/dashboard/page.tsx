@@ -2,13 +2,12 @@
 
 import Link from "next/link"
 
-import { Check, ChevronDown, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -29,39 +28,18 @@ import { DashboardCard } from "@/app/components/DashboardCard";
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { DashboardCardData } from "@/app/types/DashboardCardData";
 
 import { useState, useEffect, useCallback } from "react";
 
-import { debounce } from "lodash";
+import { debounce, filter } from "lodash";
 
-import { doesSessionExist } from "supertokens-web-js/recipe/session";
 import SessionCheck from "@/app/components/SessionCheck";
 import { ProjectCardData } from "../types/ProjectCardData";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-
 const ResponsiveGridLayout = WidthProvider(Responsive);
-
-const layouts = {
-  sm: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
-  ],
-  md: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
-  ],
-  lg: [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, minH: 1, minW: 1 },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, minH: 1, minW: 1 }
-  ]
-};
 
 export default function Dashboard() {
   const router = useRouter();
@@ -70,13 +48,15 @@ export default function Dashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [breakpoint, setBreakpoint] = useState<string | null>("");
+
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ProjectCardData[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectCardData | null>(null);
 
   const [insights, setInsights] = useState<DashboardCardData[]>([]);
   const [filteredInsights, setFilteredInsights] = useState<DashboardCardData[]>([]);
-  const [layouts, setLayouts] = useState({ sm: [], md: [], lg: [] });
+  const [layouts, setLayouts] = useState<Layouts>({ sm: [], md: [], lg: [] });
 
   useEffect(() => {
     async function fetchProjects() {
@@ -110,44 +90,6 @@ export default function Dashboard() {
 
         setInsights(data);
         setFilteredInsights(data);
-
-        const smLayouts = data.map((data: DashboardCardData, index: number) => {
-          return {
-            i: data.key,
-            x: 0,
-            y: index,
-            w: 1,
-            h: 1,
-            minH: 1,
-            minW: 1
-          }
-        });
-
-        const mdLayouts = data.map((data: DashboardCardData, index: number) => {
-          return {
-            i: data.key,
-            x: index % 2,
-            y: Math.floor(index / 2),
-            w: 1,
-            h: 1,
-            minH: 1,
-            minW: 1
-          }
-        });
-
-        const lgLayouts = data.map((data: DashboardCardData, index: number) => {
-          return {
-            i: data.key,
-            x: index % 3,
-            y: Math.floor(index / 3),
-            w: 1,
-            h: 1,
-            minH: 1,
-            minW: 1
-          }
-        });
-
-        setLayouts({ sm: smLayouts, md: mdLayouts, lg: lgLayouts });
       }
     }
 
@@ -157,9 +99,27 @@ export default function Dashboard() {
   }, [selectedProject]);
 
   useEffect(() => {
+    async function fetchLayouts(projectId: string) {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${projectId}`, {
+        method: 'GET'
+      });
+
+      if (res.status == 200) {
+        const data = await res.json()
+        setLayouts(data);
+      }
+    }
+
+    if (selectedProject) {
+      fetchLayouts(selectedProject.id)
+    }
+  }, [filteredInsights]);
+
+  useEffect(() => {
     setFilteredProjects(projects.filter((project) =>
       project.name.toLowerCase().includes(searchQuery.toLowerCase())
     ));
+
   }, [searchQuery]);
 
   const debouncedSearch = useCallback(
@@ -178,9 +138,38 @@ export default function Dashboard() {
     debouncedSearch(query);
   };
 
-  const handleGridLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
-    console.log(currentLayout);
-    console.log(allLayouts);
+  const handleGridLayoutChange = async (currentLayout: Layout[], allLayouts: Layouts) => {
+    setLayouts(allLayouts);
+
+    if (selectedProject) {
+      if (allLayouts.sm && allLayouts.md && allLayouts.lg && allLayouts.sm.length == allLayouts.md.length && allLayouts.sm.length == allLayouts.lg.length) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${selectedProject.id}`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(allLayouts)
+        });
+
+        if (res.status == 200) {
+          const data = await res.json();
+        }
+      } else if (breakpoint) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/layouts/${breakpoint}/${selectedProject.id}`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(currentLayout)
+        });
+
+        if (res.status == 200) {
+          const data = await res.json();
+        }
+      }
+    }
   }
 
   async function deleteProject(projectId: string) {
@@ -204,12 +193,13 @@ export default function Dashboard() {
       }
 
       const responseData = await res.json()
+
+      toast("Project has been deleted.")
     }
   }
 
   async function deleteInsight(projectId: string, insightId: string) {
     const formData = new FormData();
-    console.log(projectId)
     formData.append('insight_id', insightId);
     formData.append('project_id', projectId);
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/delete`, {
@@ -221,6 +211,8 @@ export default function Dashboard() {
       setInsights(insights => insights.filter(insight => insight.id != insightId));
       setFilteredInsights(filteredInsights => filteredInsights.filter(insight => insight.id != insightId))
       const responseData = await res.json()
+
+      toast("Insight has been deleted.")
     }
   }
 
@@ -270,21 +262,21 @@ export default function Dashboard() {
                         router.push(`/dashboard/${selectedProject?.id}/update`);
                         setOpen(false);
                       }}>
-                        <Pencil className="size-4 mr-1.5"/>
+                        <Pencil className="size-4 mr-1.5" />
                         Edit project
                       </CommandItem>}
                       {selectedProject && <CommandItem className="text-destructive" onSelect={() => {
                         deleteProject(selectedProject!.id);
                         setOpen(false);
                       }}>
-                        <Trash2 className="size-4 mr-1.5"/>
+                        <Trash2 className="size-4 mr-1.5" />
                         Delete project
                       </CommandItem>}
                       <CommandItem onSelect={() => {
                         router.push('/dashboard/new');
                         setOpen(false);
                       }}>
-                        <Plus className="size-4 mr-1.5"/>
+                        <Plus className="size-4 mr-1.5" />
                         New project
                       </CommandItem>
                     </CommandGroup>
@@ -306,7 +298,7 @@ export default function Dashboard() {
               </form>
               <Button asChild={selectedProject != null} disabled={selectedProject == null}>
                 <Link href={`/dashboard/${selectedProject?.id}/insights/new`}>
-                  Create New
+                  Add new insight
                 </Link>
               </Button>
             </div>
@@ -322,7 +314,7 @@ export default function Dashboard() {
               rowHeight={275}
               compactType="horizontal"
               onLayoutChange={handleGridLayoutChange}
-              draggableCancel=".react-resizable-handle-custom"
+              onBreakpointChange={setBreakpoint}
             >
               {
                 filteredInsights.map((data) => {
