@@ -145,7 +145,7 @@ async def create_dataset(
     await metadata_agent.save_metadata(metadata, db, user_id)
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" {col_type}' for col, col_type in zip(column_names, column_types)] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    columns = ', '.join([f'"{col}" {col_type}' for col, col_type in zip(column_names, column_types)] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['gb_description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
     
     # Create schema if it doesn't exist for storing the table/datas
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
