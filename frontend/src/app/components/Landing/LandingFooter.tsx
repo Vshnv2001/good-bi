@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { FacebookIcon, LinkedinIcon } from "lucide-react";
+import RegenerateModal from "@/app/components/RegenerateModal";
 
 const LandingFooter = ({className}: { className?: string }) => {
   return (
@@ -48,6 +49,7 @@ const LandingFooter = ({className}: { className?: string }) => {
             &copy; {new Date().getFullYear()} GoodBI.
           </span>
           <div className="flex gap-3 text-right">
+            <RegenerateModal />
             <DropdownMenu>
               <DropdownMenuTrigger>Share</DropdownMenuTrigger>
               <DropdownMenuContent align="start">
