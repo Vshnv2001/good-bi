@@ -66,22 +66,6 @@ import GBLineChart from "@/app/components/Charts/LineChart";
 import GBPieChart from "@/app/components/Charts/PieChart";
 
 const FormSchema = z.object({
-  dataset: z
-    .string({
-      required_error: "Please select a dataset.",
-    }).min(1, "Please select a dataset."),
-  chartType: z.string({
-    required_error: "Please select a chart type.",
-  }).min(1, "Please select a chart type."),
-  dateRange: z.object(
-    {
-      start: z.date(),
-      end: z.date(),
-    },
-    {
-      required_error: "Please select a date range",
-    }
-  ),
   title: z.string({
     required_error: "Please enter a title.",
   }).min(1, "Please enter a title."),
@@ -115,12 +99,6 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-      dataset: "",
-      chartType: ChartType.Bar,
-      dateRange: {
-        start: new Date(),
-        end: new Date(),
-      },
       title: "",
       kpiDescription: ""
     },
@@ -130,13 +108,6 @@ export default function NewDashboard({ params }: { params: { projectid: string }
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const formData = new FormData();
 
-    formData.append('dataset_id', data.dataset)
-    formData.append('chart_type', data.chartType);
-    formData.append('start_date', format(data.dateRange.start, "MM-dd-yyyy"))
-    formData.append('end_date', format(data.dateRange.end, "MM-dd-yyyy"))
-    // Replace y_range with actual values
-    formData.append('y_range_start', '0')
-    formData.append('y_range_end', '999')
     formData.append('title', data.title)
     formData.append('kpi_description', data.kpiDescription)
     formData.append('project_id', params.projectid)
@@ -154,14 +125,16 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
     if (res.status == 200) {
       const responseData = await res.json();
+
+      if ("error" in responseData) {
+        toast(responseData["error"]);
+        return;
+      }
+
       const returnedVisualizationType = responseData["visualization"];
 
       if (returnedVisualizationType != "none") {
-        let formattedVisualizationData = responseData['formatted_data_for_visualization'];
-
-        if ('formatted_data_for_visualization' in formattedVisualizationData) {
-          formattedVisualizationData = formattedVisualizationData['formatted_data_for_visualization']
-        }
+        const formattedVisualizationData = responseData['formatted_data_for_visualization']['formatted_data_for_visualization'];
 
         if (returnedVisualizationType == "bar") {
           const formattedBarData = formattedVisualizationData as {
@@ -169,10 +142,12 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             values: { data: number[], label: string }[]
           }
 
+          console.log(formattedBarData);
+
           const chartConfig: any = {} satisfies ChartConfig;
 
-          const chartData: any = []
-          const dataKeys: string[] = []
+          let chartData: any = []
+          let dataKeys: string[] = []
 
           formattedBarData.values.map((value, index) => {
             dataKeys.push(value['label'])
@@ -183,7 +158,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           });
 
           formattedBarData.labels.map((label, index) => {
-            const currentItem: any = {}
+            let currentItem: any = {}
             currentItem['xAxisDataKey'] = label;
 
             formattedBarData.values.map((value) => {
@@ -200,7 +175,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             dataKeys: dataKeys
           } as BarChartData;
 
-          formData.set('chart_type', ChartType.Bar);
+          formData.append('chart_type', ChartType.Bar);
           formData.append('visualization_data', JSON.stringify(barChartData));
 
           setVisualizationType(ChartType.Bar);
@@ -213,8 +188,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           const chartConfig: any = {} satisfies ChartConfig;
 
-          const chartData: any = []
-          const dataKeys: string[] = []
+          let chartData: any = []
+          let dataKeys: string[] = []
 
           formattedLineData.yValues.map((value, index) => {
             dataKeys.push(value['label'])
@@ -225,7 +200,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           });
 
           formattedLineData.xValues.map((label, index) => {
-            const currentItem: any = {}
+            let currentItem: any = {}
             currentItem['xAxisDataKey'] = label;
 
             formattedLineData.yValues.map((value) => {
@@ -242,29 +217,21 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             dataKeys: dataKeys
           } as LineChartData;
 
-          formData.set('chart_type', ChartType.Line);
+          formData.append('chart_type', ChartType.Line);
           formData.append('visualization_data', JSON.stringify(lineChartData));
 
           setVisualizationType(ChartType.Line);
           setVisualizationData(lineChartData);
         } else if (returnedVisualizationType == "pie") {
-          let formattedPieData;
+          const formattedPieData = formattedVisualizationData as{
+            id: number
+            value: number
+            label: string
+          }[]
 
-          if ('data' in formattedVisualizationData) {
-            formattedPieData = formattedVisualizationData.data as {
-              id: number
-              value: number
-              label: string
-            }[]
-          } else {
-            formattedPieData = formattedVisualizationData as {
-              id: number
-              value: number
-              label: string
-            }[]
-          }
+          console.log(formattedPieData)
 
-          const chartData: any = []
+          let chartData: any = []
 
           const pieChartConfig: any = {
             sliceLabel: {
@@ -292,8 +259,172 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             dataKey: 'value'
           } as PieChartData;
 
-          formData.set('chart_type', ChartType.Pie);
+          formData.append('chart_type', ChartType.Pie);
           formData.append('visualization_data', JSON.stringify(pieChartData));
+
+          setVisualizationType(ChartType.Pie);
+          setVisualizationData(pieChartData);
+        }
+      } else {
+        setVisualizationType(null);
+        setVisualizationData(null);
+      }
+    }
+  }
+
+  async function regenerateInsight() {
+    const visualizeFormData = new FormData();
+    visualizeFormData.append('query', '');
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/visualize`, {
+      method: 'POST',
+      body: visualizeFormData
+    });
+
+    if (res.status == 200) {
+      const responseData = await res.json();
+      const returnedVisualizationType = responseData["visualization"];
+
+      if (returnedVisualizationType != "none") {
+        const formattedVisualizationData = responseData['formatted_data_for_visualization']['formatted_data_for_visualization'];
+
+        if (returnedVisualizationType == "bar") {
+          const formattedBarData = formattedVisualizationData as {
+            labels: string[],
+            values: { data: number[], label: string }[]
+          }
+
+          console.log(formattedBarData);
+
+          const chartConfig: any = {} satisfies ChartConfig;
+
+          let chartData: any = []
+          let dataKeys: string[] = []
+
+          formattedBarData.values.map((value, index) => {
+            dataKeys.push(value['label'])
+            chartConfig[value['label']] = {
+              label: value['label'],
+              color: `hsl(var(--chart-${index + 1}))`
+            }
+          });
+
+          formattedBarData.labels.map((label, index) => {
+            let currentItem: any = {}
+            currentItem['xAxisDataKey'] = label;
+
+            formattedBarData.values.map((value) => {
+              currentItem[value['label']] = value['data'][index];
+            });
+
+            chartData.push(currentItem)
+          })
+
+          const barChartData = {
+            chartConfig: chartConfig,
+            xAxisDataKey: 'xAxisDataKey',
+            data: chartData,
+            dataKeys: dataKeys
+          } as BarChartData;
+
+          if (insightFormData) {
+            insightFormData.set('chart_type', ChartType.Bar);
+            insightFormData.set('visualization_data', JSON.stringify(barChartData));
+
+            setInsightFormData(insightFormData);
+          }
+
+          setVisualizationType(ChartType.Bar);
+          setVisualizationData(barChartData);
+        } else if (returnedVisualizationType == "line") {
+          const formattedLineData = formattedVisualizationData as {
+            xValues: number[] | string[]
+            yValues: { data: number[]; label: string }[]
+          }
+
+          const chartConfig: any = {} satisfies ChartConfig;
+
+          let chartData: any = []
+          let dataKeys: string[] = []
+
+          formattedLineData.yValues.map((value, index) => {
+            dataKeys.push(value['label'])
+            chartConfig[value['label']] = {
+              label: value['label'],
+              color: `hsl(var(--chart-${index + 1}))`
+            }
+          });
+
+          formattedLineData.xValues.map((label, index) => {
+            let currentItem: any = {}
+            currentItem['xAxisDataKey'] = label;
+
+            formattedLineData.yValues.map((value) => {
+              currentItem[value['label']] = value['data'][index];
+            });
+
+            chartData.push(currentItem)
+          })
+
+          const lineChartData = {
+            chartConfig: chartConfig,
+            xAxisDataKey: 'xAxisDataKey',
+            data: chartData,
+            dataKeys: dataKeys
+          } as LineChartData;
+
+          if (insightFormData) {
+            insightFormData.append('chart_type', ChartType.Line);
+            insightFormData.append('visualization_data', JSON.stringify(lineChartData));
+
+            setInsightFormData(insightFormData);
+          }
+
+          setVisualizationType(ChartType.Line);
+          setVisualizationData(lineChartData);
+        } else if (returnedVisualizationType == "pie") {
+          const formattedPieData = formattedVisualizationData as{
+            id: number
+            value: number
+            label: string
+          }[]
+
+          console.log(formattedPieData)
+
+          let chartData: any = []
+
+          const pieChartConfig: any = {
+            sliceLabel: {
+              label: "sliceLabel",
+            },
+          } satisfies ChartConfig
+
+          formattedPieData.map((value, index) => {
+            chartData.push({
+              'sliceLabel': value.label,
+              'value': value.value,
+              'fill': `hsl(var(--chart-${index + 1}))`
+            })
+
+            pieChartConfig[value['label']] = {
+              label: value['label'],
+              color: `hsl(var(--chart-${index + 1}))`
+            }
+          });
+
+          const pieChartData = {
+            chartConfig: pieChartConfig,
+            data: chartData,
+            nameKey: 'sliceLabel',
+            dataKey: 'value'
+          } as PieChartData;
+
+          if (insightFormData) {
+            insightFormData.append('chart_type', ChartType.Pie);
+            insightFormData.append('visualization_data', JSON.stringify(pieChartData));
+
+            setInsightFormData(insightFormData);
+          }
 
           setVisualizationType(ChartType.Pie);
           setVisualizationData(pieChartData);
@@ -366,7 +497,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                 </CardContent>
               </Card>
             </div>
-            <div className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 items-center justify-center">
+            <div className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 items-center justify-center" onClick={regenerateInsight}>
               <RotateCw className="h-4 w-4" />
               <span>Regenerate</span>
             </div>
@@ -375,110 +506,11 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                 Confirm
               </Button>
             </div>
-          </div> : <div className="px-3 pt-7 flex flex-col w-full max-w-sm items-center align-center flex-grow min-h-0">
+          </div> : <div className="px-3 pt-7 w-full max-w-sm items-center align-center min-h-0">
             <h1 className="pb-5 text-center text-3xl font-normal text-gray-800">Create a new insight</h1>
             <div className="sm:px-4 pt-5 pb-3 flex flex-grow w-full">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 w-full">
-                  <FormField
-                    control={form.control}
-                    name="dataset"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <FormLabel>Dataset</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger
-                              className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                              <SelectValue className="" placeholder="Select" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {datasets.map((dataset) => {
-                              return (
-                                <SelectItem key={dataset} value={dataset}>{dataset}</SelectItem>
-                              )
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="chartType"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <FormLabel>Type of chart</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger
-                              className="px-3 py-4 rounded-xl text-base data-[placeholder]:text-gray-500 border border-gray-200/70 bg-white shadow-none">
-                              <SelectValue className="" placeholder="Select chart type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="bar">Bar</SelectItem>
-                            <SelectItem value="line">Line</SelectItem>
-                            <SelectItem value="pie">Pie</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dateRange"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <FormLabel>Date range</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild
-                            className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none">
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "w-full pl-3 justify-start text-left font-normal",
-                                  !field.value.start && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value.start && (
-                                  field.value.end ? (
-                                    <>
-                                      {format(field.value.start, "LLL dd y")} -{" "}
-                                      {format(field.value.end, "LLL dd y")}
-                                    </>
-                                  ) : (
-                                    format(field.value.start, "LLL dd y")
-                                  )
-                                )}
-                                <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0" align="start">
-                            <Calendar
-                              mode="range"
-                              selected={{
-                                from: field.value.start,
-                                to: field.value.end
-                              }}
-                              onSelect={field.onChange}
-                              captionLayout="dropdown"
-                              disabled={(date) =>
-                                date > new Date()
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   <FormField
                     control={form.control}
                     name="title"

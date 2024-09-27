@@ -50,6 +50,8 @@ class GoodBIAgent:
         self.state["sql_query"] = query["query"]
         self.state["sql_valid"] = query["valid"]
         self.state["sql_issues"] = query["issues"]
+        if "corrected_query" in query:
+            self.state["corrected_query"] = query["corrected_query"]
 
     def get_table_metadata(self, df):
         return self.metadata_agent.get_table_metadata(df)
