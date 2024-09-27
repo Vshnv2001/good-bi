@@ -50,6 +50,9 @@ class GoodBIAgent:
         self.state["sql_query"] = query["query"]
         self.state["sql_valid"] = query["valid"]
         self.state["sql_issues"] = query["issues"]
+        
+    def set_user_id(self, user_id: str):
+        self.state["user_id"] = user_id
 
     def get_table_metadata(self, df):
         return self.metadata_agent.get_table_metadata(df)
@@ -97,8 +100,8 @@ class GoodBIAgent:
     def core_interpretation_pipeline(self):
         self.interpret_results()
 
-    def suggest_kpis(self, table_data, k=5):
+    def suggest_kpis(self, query, table_data, k=5):
         self.state["kpi_suggested"] = self.kpi_suggester_agent.suggest_kpis(
-            table_data, k
+            query, table_data, k
         )
         return self.state["kpi_suggested"]
