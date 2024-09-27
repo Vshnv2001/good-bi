@@ -38,9 +38,6 @@ const chartConfig = {
 export function ChartFeature() {
   return (
     <Card className="shadow-none border-none">
-      <CardHeader className="px-0 pt-0">
-        <CardTitle>Chart Visualisations</CardTitle>
-      </CardHeader>
       <CardContent className="px-0">
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>

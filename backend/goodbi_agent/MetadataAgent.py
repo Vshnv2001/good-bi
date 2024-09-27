@@ -26,7 +26,7 @@ class MetadataAgent:
             "table_name": string,
             "column_names": [string],
             "column_descriptors": dict[string, string],
-            "column_types": dict[string, string],
+            "column_types": dict[string, string], // This is the type of the POSTGRESQL column, for example, TEXT, INTEGER, etc.
             "data_sample": [string]
         }}
 
@@ -47,11 +47,14 @@ class MetadataAgent:
         first_three_rows_list = df.head(3).to_dict(orient="records")
         column_names = df.columns.tolist()
 
+
         output_parser = JsonOutputParser()
 
         response = self.llm_manager.invoke(
             self.prompt, sample=first_three_rows_list, column_names=column_names
         )
+
+        response = self.llm_manager.invoke(self.prompt, sample=first_three_rows_list, column_names=column_names)
         parsed_response = output_parser.parse(response)
         return parsed_response
 
@@ -90,11 +93,11 @@ class MetadataAgent:
         # Serialize the JSON data
 
         serialized_metadata = {
-            "table_name": metadata["table_name"],
-            "column_names": json.dumps(metadata["column_names"]),
-            "column_descriptors": json.dumps(metadata["column_descriptors"]),
-            "column_types": json.dumps(metadata["column_types"]),
-            "data_sample": json.dumps(metadata["data_sample"]),
+            'table_name': metadata['table_name'],
+            'column_names': json.dumps(metadata['column_names']),
+            'column_descriptors': json.dumps(metadata['column_descriptors']),
+            'column_types': json.dumps(metadata['column_types']),
+            'data_sample': json.dumps(metadata['data_sample'])
         }
 
         # Insert the metadata into the table
