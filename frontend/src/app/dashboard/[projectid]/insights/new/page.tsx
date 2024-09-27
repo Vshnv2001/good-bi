@@ -509,10 +509,10 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                 </CardContent>
               </Card>
             </div>
-            <div className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 items-center justify-center" onClick={regenerateInsight}>
+            <Button variant="ghost" className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 w-full" onClick={regenerateInsight}>
               <RotateCw className="h-4 w-4" />
-              <span>Regenerate</span>
-            </div>
+              Regenerate
+            </Button>
             <div className="pb-7">
               <Button className="w-full" onClick={onConfirm}>
                 Confirm
