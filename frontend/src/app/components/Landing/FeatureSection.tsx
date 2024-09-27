@@ -15,7 +15,7 @@ const FeatureSection = () => {
         <div className="font-bold max-w-2xl">Get better insights, faster.</div>
         <div className="max-w-xl">Powerful analytics on metrics that matter.</div>
       </h2>
-      <FeatureToggle />
+      <FeatureToggle/>
     </section>
   )
 }
@@ -43,7 +43,8 @@ const FeatureToggle = () => {
           </span>
           </AccordionTrigger>
           <AccordionContent className="text-base text-gray-700">
-            Instantly generate key insights from your data, using the latest large-language models from OpenAI.
+            GoodBI learns from your data, and generates actionable key insights from your data in a few minutes to
+            empower your business goals.
             <AiFeature className="block h-[368px] md:hidden md:h-[500px]"/>
           </AccordionContent>
         </AccordionItem>
@@ -54,7 +55,8 @@ const FeatureToggle = () => {
           </span>
           </AccordionTrigger>
           <AccordionContent className="text-base text-gray-700">
-            Get real-time data visualisations from the click of a button.
+            Unlock dynamic, real-time data visualisations at the click of a button! Transform your data
+            into bar, line, or pie charts effortlessly.
             <div className="block pt-6 md:hidden md:pt-0">
               <ChartFeature/>
             </div>
