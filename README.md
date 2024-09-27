@@ -2,13 +2,20 @@
 
 GoodBI is the ultimate AI business intelligence platform, and can be found at [https://good-bi.vercel.app](https://good-bi.vercel.app).
 
+For a demo, you can log in with the following credentials:
+
+```
+demouser@somemail.com
+demouser123
+```
+
 ## Our group
 
 | Group Member          | Matriculation No. | Contributions                                                                     |
 |-----------------------|-------------------|-----------------------------------------------------------------------------------|
 | Lok Jian Ming         | A0236537Y         | Full-stack engineering on dashboard page, report writing                          |
 | Ong Pei Cong Lester   | A0245751A         | UI/UX design, front-end engineering on landing and datasets pages, report writing |
-| Shirshajit Sen Gupta  | A0244147H         | LLM research, report writing                                                      |
+| Shirshajit Sen Gupta  | A0244147H         | LLM research and implementation, report writing                                   |
 | Vaishnav Muralidharan | A0235268Y         | Full-stack engineering on user authentication and datasets page, LLM Research     |
 
 ## Setup Guide
