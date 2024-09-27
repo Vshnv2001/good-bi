@@ -171,8 +171,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           const chartConfig: any = {} satisfies ChartConfig;
 
-          let chartData: any = []
-          let dataKeys: string[] = []
+          const chartData: any = []
+          const dataKeys: string[] = []
 
           formattedBarData.values.map((value, index) => {
             dataKeys.push(value['label'])
@@ -183,7 +183,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           });
 
           formattedBarData.labels.map((label, index) => {
-            let currentItem: any = {}
+            const currentItem: any = {}
             currentItem['xAxisDataKey'] = label;
 
             formattedBarData.values.map((value) => {
@@ -213,8 +213,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           const chartConfig: any = {} satisfies ChartConfig;
 
-          let chartData: any = []
-          let dataKeys: string[] = []
+          const chartData: any = []
+          const dataKeys: string[] = []
 
           formattedLineData.yValues.map((value, index) => {
             dataKeys.push(value['label'])
@@ -225,7 +225,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           });
 
           formattedLineData.xValues.map((label, index) => {
-            let currentItem: any = {}
+            const currentItem: any = {}
             currentItem['xAxisDataKey'] = label;
 
             formattedLineData.yValues.map((value) => {
@@ -264,7 +264,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
             }[]
           }
 
-          let chartData: any = []
+          const chartData: any = []
 
           const pieChartConfig: any = {
             sliceLabel: {
