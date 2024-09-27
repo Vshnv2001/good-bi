@@ -16,7 +16,7 @@ demouser123
 | Lok Jian Ming         | A0236537Y         | Full-stack engineering on dashboard page, report writing                          |
 | Ong Pei Cong Lester   | A0245751A         | UI/UX design, front-end engineering on landing and datasets pages, report writing |
 | Shirshajit Sen Gupta  | A0244147H         | LLM research and implementation, report writing                                   |
-| Vaishnav Muralidharan | A0235268Y         | Full-stack engineering on user authentication and datasets page, LLM Research     |
+| Vaishnav Muralidharan | A0235268Y         | Full-stack engineering on Data Pipeline, End-to-end Deployment, LLM Research      |
 
 ## Setup Guide
 
