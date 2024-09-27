@@ -228,7 +228,7 @@ async def get_datasets(
 async def create_dataset(
     datasetName: str = Form(...),
     datasetDescription: str = Form(...),
-    datasetFile: UploadFile = File(...),
+    datasetFile: UploadFile = Form(...),
     file_id: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
@@ -236,6 +236,8 @@ async def create_dataset(
 ):
     print(f"Dataset Name: {datasetName}")
     print(f"Dataset Description: {datasetDescription}")
+    
+    agent.set_user_id(auth_session.get_user_id())
 
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
