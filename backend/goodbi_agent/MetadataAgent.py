@@ -19,7 +19,7 @@ class MetadataAgent:
             "table_name": string,
             "column_names": [string],
             "column_descriptors": dict[string, string],
-            "column_types": dict[string, string],
+            "column_types": dict[string, string], // This is the type of the POSTGRESQL column, for example, TEXT, INTEGER, etc.
             "data_sample": [string]
         }}
 

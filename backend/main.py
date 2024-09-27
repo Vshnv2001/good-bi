@@ -132,13 +132,20 @@ async def create_dataset(
     
     metadata_agent = MetadataAgent()
     metadata = metadata_agent.get_table_metadata(df)
-    print(f"Metadata: {metadata}")
+    column_names = metadata['column_names']
+    column_types = metadata['column_types']
+    valid_postgres_column_types = ['TEXT', 'INTEGER', 'BOOLEAN', 'TIMESTAMP', 'FLOAT', 'DOUBLE PRECISION', 'NUMERIC', 'GEOGRAPHY', 'GEOMETRY', 'JSONB']
+    # If the column type is not in the valid_postgres_column_types, set it to 'TEXT'
+    for i, column_type in enumerate(column_types):
+        if column_type not in valid_postgres_column_types:
+            column_types[i] = 'TEXT'
     user_id = auth_session.get_user_id()
     await metadata_agent.save_metadata(metadata, db, user_id)
-    print(f"User ID: {user_id}")
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    columns = ', '.join([f'"{col}" {col_type}' for col, col_type in zip(column_names, column_types)] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    
+    # Create schema if it doesn't exist for storing the table/datas
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
     await db.commit()
