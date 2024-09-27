@@ -69,3 +69,7 @@ docker-compose up --build -d
 
 1. [shadcn/ui](https://ui.shadcn.com/)
 2. [Figma mockup](https://www.figma.com/design/5sKpfUDsNlWmzsxW7uLExM/GoodBI?node-id=0-1&t=rNu0vSMoAvC5vLdD-1) 
+
+## Known issues
+
+- Our application does not function correctly on Safari and incognito tabs in Chrome, due to third-party cookies utilised by authentication on our platform. See [https://github.com/supertokens/supertokens-core/issues/280](https://github.com/supertokens/supertokens-core/issues/280).
