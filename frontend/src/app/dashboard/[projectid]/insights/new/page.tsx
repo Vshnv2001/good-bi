@@ -283,6 +283,12 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
     if (res.status == 200) {
       const responseData = await res.json();
+
+      if ("error" in responseData) {
+        toast(responseData["error"]);
+        return;
+      }
+      
       const returnedVisualizationType = responseData["visualization"];
 
       if (returnedVisualizationType != "none") {
