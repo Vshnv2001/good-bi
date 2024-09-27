@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Any
 import os
 from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
