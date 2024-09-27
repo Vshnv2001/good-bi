@@ -16,13 +16,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
 import { ReactNode, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   chartType: z.string(),
 })
 
-export default function RegenerateModal({regenerateInsight, children}: { regenerateInsight: (chartType: string) => Promise<boolean>, children?: ReactNode }) {
+export default function RegenerateModal({ regenerateInsight, children }: { regenerateInsight: (chartType: string) => Promise<boolean>, children?: ReactNode }) {
   const [open, setOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,10 +34,9 @@ export default function RegenerateModal({regenerateInsight, children}: { regener
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+    setIsLoading(true)
     const isRegenerationSuccessful = await regenerateInsight(values.chartType);
-
-    console.log(isRegenerationSuccessful);
+    setIsLoading(false)
 
     if (isRegenerationSuccessful) {
       setOpen(false);
@@ -46,7 +47,7 @@ export default function RegenerateModal({regenerateInsight, children}: { regener
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="inline-flex gap-1.5 items-center">
-          {children ? children : <><RotateCw className="size-4"/>Regenerate</>}
+          {children ? children : <><RotateCw className="size-4" />Regenerate</>}
         </button>
       </DialogTrigger>
       <DialogContent>
@@ -62,13 +63,13 @@ export default function RegenerateModal({regenerateInsight, children}: { regener
             <FormField
               control={form.control}
               name="chartType"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Chart Type</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a chart type"/>
+                        <SelectValue placeholder="Select a chart type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -82,9 +83,9 @@ export default function RegenerateModal({regenerateInsight, children}: { regener
               )}
             >
             </FormField>
-            <Button type="submit" className="w-full">
-              <RotateCw className="size-4 mr-1.5"/>
-              Regenerate
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? <><Spinner className="size-4 mr-1.5" />Generating</> : <><RotateCw className="size-4 mr-1.5" />
+                Regenerate</>}
             </Button>
           </form>
         </Form>
