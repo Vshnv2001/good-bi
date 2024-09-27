@@ -97,10 +97,12 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
     tables = [table[0] for table in tables]
 
     datasets = []
+    
+    print(f"Tables: {tables}")
 
     for table_name in tables:
         # Query to get the first three rows from the table
-        if table_name == "user_tables_metadata":
+        if table_name == "user_tables_metadata" or table_name == "projects":
             continue
         result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3'))
         rows = result.fetchall()
@@ -134,7 +136,7 @@ async def create_dataset(
 
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
-    df = df.fillna('')
+    
     
     metadata_agent = MetadataAgent()
     metadata = metadata_agent.get_table_metadata(df)
@@ -146,6 +148,18 @@ async def create_dataset(
         if col_type not in valid_postgres_column_types:
             column_types[column] = 'TEXT'
 
+    for column, col_type in column_types.items():
+        if col_type == 'INTEGER':
+            df[column] = df[column].astype('Int64')  # Use 'Int64' to handle NaNs
+        elif col_type == 'FLOAT' or col_type == 'DOUBLE PRECISION':
+            df[column] = df[column].astype('float64')
+        elif col_type == 'BOOLEAN':
+            df[column] = df[column].astype('bool')
+        elif col_type == 'TIMESTAMP':
+            df[column] = pd.to_datetime(df[column])
+        else:
+            df[column] = df[column].astype('str')
+
     user_id = auth_session.get_user_id()
     await metadata_agent.save_metadata(metadata, db, user_id)
 
@@ -155,12 +169,11 @@ async def create_dataset(
     # Create schema if it doesn't exist for storing the table/datas
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
-    await db.commit()
+
     
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
-    await db.commit()
+
     await db.execute(text(f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription})
-    await db.commit()
 
     print(f"Columns: {columns}")
     # Insert rows into the table
