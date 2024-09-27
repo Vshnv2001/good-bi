@@ -17,14 +17,15 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List
-
 from goodbi_agent.agent import GoodBIAgent
+import os
+from supertokens_python import get_all_cors_headers
 
 init(
     app_info=InputAppInfo(
         app_name="goodbi",
-        api_domain="http://localhost:3000",
-        website_domain="http://localhost:3000",
+        api_domain=os.getenv("NEXT_PUBLIC_API_URL"),
+        website_domain=os.getenv("NEXT_PUBLIC_FRONTEND_URL"),
         api_base_path="/api/auth",
         website_base_path="/auth",
     ),
@@ -43,11 +44,10 @@ app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app"],  # Add your frontend URLs
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+    allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
 
 

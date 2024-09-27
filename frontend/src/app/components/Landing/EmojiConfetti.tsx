@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface Particle {
   x: number
@@ -20,7 +20,7 @@ const EmojiConfetti = ({ confettiText, className, children }: { confettiText: st
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particles = useRef<Particle[]>([])
 
-  const emojis = ['🎉', '🎊', '🥳', '🍾', '🎈', '🎇', '✨', '💥']
+  const emojis = useMemo(() => ['🎉', '🎊', '🥳', '🍾', '🎈', '🎇', '✨', '💥'], [])
 
   useEffect(() => {
     if (isExploding) {

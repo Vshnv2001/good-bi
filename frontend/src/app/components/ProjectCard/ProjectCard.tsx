@@ -34,8 +34,6 @@ const ProjectCard = React.forwardRef<
     DashboardCardProps
 >(({ project, deleteProject, children, className, ...props }, ref) => {
 
-
-
     return (
         <Card ref={ref} className={cn("flex flex-col", className)} {...props}>
             <CardHeader className="flex-row items-center justify-between">
