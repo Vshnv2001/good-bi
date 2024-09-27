@@ -8,7 +8,7 @@ import pandas as pd
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
 from fastapi import Depends
-from backend.goodbi_agent.agent import GoodBIAgent
+from goodbi_agent.agent import GoodBIAgent
 from utils.db_utils import get_db
 from sqlalchemy import text
 from supertokens_python import init, InputAppInfo, SupertokensConfig
