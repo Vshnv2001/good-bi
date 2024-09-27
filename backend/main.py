@@ -17,7 +17,7 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from goodbi_agent.MetadataAgent import MetadataAgent
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import os
 from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
@@ -621,6 +621,10 @@ async def user_query(
     # if not agent.state["sql_valid"]:
     #     return JSONResponse(content=agent.state["sql_issues"])
     agent.core_sql_pipeline(user_id, query, metadata)
+    print(agent.state)
+    print()
+    print(agent.state["sql_query"])
+
     # Execute the query
     result = await db.execute(text(agent.state["sql_query"]))
     result = result.fetchall()
@@ -632,9 +636,9 @@ async def user_query(
 # Get the suggested KPIs
 @app.post("/api/{user_id}/suggest_kpis")
 async def suggest_kpis(
-    query: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
+    query: Optional[str] = Form(None),
 ):
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
@@ -652,6 +656,8 @@ async def interpret_results(
 ):
     user_id = auth_session.get_user_id()
     if user_id != agent.state["user_id"]:
+        print(f"User ID: {user_id}")
+        print(f"Agent User ID: {agent.state['user_id']}")
         return JSONResponse(content={"error": "User ID does not match"})
     if agent.state["results"] == "" or agent.state["results"] == []:
         return JSONResponse(content={"error": "Execute a query first"})

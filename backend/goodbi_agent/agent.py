@@ -97,8 +97,8 @@ class GoodBIAgent:
     def core_interpretation_pipeline(self):
         self.interpret_results()
 
-    def suggest_kpis(self, table_data, k=5):
+    def suggest_kpis(self, query, table_data, k=5):
         self.state["kpi_suggested"] = self.kpi_suggester_agent.suggest_kpis(
-            table_data, k
+            query, table_data, k
         )
         return self.state["kpi_suggested"]
