@@ -21,12 +21,9 @@ The "noun_columns" field should contain only the columns that are relevant to th
 the column "Artist name" contains nouns relevant to the question "What are the top selling artists?", but the column "Artist ID" is not relevant because it 
 does not contain a noun. Do not include columns that contain numbers.
     Sample JSON format:
-       {{
-
-"is_relevant": boolean,
-
-"relevant_tables": [
-
+{{
+    "is_relevant": boolean,
+    "relevant_tables": [
 		{{
 		"table_name": string,
 		"columns": [
@@ -38,9 +35,7 @@ does not contain a noun. Do not include columns that contain numbers.
                 }}
             ]        
 		}}
-		
 	]
-	
 }}""",
                 ),
                 (
@@ -52,8 +47,6 @@ does not contain a noun. Do not include columns that contain numbers.
 
     def get_relevant_columns(self, query: str, metadata: list):
         output_parser = JsonOutputParser()
-        response = self.llm_manager.invoke(
-            self.prompt, query=query, metadata=metadata
-        )
+        response = self.llm_manager.invoke(self.prompt, query=query, metadata=metadata)
         parsed_response = output_parser.parse(response)
         return parsed_response
