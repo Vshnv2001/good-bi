@@ -8,10 +8,9 @@ import { BarChartData } from "@/app/types/ChartData";
 
 const GBBarChart = ({ chartData }: { chartData: BarChartData }) => {
     return (
-        <ChartContainer config={chartData.chartConfig} className="w-full">
+        <ChartContainer config={chartData.chartConfig} className="min-h-[200px] w-full">
             <BarChart accessibilityLayer data={chartData.data} margin={{
-                left: -20,
-                right: 10
+                right: 20
             }}>
                 <CartesianGrid vertical={false} />
                 <XAxis
@@ -19,12 +18,13 @@ const GBBarChart = ({ chartData }: { chartData: BarChartData }) => {
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
-                    tickFormatter={(value) => value.slice(0, 3)}
+                    tickFormatter={(value) => value.toString().slice(0, 10)}
                 />
                 <YAxis
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
+                    tickFormatter={(value) => value > 1000000 ? `${(value / 1000000).toFixed(1)}M` : value > 1000 ? `${(value / 1000).toFixed(1)}K` : value}
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 {

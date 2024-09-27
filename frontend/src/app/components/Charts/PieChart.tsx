@@ -8,7 +8,7 @@ import { PieChartData } from "@/app/types/ChartData";
 
 const GBPieChart = ({ chartData }: { chartData: PieChartData }) => {
     return (
-        <ChartContainer config={chartData.chartConfig} className="w-full">
+        <ChartContainer config={chartData.chartConfig} className="min-h-[200px] w-full">
             <PieChart>
                 <ChartTooltip
                     cursor={false}
