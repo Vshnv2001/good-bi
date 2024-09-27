@@ -28,9 +28,9 @@ const GBBarChart = ({ chartData }: { chartData: BarChartData }) => {
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 {
-                    chartData.dataKeys.map((dataKey) => {
+                    chartData.dataKeys.map((dataKey, index) => {
                         return (
-                            <Bar key={dataKey} dataKey={dataKey} fill={`var(--color-${dataKey})`} radius={4} />
+                            <Bar key={dataKey} dataKey={dataKey} fill={`hsl(var(--chart-${index + 1}))`} radius={4} />
                         )
                     })
                 }

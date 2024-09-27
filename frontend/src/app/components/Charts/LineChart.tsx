@@ -28,9 +28,9 @@ const GBLineChart = ({ chartData }: { chartData: LineChartData }) => {
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 {
-                    chartData.dataKeys.map((dataKey) => {
+                    chartData.dataKeys.map((dataKey, index) => {
                         return (
-                            <Line type="natural" key={dataKey} dataKey={dataKey} stroke={`var(--color-${dataKey})`} strokeWidth={2} />
+                            <Line type="natural" key={dataKey} dataKey={dataKey} stroke={`hsl(var(--chart-${index + 1}))`} strokeWidth={2} />
                         )
                     })
                 }

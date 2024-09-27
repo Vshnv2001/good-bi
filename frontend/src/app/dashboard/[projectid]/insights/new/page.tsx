@@ -157,7 +157,11 @@ export default function NewDashboard({ params }: { params: { projectid: string }
       const returnedVisualizationType = responseData["visualization"];
 
       if (returnedVisualizationType != "none") {
-        const formattedVisualizationData = responseData['formatted_data_for_visualization'];
+        let formattedVisualizationData = responseData['formatted_data_for_visualization'];
+
+        if ('formatted_data_for_visualization' in formattedVisualizationData) {
+          formattedVisualizationData = formattedVisualizationData['formatted_data_for_visualization']
+        }
 
         if (returnedVisualizationType == "bar") {
           const formattedBarData = formattedVisualizationData as {
@@ -244,11 +248,21 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           setVisualizationType(ChartType.Line);
           setVisualizationData(lineChartData);
         } else if (returnedVisualizationType == "pie") {
-          const formattedPieData = formattedVisualizationData as {
-            id: number
-            value: number
-            label: string
-          }[]
+          let formattedPieData;
+
+          if ('data' in formattedVisualizationData) {
+            formattedPieData = formattedVisualizationData.data as {
+              id: number
+              value: number
+              label: string
+            }[]
+          } else {
+            formattedPieData = formattedVisualizationData as {
+              id: number
+              value: number
+              label: string
+            }[]
+          }
 
           let chartData: any = []
 
@@ -406,8 +420,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="bar">Bar</SelectItem>
-                            <SelectItem value="pie">Pie</SelectItem>
                             <SelectItem value="line">Line</SelectItem>
+                            <SelectItem value="pie">Pie</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
