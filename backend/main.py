@@ -228,7 +228,7 @@ async def get_datasets(
 async def create_dataset(
     datasetName: str = Form(...),
     datasetDescription: str = Form(...),
-    datasetFile: UploadFile = Form(...),
+    datasetFile: UploadFile = File(...),
     file_id: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
