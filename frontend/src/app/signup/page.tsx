@@ -51,6 +51,9 @@ export default function Signup() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast.loading("Signing you up...", {
+      id: 'signup-toast'
+    })
     try {
       const response = await signUp({
           formFields: [{
@@ -64,7 +67,7 @@ export default function Signup() {
               value: data.name
           }]
       })
-
+      toast.dismiss('signup-toast')
       if (response.status === "FIELD_ERROR") {
           // one of the input formFields failed validation
           response.formFields.forEach(formField => {

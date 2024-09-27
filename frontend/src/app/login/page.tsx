@@ -47,6 +47,9 @@ export default function Login() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast.loading("Logging you in...", {
+      id: 'login-toast'
+    })
     try {
       const response = await signIn({
         formFields: [{
@@ -57,7 +60,7 @@ export default function Login() {
           value: data.password
         }]
       })
-
+      toast.dismiss('login-toast')
       if (response.status === "FIELD_ERROR") {
         response.formFields.forEach(formField => {
           if (formField.id === "email") {
