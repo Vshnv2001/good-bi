@@ -1,5 +1,5 @@
-from goodbi_agent.agent import GoodbiAgent
+from goodbi_agent.agent import GoodBIAgent
 
 
 def get_goodbi_agent(user_id: str):
-    return GoodbiAgent(user_id)
+    return GoodBIAgent(user_id)
