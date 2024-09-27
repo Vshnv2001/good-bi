@@ -48,9 +48,7 @@ export function CustomCombobox({
                                }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState<string>('');
-  console.log(query)
-  console.log(options.filter(x => x.value.toLowerCase() === query.toLowerCase()).length === 0)
-  console.log((query && options.filter(x => x.value.toLowerCase() === query.toLowerCase()).length === 0))
+
   return (
     <div className={cn('block', className)}>
       <Popover open={open} onOpenChange={setOpen}>

@@ -5,7 +5,7 @@ import Link from "next/link"
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-import { EllipsisVertical } from "lucide-react";
+import { Edit, EllipsisVertical, Trash } from "lucide-react";
 
 import {
     Card,
@@ -25,6 +25,7 @@ import { BarChartData, ChartType, LineChartData, PieChartData } from "@/app/type
 import GBBarChart from "../Charts/BarChart";
 import GBLineChart from "../Charts/LineChart";
 import GBPieChart from "../Charts/PieChart";
+import { Button } from "@/components/ui/button";
 
 interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
     data: DashboardCardData,
@@ -42,13 +43,21 @@ const DashboardCard = React.forwardRef<
                 <div className="flex items-center md:ml-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <EllipsisVertical className="text-gray-500 w-5 h-5" />
+                            <Button variant="ghost" size="icon">
+                                <EllipsisVertical className="text-gray-500 w-5 h-5" />
+                            </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <Link href={`/dashboard/${data.projectId}/insights/${data.id}/update`}>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Edit className="size-4 mr-1.5" />
+                                    Edit
+                                </DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem onClick={() => deleteInsight(data.projectId, data.id)}>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => deleteInsight(data.projectId, data.id)}>
+                                <Trash className="size-4 mr-1.5" />
+                                Delete
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

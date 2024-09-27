@@ -58,7 +58,6 @@ export default function NewDataset() {
     })
 
     try {
-      console.log("RAN")
       axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
