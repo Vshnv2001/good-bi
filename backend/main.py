@@ -1,3 +1,4 @@
+import json
 import uuid
 from fastapi import FastAPI, File, UploadFile, Form, File, UploadFile, Form
 from fastapi.responses import FileResponse, JSONResponse
@@ -14,6 +15,7 @@ from supertokens_python.recipe import emailpassword, session
 from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
+from goodbi_agent.MetadataAgent import MetadataAgent
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import os
@@ -60,6 +62,8 @@ def override_email_password_apis(original_implementation: APIInterface):
     return original_implementation
 
 load_dotenv()
+
+print(os.getenv("NEXT_PUBLIC_FRONTEND_URL"))
 
 init(
     app_info=InputAppInfo(
@@ -121,6 +125,7 @@ async def get_dataset_names(auth_session: SessionContainer = Depends(verify_sess
     """), {'user_id': user_id})
     tables = result.fetchall()
     tables = [table[0] for table in tables]
+    tables.remove("user_tables_metadata")
     return JSONResponse(content={"data": tables})
 
 @app.get("/api/datasets")
@@ -138,12 +143,14 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
     tables = [table[0] for table in tables]
 
     datasets = []
+    
+    print(f"Tables: {tables}")
 
     for table_name in tables:
         # Query to get the first three rows from the table
-        if table_name == "user_tables_metadata":
+        if table_name == "user_tables_metadata" or table_name == "projects":
             continue
-        result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}"'))
+        result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3'))
         rows = result.fetchall()
 
         # Convert rows to JSON format
@@ -175,21 +182,44 @@ async def create_dataset(
 
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
+    
+    
+    metadata_agent = MetadataAgent()
+    metadata = metadata_agent.get_table_metadata(df)
+    print(f"Metadata: {metadata}")
+    column_types = metadata['column_types']
+    valid_postgres_column_types = ['TEXT', 'INTEGER', 'BOOLEAN', 'TIMESTAMP', 'FLOAT', 'DOUBLE PRECISION', 'NUMERIC', 'GEOGRAPHY', 'GEOMETRY', 'JSONB']
+    # If the column type is not in the valid_postgres_column_types, set it to 'TEXT'
+    for column, col_type in column_types.items():
+        if col_type not in valid_postgres_column_types:
+            column_types[column] = 'TEXT'
+
+    for column, col_type in column_types.items():
+        if col_type == 'INTEGER':
+            df[column] = df[column].astype('Int64')  # Use 'Int64' to handle NaNs
+        elif col_type == 'FLOAT' or col_type == 'DOUBLE PRECISION':
+            df[column] = df[column].astype('float64')
+        elif col_type == 'BOOLEAN':
+            df[column] = df[column].astype('bool')
+        elif col_type == 'TIMESTAMP':
+            df[column] = pd.to_datetime(df[column])
+        else:
+            df[column] = df[column].astype('str')
 
     user_id = auth_session.get_user_id()
-    # user_id = "test"
-    print(f"User ID: {user_id}")
+    await metadata_agent.save_metadata(metadata, db, user_id)
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['gb_description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    columns = ', '.join([f'"{col}" {col_type}' for col, col_type in column_types.items()] + ['user_id TEXT', 'file_id TEXT', 'gb_description TEXT', 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    
+    # Create schema if it doesn't exist for storing the table/datas
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
-    await db.commit()
 
+    
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
-    await db.commit()
+
     await db.execute(text(f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription})
-    await db.commit()
 
     print(f"Columns: {columns}")
     # Insert rows into the table
@@ -198,9 +228,8 @@ async def create_dataset(
         row = list(row)
         row += [user_id, file_id, datasetDescription]
         placeholders = ', '.join([':{}'.format(i) for i in range(len(row))])
-        # Convert all values to strings
-        row_as_str = tuple(str(value) for value in row)
-        await db.execute(text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'), {str(i): value for i, value in enumerate(row_as_str)})
+        # Use the original data types
+        await db.execute(text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'), {str(i): value for i, value in enumerate(row)})
 
     await db.commit()
 
