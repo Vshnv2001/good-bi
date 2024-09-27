@@ -99,7 +99,7 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
         # Convert rows to JSON format
         columns = [col for col in result.keys()]
         json_rows = [dict(zip(columns, [str(value) for value in row])) for row in rows]
-        description = await db.execute(text(f'SELECT description FROM "{user_id}"."{table_name}" LIMIT 1'))
+        description = await db.execute(text(f'SELECT gb_description FROM "{user_id}"."{table_name}" LIMIT 1'))
         description = description.fetchone()[0]
 
         datasets.append({
@@ -131,7 +131,7 @@ async def create_dataset(
     print(f"User ID: {user_id}")
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['gb_description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
     await db.commit()
