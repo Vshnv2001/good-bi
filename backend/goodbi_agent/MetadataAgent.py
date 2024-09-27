@@ -57,7 +57,7 @@ class MetadataAgent:
         parsed_response = output_parser.parse(response)
         return parsed_response
 
-    async def save_metadata(self, metadata: dict, db: AsyncSession, user_id: str):
+    async def save_metadata(self, table_name: str, metadata: dict, db: AsyncSession, user_id: str):
         # Create the schema if it doesn't exist
         await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}"'))
 
@@ -83,7 +83,7 @@ class MetadataAgent:
             text(
                 f'SELECT table_name FROM "{user_id}".user_tables_metadata WHERE table_name = :table_name'
             ),
-            {"table_name": metadata["table_name"]},
+            {"table_name": table_name},
         )
         if result.scalar_one_or_none():
             await db.commit()
@@ -91,7 +91,7 @@ class MetadataAgent:
 
         # Serialize the JSON data
         serialized_metadata = {
-            "table_name": metadata["table_name"],
+            "table_name": table_name,
             "column_names": json.dumps(metadata["column_names"]),
             "column_descriptors": json.dumps(metadata["column_descriptors"]),
             "column_types": json.dumps(metadata["column_types"]),

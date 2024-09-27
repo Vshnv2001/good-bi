@@ -62,8 +62,8 @@ class GoodBIAgent:
             query, metadata
         )
 
-    def save_metadata(self, metadata: dict, db, user_id: str):
-        return self.metadata_agent.save_metadata(metadata, db, user_id)
+    def save_metadata(self, table_name: str, metadata: dict, db, user_id: str):
+        return self.metadata_agent.save_metadata(table_name, metadata, db, user_id)
 
     def format_data_for_visualization(self):
         results = self.data_formatter.format_data_for_visualization(state=self.state)

@@ -15,7 +15,7 @@ class PruningAgent:
                 (
                     "system",
                     """You are a data analyst that can help summarize SQL tables and parse user questions about a database. 
-Given the question and database schema and metadata, identify the relevant tables and columns. 
+Given the question and database schema and metadata, identify the relevant tables and columns.  Do not change the column names.
 If the question is not relevant to the database or if there is not enough information to answer the question, set is_relevant to false.
 
 The "noun_columns" field should contain only the columns that are relevant to the question and contain nouns or names, for example, 

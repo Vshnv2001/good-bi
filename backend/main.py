@@ -275,7 +275,7 @@ async def create_dataset(
             df[column] = df[column].astype("str")
 
     user_id = auth_session.get_user_id()
-    await metadata_agent.save_metadata(metadata, db, user_id)
+    await metadata_agent.save_metadata(datasetName, metadata, db, user_id)
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
     columns = ", ".join(
