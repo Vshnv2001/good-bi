@@ -414,6 +414,8 @@ async def create_insight(
         )
     )
     await db.commit()
+    
+    insight_id = str(uuid.uuid4())
 
     await db.execute(
         text(
