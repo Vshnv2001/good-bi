@@ -274,7 +274,13 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
   async function regenerateInsight() {
     const visualizeFormData = new FormData();
-    visualizeFormData.append('query', '');
+    
+    if (!insightFormData) {
+      toast("Please reload the page and try again.");
+      return;
+    }
+
+    visualizeFormData.append('query', insightFormData!.get('kpi_description') as string);
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/visualize`, {
       method: 'POST',
