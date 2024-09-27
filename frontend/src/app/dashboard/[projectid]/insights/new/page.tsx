@@ -65,6 +65,7 @@ import { toast } from "sonner";
 import GBLineChart from "@/app/components/Charts/LineChart";
 import GBPieChart from "@/app/components/Charts/PieChart";
 import RegenerateModal from "@/app/components/RegenerateModal";
+import { Spinner } from "@/components/ui/spinner";
 
 const FormSchema = z.object({
   title: z.string({
@@ -77,7 +78,7 @@ const FormSchema = z.object({
 
 export default function NewDashboard({ params }: { params: { projectid: string } }) {
   const router = useRouter();
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [datasets, setDatasets] = useState<string[]>([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [visualizationType, setVisualizationType] = useState<string | null>(null);
@@ -108,7 +109,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const formData = new FormData();
-
+    setIsLoading(true)
     formData.append('title', data.title)
     formData.append('kpi_description', data.kpiDescription)
     formData.append('project_id', params.projectid)
@@ -123,6 +124,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
       method: 'POST',
       body: visualizeFormData
     });
+
+    setIsLoading(false)
 
     if (res.status == 200) {
       const responseData = await res.json();
@@ -275,7 +278,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
   async function regenerateInsight(chartType: string) : Promise<boolean> {
     const visualizeFormData = new FormData();
-    
+
     if (!insightFormData) {
       toast("Please reload the page and try again.");
       return false;
@@ -296,7 +299,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         toast.error(responseData["error"]);
         return false;
       }
-      
+
       const returnedVisualizationType = responseData["visualization"];
 
       if (returnedVisualizationType != "none") {
@@ -451,7 +454,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         } else {
           setVisualizationType(null);
           setVisualizationData(null);
-  
+
           return false;
         }
       } else {
@@ -567,8 +570,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">
-                    Create
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? <><Spinner className="size-4 mr-1.5" />Generating</>  : "Create"}
                   </Button>
                 </form>
               </Form>
