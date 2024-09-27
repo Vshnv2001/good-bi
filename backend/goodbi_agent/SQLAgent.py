@@ -159,9 +159,12 @@ Validate the SQL query and provide the corrected query.""",
             validated_query = self._validate_sql_query(
                 question, schema_name, relevant_tables, query["query"]
             )
-            validated_query["query"] = validated_query["corrected_query"].replace(
-                "`", '"'
-            )
+            if not validated_query['valid']:
+                validated_query["query"] = validated_query["corrected_query"].replace(
+                    "`", '"'
+                )
+            else:
+                validated_query["query"] =  query["query"].replace("`", '"')
             return validated_query
         else:
             # Query is not valid

@@ -53,10 +53,10 @@ class GoodBIAgent:
     def get_table_metadata(self, df):
         return self.metadata_agent.get_table_metadata(df)
 
-    def get_relevant_columns(self, query: str, column_names: list):
+    def get_relevant_columns(self, query: str, metadata: list):
         self.state["question"] = query
         self.state["parsed_question"] = self.pruning_agent.get_relevant_columns(
-            query, column_names
+            query, metadata
         )
 
     def save_metadata(self, metadata: dict, db, user_id: str):
@@ -80,8 +80,12 @@ class GoodBIAgent:
     def core_sql_pipeline(self, user_id: str, query: str, metadata):
         self.state["question"] = query
         self.state["user_id"] = user_id
+
+        metadata = [r._asdict() for r in metadata]
+
         self.get_relevant_columns(query, metadata)
         self.make_query()
+
         print(self.state["sql_issues"])
         print(self.state["sql_query"])
 

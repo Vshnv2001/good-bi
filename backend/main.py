@@ -557,7 +557,7 @@ async def interpret_results(
         return JSONResponse(content=agent.state["interpreted_answer"])
 
 
-@app.post("/api/{user_id}/visualize")
+@app.post("/api/visualize")
 async def visualize_query(
     query: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),
@@ -581,7 +581,12 @@ async def visualize_query(
             "formatted_data_for_visualization": {},
             "kpi_suggested": {},
         }
-        agent.core_sql_pipeline(user_id, query)
+
+        metadata = await db.execute(
+            text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+        )
+
+        agent.core_sql_pipeline(user_id, query, metadata)
         result = await db.execute(text(agent.state["sql_query"]))
         result = result.fetchall()
         result = [r._asdict() for r in result]
