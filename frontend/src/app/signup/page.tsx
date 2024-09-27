@@ -1,17 +1,17 @@
 "use client"
 
 import Link from "next/link";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { LucideChevronLeft } from "lucide-react";
+import { Eye, EyeOff, LucideChevronLeft } from "lucide-react";
 import { signUp } from "supertokens-web-js/recipe/emailpassword";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { doesSessionExist } from "@/lib/utils";
 
 const FormSchema = z.object({
@@ -22,11 +22,15 @@ const FormSchema = z.object({
     .email({ message: "Invalid email." }),
   password: z
     .string()
-    .min(1, { message: "Please enter a password." }),
+    .min(1, { message: "Please enter a password." })
+    .refine((val) => val.length >= 8 && /[0-9]/.test(val), {
+      message: "Password should be at least 8 characters long, and contain a number."
+    })
 })
 
 export default function Signup() {
   const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
@@ -46,7 +50,6 @@ export default function Signup() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data, null, 2));
     try {
       const response = await signUp({
           formFields: [{
@@ -160,11 +163,24 @@ export default function Signup() {
               render={({field}) => (
                 <FormItem className="space-y-1">
                   <FormLabel className="font-normal text-base text-gray-800">Password</FormLabel>
-                  <Input
-                    type="password"
-                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
-                    {...field}
-                  />
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none pr-10 relative"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute text-muted-foreground bottom-0 right-1 border-0 bg-transparent hover:bg-transparent z-50"
+                      >
+                        {showPassword ? <Eye className="size-[20px]" /> : <EyeOff className="size-[20px]" />}
+                      </Button>
+                    </div>
+                  </FormControl>
                   <FormMessage/>
                 </FormItem>
               )}

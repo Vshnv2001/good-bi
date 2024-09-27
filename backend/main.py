@@ -8,7 +8,6 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
 from fastapi import Depends
 from utils.db_utils import get_db
-from models.org_tables import OrgTables
 from sqlalchemy import text
 from supertokens_python import init, InputAppInfo, SupertokensConfig
 from supertokens_python.recipe import emailpassword, session
@@ -16,8 +15,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Dict, Any, List
-import os
+from typing import List
+import os   
+from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
 from supertokens_python.recipe.emailpassword.interfaces import APIInterface, APIOptions, SignUpPostOkResult
 from supertokens_python.recipe.emailpassword.types import FormField
@@ -58,6 +58,8 @@ def override_email_password_apis(original_implementation: APIInterface):
 
     original_implementation.sign_up_post = sign_up_post
     return original_implementation
+
+load_dotenv()
 
 init(
     app_info=InputAppInfo(
@@ -108,7 +110,7 @@ async def delete_dataset(datasetName: str, auth_session: SessionContainer = Depe
     # Delete the file from the database
     await db.execute(text(f'DROP TABLE IF EXISTS "{user_id}"."{datasetName}"'))
     await db.commit()
-    
+
 @app.get("/api/datasetnames")
 async def get_dataset_names(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
     user_id = auth_session.get_user_id()
@@ -125,7 +127,7 @@ async def get_dataset_names(auth_session: SessionContainer = Depends(verify_sess
 async def get_datasets(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
-    
+
     # Query to get the list of tables for the user
     result = await db.execute(text(f"""
         SELECT table_name 
@@ -134,26 +136,28 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
     """), {'user_id': user_id})
     tables = result.fetchall()
     tables = [table[0] for table in tables]
-    
+
     datasets = []
-    
+
     for table_name in tables:
         # Query to get the first three rows from the table
-        result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3'))
+        if table_name == "user_tables_metadata":
+            continue
+        result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}"'))
         rows = result.fetchall()
-        
+
         # Convert rows to JSON format
         columns = [col for col in result.keys()]
         json_rows = [dict(zip(columns, [str(value) for value in row])) for row in rows]
-        description = await db.execute(text(f'SELECT description FROM "{user_id}"."{table_name}" LIMIT 1'))
+        description = await db.execute(text(f'SELECT gb_description FROM "{user_id}"."{table_name}" LIMIT 1'))
         description = description.fetchone()[0]
-        
+
         datasets.append({
             "datasetName": table_name,
             "datasetDescription": description,
             "datasetJson": json_rows
         })
-    
+
     # Return JSON response with dataset information
     return JSONResponse(content={"data": datasets})
 
@@ -177,12 +181,14 @@ async def create_dataset(
     print(f"User ID: {user_id}")
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    columns = ', '.join([f'"{col}" TEXT' for col in df.columns] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['gb_description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
     await db.commit()
-    orgtable = OrgTables(user_id=user_id, table_name=datasetName, table_description=datasetDescription)
-    db.add(orgtable)
+    
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
+    await db.commit()
+    await db.execute(text(f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription})
     await db.commit()
 
     print(f"Columns: {columns}")
@@ -223,7 +229,7 @@ async def create_project(
 
     await db.commit()
 
-    return JSONResponse(content={"message": "Project created successfully"}) 
+    return JSONResponse(content={"message": "Project created successfully"})
 
 @app.get("/api/projects")
 async def get_projects(
@@ -252,7 +258,7 @@ async def get_projects(
             "name": project['name'],
             "lastUpdated": str(project['updated_at'])
         }
-    
+
     projects = list(map(create_project_card_object, projects))
 
     print(projects)
@@ -285,7 +291,7 @@ async def get_project(
                 "name": project['name'],
                 "lastUpdated": str(project['updated_at'])
             }
-        
+
         projects = list(map(create_project_card_object, projects))
 
         return JSONResponse(content=projects[0])
@@ -310,7 +316,7 @@ async def update_project(
 
     await db.commit()
 
-    return JSONResponse(content={"message": "Project updated successfully"}) 
+    return JSONResponse(content={"message": "Project updated successfully"})
 
 @app.post("/api/projects/delete")
 async def delete_project(
@@ -328,7 +334,7 @@ async def delete_project(
 
     await db.commit()
 
-    return JSONResponse(content={"message": "Project deleted successfully"}) 
+    return JSONResponse(content={"message": "Project deleted successfully"})
 
 @app.post("/api/insights/new")
 async def create_insight(
@@ -385,10 +391,10 @@ async def create_insight(
         (insight_id, user_id, project_id, x, y, w, h)
         VALUES (:insight_id, :user_id, :project_id, 0, COALESCE((SELECT MAX(y + h) FROM "{user_id}.user_data.layouts".lg WHERE project_id = :project_id), 0), 1, 1)
     """), {'insight_id': insight_id, 'project_id': project_id, 'user_id': user_id})
-    
+
     await db.commit()
 
-    return JSONResponse(content={"message": "Insight created successfully"}) 
+    return JSONResponse(content={"message": "Insight created successfully"})
 
 @app.post("/api/insights")
 async def get_insights(
@@ -487,7 +493,7 @@ async def get_insights(
             },
             "projectId": str(insight['project_id'])
         }
-    
+
     insights = list(map(create_dashboard_card_object, insights))
 
     return JSONResponse(content=insights)
@@ -508,10 +514,10 @@ async def get_insight(
     """), {'insight_id': insight_id, 'user_id': user_id})
 
     insights = result.fetchall()
-    
+
     if len(insights) == 1:
         insights = [r._asdict() for r in insights]
-    
+
         def create_dashboard_card_object(insight):
             return {
                 "id": str(insight['insight_id']),
@@ -519,7 +525,7 @@ async def get_insight(
                 "title": insight['title'],
                 "projectId": str(insight['project_id'])
             }
-        
+
         insights = list(map(create_dashboard_card_object, insights))
 
         return JSONResponse(content=insights[0])
@@ -545,7 +551,7 @@ async def update_insight(
 
     await db.commit()
 
-    return JSONResponse(content={"message": "Insight updated successfully"}) 
+    return JSONResponse(content={"message": "Insight updated successfully"})
 
 @app.post("/api/insights/delete")
 async def delete_insight(
@@ -578,7 +584,7 @@ async def delete_insight(
         DELETE FROM "{user_id}.user_data.layouts".lg 
         WHERE insight_id = :insight_id AND project_id = :project_id AND user_id = :user_id
     """), {'insight_id': insight_id, 'project_id': project_id, 'user_id': user_id})
-    
+
     await db.commit()
 
     return JSONResponse(content={"message": "Insight deleted successfully"})
@@ -633,7 +639,7 @@ async def get_insights_layout(
 
     sm_layout_items = result.fetchall()
     sm_layout_items = [r._asdict() for r in sm_layout_items]
-    
+
     sm_layout_items = list(map(create_layout_item_object, sm_layout_items))
 
     result = await db.execute(text(f"""
@@ -644,7 +650,7 @@ async def get_insights_layout(
 
     md_layout_items = result.fetchall()
     md_layout_items = [r._asdict() for r in md_layout_items]
-    
+
     md_layout_items = list(map(create_layout_item_object, md_layout_items))
 
     result = await db.execute(text(f"""
@@ -655,10 +661,10 @@ async def get_insights_layout(
 
     lg_layout_items = result.fetchall()
     lg_layout_items = [r._asdict() for r in lg_layout_items]
-    
+
     lg_layout_items = list(map(create_layout_item_object, lg_layout_items))
 
-    return JSONResponse(content={"sm": sm_layout_items, "md": md_layout_items, "lg": lg_layout_items}) 
+    return JSONResponse(content={"sm": sm_layout_items, "md": md_layout_items, "lg": lg_layout_items})
 
 @app.post("/api/layouts/{project_id}")
 async def update_insights_layout(
@@ -686,7 +692,7 @@ async def update_insights_layout(
             ON CONFLICT (insight_id)
             DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
         """), {'x': layout.x, 'y': layout.y, 'h': layout.h, 'w': layout.w, 'insight_id': layout.i, 'project_id': project_id, 'user_id': user_id})
-    
+
     await db.commit()
 
     for layout in layouts.md:
@@ -697,7 +703,7 @@ async def update_insights_layout(
             ON CONFLICT (insight_id)
             DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
         """), {'x': layout.x, 'y': layout.y, 'h': layout.h, 'w': layout.w, 'insight_id': layout.i, 'project_id': project_id, 'user_id': user_id})
-    
+
     await db.commit()
 
     for layout in layouts.lg:
@@ -708,7 +714,7 @@ async def update_insights_layout(
             ON CONFLICT (insight_id)
             DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
         """), {'x': layout.x, 'y': layout.y, 'h': layout.h, 'w': layout.w, 'insight_id': layout.i, 'project_id': project_id, 'user_id': user_id})
-    
+
     await db.commit()
 
     return JSONResponse(content={"message": "Layout updated successfully"})
@@ -738,10 +744,10 @@ async def update_insights_layout(
             ON CONFLICT (insight_id)
             DO UPDATE SET x = :x, y = :y, h = :h, w = :w, updated_at = CURRENT_TIMESTAMP
         """), {'x': layout.x, 'y': layout.y, 'h': layout.h, 'w': layout.w, 'insight_id': layout.i, 'project_id': project_id, 'user_id': user_id})
-    
+
     await db.commit()
 
-    return JSONResponse(content={"message": "Layout updated successfully"}) 
+    return JSONResponse(content={"message": "Layout updated successfully"})
 
 @app.get("/api/user/data")
 async def get_datasets(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
