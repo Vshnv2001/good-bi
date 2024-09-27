@@ -34,17 +34,17 @@ class MetadataAgent:
         """
         first_three_rows_list = df.head(3).to_dict(orient='records')
         column_names = df.columns.tolist()
-    
+
         output_parser = JsonOutputParser()
-        
+
         response = self.llm_manager.invoke(self.prompt, sample=first_three_rows_list, column_names=column_names)
         parsed_response = output_parser.parse(response)
         return parsed_response
-    
+
     async def save_metadata(self, metadata: dict, db: AsyncSession, user_id: str):
         # Create the schema if it doesn't exist
         await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}"'))
-        
+
         # Create the table if it doesn't exist
         await db.execute(text(f"""
             CREATE TABLE IF NOT EXISTS "{user_id}".user_tables_metadata (
@@ -57,7 +57,7 @@ class MetadataAgent:
             )
         """))
         await db.commit()
-        
+
         # Check if the table already has an entry for this table_name
         result = await db.execute(
             text(f'SELECT table_name FROM "{user_id}".user_tables_metadata WHERE table_name = :table_name'),
