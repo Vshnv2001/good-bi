@@ -182,7 +182,7 @@ export default function NewDataset() {
                   )}
                 />
                 <Button type="submit">
-                  Create dataset
+                  Add data
                 </Button>
               </form>
             </Form>
