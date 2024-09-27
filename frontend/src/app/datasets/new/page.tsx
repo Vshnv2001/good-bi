@@ -52,22 +52,31 @@ export default function NewDataset() {
       file_id: uuidv4()
     }
 
+    toast('Uploading your data. We will let you know when it is ready.', {
+      duration: Infinity,
+      id: 'data-upload'
+    })
+
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`, formData, {
+      console.log("RAN")
+      axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
+      }).then((response) => {
+        toast.dismiss('data-upload');
+        if (response.status === 200) {
+          toast('Added new data')
+        } else {
+          toast.error('Failed to submit dataset');
+        }
       });
-
-      if (response.status === 200) {
-        toast('Added new data')
-        router.push('/datasets');
-      } else {
-        toast.error('Failed to submit dataset');
-      }
     } catch (error) {
+      toast.dismiss('data-upload');
       toast.error('Error submitting dataset');
     }
+
+    router.push('/datasets');
   }
 
   const [options, setOptions] = useState<{
