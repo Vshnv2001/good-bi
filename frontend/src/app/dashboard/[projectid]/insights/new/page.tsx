@@ -46,7 +46,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { boolean, z } from "zod"
 
 import { NavBar } from "@/app/components/NavBar";
 
@@ -64,6 +64,7 @@ import { ChartConfig } from "@/components/ui/chart";
 import { toast } from "sonner";
 import GBLineChart from "@/app/components/Charts/LineChart";
 import GBPieChart from "@/app/components/Charts/PieChart";
+import RegenerateModal from "@/app/components/RegenerateModal";
 
 const FormSchema = z.object({
   title: z.string({
@@ -272,17 +273,18 @@ export default function NewDashboard({ params }: { params: { projectid: string }
     }
   }
 
-  async function regenerateInsight() {
+  async function regenerateInsight(chartType: string) : Promise<boolean> {
     const visualizeFormData = new FormData();
     
     if (!insightFormData) {
       toast("Please reload the page and try again.");
-      return;
+      return false;
     }
 
     visualizeFormData.append('query', insightFormData!.get('kpi_description') as string);
+    visualizeFormData.append('chart_type', chartType != "" ? chartType : insightFormData!.get('chart_type') as string)
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/visualize`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/visualize/regenerate`, {
       method: 'POST',
       body: visualizeFormData
     });
@@ -292,7 +294,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
       if ("error" in responseData) {
         toast.error(responseData["error"]);
-        return;
+        return false;
       }
       
       const returnedVisualizationType = responseData["visualization"];
@@ -348,6 +350,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           setVisualizationType(ChartType.Bar);
           setVisualizationData(barChartData);
+
+          return true;
         } else if (returnedVisualizationType == "line") {
           const formattedLineData = formattedVisualizationData as {
             xValues: number[] | string[]
@@ -394,6 +398,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           setVisualizationType(ChartType.Line);
           setVisualizationData(lineChartData);
+
+          return true;
         } else if (returnedVisualizationType == "pie") {
           const formattedPieData = formattedVisualizationData as{
             id: number
@@ -440,12 +446,23 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           setVisualizationType(ChartType.Pie);
           setVisualizationData(pieChartData);
+
+          return true;
+        } else {
+          setVisualizationType(null);
+          setVisualizationData(null);
+  
+          return false;
         }
       } else {
         setVisualizationType(null);
         setVisualizationData(null);
+
+        return false;
       }
     }
+
+    return false;
   }
 
   async function onConfirm() {
@@ -509,10 +526,9 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                 </CardContent>
               </Card>
             </div>
-            <Button variant="ghost" className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 w-full" onClick={regenerateInsight}>
-              <RotateCw className="h-4 w-4" />
-              Regenerate
-            </Button>
+            <div className="pt-3.5 pb-5 flex flex-cols gap-2 text-base text-gray-500 items-center justify-center">
+              <RegenerateModal regenerateInsight={regenerateInsight} />
+            </div>
             <div className="pb-7">
               <Button className="w-full" onClick={onConfirm}>
                 Confirm

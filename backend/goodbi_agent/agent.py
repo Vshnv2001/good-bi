@@ -99,6 +99,11 @@ class GoodBIAgent:
         self.interpret_results()
         self.format_data_for_visualization()
 
+    def core_regeneration_pipeline(self, chart_type):
+        self.state["visualization"] = chart_type
+        self.state["visualization_reason"] = f'User requested for visualization with chart of the type {chart_type}'
+        self.format_data_for_visualization()
+
     def core_interpretation_pipeline(self):
         self.interpret_results()
 

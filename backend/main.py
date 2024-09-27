@@ -740,6 +740,75 @@ async def visualize_query(
         }
     )
 
+@app.post("/api/visualize/regenerate")
+async def regenerate_visualize_query(
+    query: str = Form(...),
+    chart_type: str = Form(...),
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+    agent: GoodBIAgent = Depends(get_goodbi_agent),
+):
+    user_id = auth_session.get_user_id()
+    # Check to ensure same user
+    if user_id != agent.state["user_id"] or agent.state["question"] != query:
+        agent.state = {
+            "question": "",
+            "user_id": user_id,
+            "parsed_question": {},
+            "sql_query": "",
+            "sql_valid": False,
+            "sql_issues": "",
+            "results": [],
+            "answer": "",
+            "error": "",
+            "visualization": "",
+            "visualization_reason": "",
+            "formatted_data_for_visualization": {},
+        }
+
+        metadata = await db.execute(
+            text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+        )
+        
+        agent.core_sql_pipeline(user_id, query, metadata)
+
+        if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+            return JSONResponse(
+                content={
+                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                }
+            )
+
+        result = await db.execute(text(agent.state["sql_query"]))
+        result = result.fetchall()
+        result = [r._asdict() for r in result]
+
+        if len(result) == 0:
+            return JSONResponse(
+                content={
+                    "error": "Query result is empty. Please check your KPI description and try again."
+                }
+            )
+        agent.state["results"] = result
+
+    agent.core_regeneration_pipeline(chart_type)
+
+    if agent.state["error"] != "":
+        return JSONResponse(
+            content={
+                "error": agent.state["error"] + " Please refine your KPI description and try again."
+            }
+        )
+
+    return JSONResponse(
+        content={
+            "visualization": agent.state["visualization"],
+            "visualization_reason": agent.state["visualization_reason"],
+            "formatted_data_for_visualization": agent.state[
+                "formatted_data_for_visualization"
+            ],
+        }
+    )
 
 @app.post("/api/insights")
 async def get_insights(

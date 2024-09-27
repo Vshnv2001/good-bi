@@ -8,20 +8,22 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 const formSchema = z.object({
   chartType: z.string(),
 })
 
-export default function RegenerateModal({children}: { children?: ReactNode }) {
+export default function RegenerateModal({regenerateInsight, children}: { regenerateInsight: (chartType: string) => Promise<boolean>, children?: ReactNode }) {
+  const [open, setOpen] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -29,12 +31,19 @@ export default function RegenerateModal({children}: { children?: ReactNode }) {
     }
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
+    const isRegenerationSuccessful = await regenerateInsight(values.chartType);
+
+    console.log(isRegenerationSuccessful);
+
+    if (isRegenerationSuccessful) {
+      setOpen(false);
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="inline-flex gap-1.5 items-center">
           {children ? children : <><RotateCw className="size-4"/>Regenerate</>}
