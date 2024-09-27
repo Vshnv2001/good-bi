@@ -691,7 +691,7 @@ async def visualize_query(
         
         agent.core_sql_pipeline(user_id, query, metadata)
 
-        if not agent.state["sql_valid"] and not agent.state["corrected_query"]:
+        if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
             return JSONResponse(
                 content={
                     "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."

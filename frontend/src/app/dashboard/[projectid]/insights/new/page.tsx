@@ -127,7 +127,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
       const responseData = await res.json();
 
       if ("error" in responseData) {
-        toast(responseData["error"]);
+        toast.error(responseData["error"]);
         return;
       }
 
@@ -285,7 +285,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
       const responseData = await res.json();
 
       if ("error" in responseData) {
-        toast(responseData["error"]);
+        toast.error(responseData["error"]);
         return;
       }
       
