@@ -1,3 +1,4 @@
+import json
 import uuid
 from fastapi import FastAPI, File, UploadFile, Form, File, UploadFile, Form
 from fastapi.responses import FileResponse, JSONResponse
@@ -22,6 +23,8 @@ from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
 
 load_dotenv()
+
+print(os.getenv("NEXT_PUBLIC_FRONTEND_URL"))
 
 init(
     app_info=InputAppInfo(
@@ -131,21 +134,23 @@ async def create_dataset(
 
     # Read the CSV file
     df = pd.read_csv(datasetFile.file)
+    df = df.fillna('')
     
     metadata_agent = MetadataAgent()
     metadata = metadata_agent.get_table_metadata(df)
-    column_names = metadata['column_names']
+    print(f"Metadata: {metadata}")
     column_types = metadata['column_types']
     valid_postgres_column_types = ['TEXT', 'INTEGER', 'BOOLEAN', 'TIMESTAMP', 'FLOAT', 'DOUBLE PRECISION', 'NUMERIC', 'GEOGRAPHY', 'GEOMETRY', 'JSONB']
     # If the column type is not in the valid_postgres_column_types, set it to 'TEXT'
-    for i, column_type in enumerate(column_types):
-        if column_type not in valid_postgres_column_types:
-            column_types[i] = 'TEXT'
+    for column, col_type in column_types.items():
+        if col_type not in valid_postgres_column_types:
+            column_types[column] = 'TEXT'
+
     user_id = auth_session.get_user_id()
     await metadata_agent.save_metadata(metadata, db, user_id)
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ', '.join([f'"{col}" {col_type}' for col, col_type in zip(column_names, column_types)] + ['user_id TEXT'] + [f'"file_id" TEXT'] + ['gb_description TEXT'] + ['created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
+    columns = ', '.join([f'"{col}" {col_type}' for col, col_type in column_types.items()] + ['user_id TEXT', 'file_id TEXT', 'gb_description TEXT', 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP'])
     
     # Create schema if it doesn't exist for storing the table/datas
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
@@ -164,9 +169,8 @@ async def create_dataset(
         row = list(row)
         row += [user_id, file_id, datasetDescription]
         placeholders = ', '.join([':{}'.format(i) for i in range(len(row))])
-        # Convert all values to strings
-        row_as_str = tuple(str(value) for value in row)
-        await db.execute(text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'), {str(i): value for i, value in enumerate(row_as_str)})
+        # Use the original data types
+        await db.execute(text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'), {str(i): value for i, value in enumerate(row)})
 
     await db.commit()
 
