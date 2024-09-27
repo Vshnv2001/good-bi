@@ -8,7 +8,6 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
 from fastapi import Depends
 from utils.db_utils import get_db
-from models.org_tables import OrgTables
 from sqlalchemy import text
 from supertokens_python import init, InputAppInfo, SupertokensConfig
 from supertokens_python.recipe import emailpassword, session
@@ -17,14 +16,18 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List
+import os   
+from dotenv import load_dotenv
+from supertokens_python import get_all_cors_headers
 
 from goodbi_agent.agent import GoodBIAgent
+load_dotenv()
 
 init(
     app_info=InputAppInfo(
         app_name="goodbi",
-        api_domain="http://localhost:3000",
-        website_domain="http://localhost:3000",
+        api_domain=os.getenv("NEXT_PUBLIC_API_URL"),
+        website_domain=os.getenv("NEXT_PUBLIC_FRONTEND_URL"),
         api_base_path="/api/auth",
         website_base_path="/auth",
     ),
@@ -43,11 +46,10 @@ app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app"],  # Add your frontend URLs
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+    allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
 
 
@@ -67,7 +69,6 @@ async def delete_dataset(
     # Delete the file from the database
     await db.execute(text(f'DROP TABLE IF EXISTS "{user_id}"."{datasetName}"'))
     await db.commit()
-
 
 @app.get("/api/datasetnames")
 async def get_dataset_names(
@@ -171,7 +172,7 @@ async def create_dataset(
         [f'"{col}" TEXT' for col in df.columns]
         + ["user_id TEXT"]
         + [f'"file_id" TEXT']
-        + ["description TEXT"]
+        + ["gb_description TEXT"]
         + ["created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
     )
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
@@ -179,10 +180,12 @@ async def create_dataset(
         text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})')
     )
     await db.commit()
-    orgtable = OrgTables(
-        user_id=user_id, table_name=datasetName, table_description=datasetDescription
-    )
-    db.add(orgtable)
+    
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
+    await db.commit()
+    await db.execute(text(f'INSERT INTO "org_tables" (
+        user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription
+    })
     await db.commit()
 
     print(f"Columns: {columns}")

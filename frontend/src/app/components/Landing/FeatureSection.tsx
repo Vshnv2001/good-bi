@@ -1,10 +1,10 @@
 "use client"
 
-import {useState} from "react";
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
-import {LucideChartArea, LucidePencilRuler, LucideSparkles} from "lucide-react";
-import {AiFeature} from "@/app/components/Landing/AiFeature";
-import {ChartFeature} from "@/app/components/Landing/ChartFeature";
+import { useState } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { LucideChartArea, LucidePencilRuler, LucideSparkles } from "lucide-react";
+import { AiFeature } from "@/app/components/Landing/AiFeature";
+import { ChartFeature } from "@/app/components/Landing/ChartFeature";
 import CustomisableFeature from "@/app/components/Landing/CustomisableFeature";
 
 const FeatureSection = () => {

@@ -1,31 +1,33 @@
 "use client"
 
 import Link from "next/link";
-import {Form, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {LucideChevronLeft} from "lucide-react";
-import {signIn} from "supertokens-web-js/recipe/emailpassword";
-import {useEffect} from "react";
-import {doesSessionExist} from "@/lib/utils";
-import {useRouter} from "next/navigation";
+import { Eye, EyeOff, LucideChevronLeft } from "lucide-react";
+import { signIn } from "supertokens-web-js/recipe/emailpassword";
+import { useEffect, useState } from "react";
+import { doesSessionExist } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { EyeClosedIcon } from "@radix-ui/react-icons";
 
 const FormSchema = z.object({
   email: z
     .string()
-    .min(1, {message: "Please enter an email."})
-    .email({message: "Invalid email."}),
+    .min(1, { message: "Please enter an email." })
+    .email({ message: "Invalid email." }),
   password: z
     .string()
-    .min(1, {message: "Please enter a password."}),
+    .min(1, { message: "Please enter a password." }),
 })
 
 export default function Login() {
   const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     doesSessionExist().then((hasSession) => {
@@ -98,7 +100,7 @@ export default function Login() {
       <div className="max-w-lg px-4 w-full place-self-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto -mt-8"
+          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold font-logo w-fit mx-auto -mt-8"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-12 w-10" width="28" height="28"/>
           GoodBI
@@ -133,13 +135,26 @@ export default function Login() {
               control={form.control}
               name="password"
               render={({field}) => (
-                <FormItem className="space-y-1">
+                <FormItem className="space-y-1 relative">
                   <FormLabel className="font-normal text-base text-gray-800">Password</FormLabel>
-                  <Input
-                    type="password"
-                    className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none"
-                    {...field}
-                  />
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        className="rounded-xl text-base border border-gray-200/70 bg-white shadow-none pr-10 relative"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute text-muted-foreground bottom-0 right-1 border-0 bg-transparent hover:bg-transparent z-50"
+                      >
+                        {showPassword ? <Eye className="size-[20px]" /> : <EyeOff className="size-[20px]" />}
+                      </Button>
+                    </div>
+                  </FormControl>
                   <FormMessage/>
                 </FormItem>
               )}

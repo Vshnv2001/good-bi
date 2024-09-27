@@ -3,8 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import {cn} from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dropdown } from "react-day-picker";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +15,7 @@ const LandingFooter = ({className}: { className?: string }) => {
   return (
     <footer className={cn("py-4 bg-gray-100", className)}>
       <div className="px-4 max-w-7xl mx-auto flex gap-8 justify-between items-center">
-        <div className="flex items-center gap-2 text-3xl text-primary-500 font-extrabold">
+        <div className="flex items-center gap-2 text-3xl text-primary-500 font-logo font-extrabold">
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-10 w-8" width="28"
                  height="28"/>
           GoodBI
