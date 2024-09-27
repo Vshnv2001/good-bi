@@ -66,7 +66,8 @@ export default function NewDataset() {
       }).then((response) => {
         toast.dismiss('data-upload');
         if (response.status === 200) {
-          toast('Added new data')
+          toast('Added new data.')
+          location.reload()
         } else {
           toast.error('Failed to submit dataset');
         }
