@@ -8,10 +8,9 @@ import { LineChartData } from "@/app/types/ChartData";
 
 const GBLineChart = ({ chartData }: { chartData: LineChartData }) => {
     return (
-        <ChartContainer config={chartData.chartConfig} className="w-full">
+        <ChartContainer config={chartData.chartConfig} className="min-h-[200px] w-full">
             <LineChart accessibilityLayer data={chartData.data} margin={{
-                left: -20,
-                right: 10
+                right: 20
             }}>
                 <CartesianGrid vertical={false} />
                 <XAxis
@@ -19,18 +18,19 @@ const GBLineChart = ({ chartData }: { chartData: LineChartData }) => {
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
-                    tickFormatter={(value) => value.slice(0, 3)}
+                    tickFormatter={(value) => value.toString().slice(0, 10)}
                 />
                 <YAxis
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
+                    tickFormatter={(value) => value > 1000000 ? `${(value / 1000000).toFixed(1)}M` : value > 1000 ? `${(value / 1000).toFixed(1)}K` : value}
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 {
-                    chartData.dataKeys.map((dataKey) => {
+                    chartData.dataKeys.map((dataKey, index) => {
                         return (
-                            <Line type="natural" key={dataKey} dataKey={dataKey} stroke={`var(--color-${dataKey})`} strokeWidth={2} />
+                            <Line type="natural" key={dataKey} dataKey={dataKey} stroke={`hsl(var(--chart-${index + 1}))`} strokeWidth={2} />
                         )
                     })
                 }

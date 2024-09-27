@@ -276,7 +276,7 @@ async def create_dataset(
             df[column] = df[column].astype("str")
 
     user_id = auth_session.get_user_id()
-    await metadata_agent.save_metadata(metadata, db, user_id)
+    await metadata_agent.save_metadata(datasetName, metadata, db, user_id)
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
     columns = ", ".join(
@@ -500,13 +500,11 @@ async def delete_project(
 
 @app.post("/api/insights/new")
 async def create_insight(
-    dataset_id: str = Form(...),
     chart_type: str = Form(...),
-    start_date: str = Form(...),
-    end_date: str = Form(...),
     title: str = Form(...),
     kpi_description: str = Form(...),
     project_id: str = Form(...),
+    visualization_data: str = Form(...),
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
 ):
@@ -515,33 +513,31 @@ async def create_insight(
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
 
+    insight_id = str(uuid.uuid4())
+
     await db.execute(
         text(
-            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), visualization_data JSONB, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
         )
     )
     await db.commit()
-
-    insight_id = str(uuid.uuid4())
 
     await db.execute(
         text(
             f"""
         INSERT INTO "{user_id}.user_data".insights
-        (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date)
-        VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date)
+        (insight_id, user_id, project_id, title, kpi_description, chart_type, visualization_data)
+        VALUES (:insight_id, :user_id, :project_id, :title, :kpi_description, :chart_type, :visualization_data)
     """
         ),
         {
             "insight_id": insight_id,
             "user_id": user_id,
             "project_id": project_id,
-            "dataset_id": dataset_id,
             "title": title,
             "kpi_description": kpi_description,
             "chart_type": chart_type,
-            "start_date": datetime.strptime(start_date, "%m-%d-%Y"),
-            "end_date": datetime.strptime(end_date, "%m-%d-%Y"),
+            "visualization_data": visualization_data
         },
     )
 
@@ -698,20 +694,42 @@ async def visualize_query(
             "visualization": "",
             "visualization_reason": "",
             "formatted_data_for_visualization": {},
-            "kpi_suggested": {},
         }
 
         metadata = await db.execute(
             text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
         )
-
+        
         agent.core_sql_pipeline(user_id, query, metadata)
+
+        if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+            return JSONResponse(
+                content={
+                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                }
+            )
+
         result = await db.execute(text(agent.state["sql_query"]))
         result = result.fetchall()
         result = [r._asdict() for r in result]
+
+        if len(result) == 0:
+            return JSONResponse(
+                content={
+                    "error": "Query result is empty. Please check your KPI description and try again."
+                }
+            )
         agent.state["results"] = result
 
     agent.core_visualization_pipeline()
+
+    if agent.state["error"] != "":
+        return JSONResponse(
+            content={
+                "error": agent.state["error"] + " Please refine your KPI description and try again."
+            }
+        )
+
     return JSONResponse(
         content={
             "visualization": agent.state["visualization"],
@@ -734,7 +752,7 @@ async def get_insights(
 
     await db.execute(
         text(
-            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id VARCHAR(255), title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, visualization_data JSONB, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
         )
     )
     await db.commit()
@@ -752,85 +770,14 @@ async def get_insights(
 
     insights = result.fetchall()
     insights = [r._asdict() for r in insights]
-
-    chart_config = {
-        "desktop": {
-            "label": "Desktop",
-            "color": "hsl(var(--chart-1))",
-        },
-        "mobile": {
-            "label": "Mobile",
-            "color": "hsl(var(--chart-2))",
-        },
-    }
-
-    # dbData equivalent in Python
-    db_data = [
-        {"month": "January", "desktop": 186, "mobile": 80},
-        {"month": "February", "desktop": 305, "mobile": 200},
-        {"month": "March", "desktop": 237, "mobile": 120},
-        {"month": "April", "desktop": 73, "mobile": 190},
-        {"month": "May", "desktop": 209, "mobile": 130},
-        {"month": "June", "desktop": 214, "mobile": 140},
-    ]
-
-    # browserChartConfig equivalent in Python
-    browser_chart_config = {
-        "visitors": {
-            "label": "Visitors",
-        },
-        "chrome": {
-            "label": "Chrome",
-            "color": "hsl(var(--chart-1))",
-        },
-        "safari": {
-            "label": "Safari",
-            "color": "hsl(var(--chart-2))",
-        },
-        "firefox": {
-            "label": "Firefox",
-            "color": "hsl(var(--chart-3))",
-        },
-        "edge": {
-            "label": "Edge",
-            "color": "hsl(var(--chart-4))",
-        },
-        "other": {
-            "label": "Other",
-            "color": "hsl(var(--chart-5))",
-        },
-    }
-
-    # browserChartData equivalent in Python
-    browser_chart_data = [
-        {"browser": "chrome", "visitors": 275, "fill": "var(--color-chrome)"},
-        {"browser": "safari", "visitors": 200, "fill": "var(--color-safari)"},
-        {"browser": "firefox", "visitors": 187, "fill": "var(--color-firefox)"},
-        {"browser": "edge", "visitors": 173, "fill": "var(--color-edge)"},
-        {"browser": "other", "visitors": 90, "fill": "var(--color-other)"},
-    ]
-
+    
     def create_dashboard_card_object(insight):
         return {
             "id": str(insight["insight_id"]),
             "key": str(insight["insight_id"]),
             "title": insight["title"],
             "chartType": insight["chart_type"],
-            "chartData": (
-                {
-                    "chartConfig": browser_chart_config,
-                    "data": browser_chart_data,
-                    "nameKey": "browser",
-                    "dataKey": "visitors",
-                }
-                if insight["chart_type"] == "pie"
-                else {
-                    "chartConfig": chart_config,
-                    "data": db_data,
-                    "xAxisDataKey": "month",
-                    "dataKeys": ["desktop", "mobile"],
-                }
-            ),
+            "chartData": insight["visualization_data"],
             "projectId": str(insight["project_id"]),
         }
 
