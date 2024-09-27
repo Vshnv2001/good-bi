@@ -46,6 +46,8 @@ For questions like "plot a distribution of the fares for men and women", count t
 SKIP ALL ROWS WHERE ANY COLUMN IS NULL or "N/A" or "".
 Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
 Just give the query string. Do not format it. Make sure to use the correct spellings of nouns as provided in the unique nouns list.
+For column names, use the format "table_name.column_name".
+Show most of the columns, especially the name of the product, the quantity, and the price.
 Limit the number of results to {max_results}.
 """,
                 ),
@@ -79,6 +81,7 @@ Check for the following issues:
 - The schema name and table name should not be modified, if it is dash-separated, it should remain dash-separated. 
 - If the table name is incorrect, provide the correct table name.
 - For every column, if the column name is incorrect, provide the correct column name.
+- Use table_name.column_name format for column names.
 - Check for any other issues that may cause the query to fail.
 
 If no issues are found, return the original query.
