@@ -5,11 +5,10 @@ import dotenv
 
 dotenv.load_dotenv()
 
-
 class LLMManager:
-    def __init__(self, model="gpt-4o"):
+    def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
-        self.llm = ChatOpenAI(model=model, temperature=0, api_key=api_key)
+        self.llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=api_key)
 
     def invoke(self, prompt: ChatPromptTemplate, **kwargs) -> str:
         messages = prompt.format_messages(**kwargs)
