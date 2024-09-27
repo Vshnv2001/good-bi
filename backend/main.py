@@ -1,3 +1,4 @@
+import json
 import uuid
 from fastapi import FastAPI, File, UploadFile, Form, File, UploadFile, Form
 from fastapi.responses import FileResponse, JSONResponse
@@ -14,15 +15,78 @@ from supertokens_python.recipe import emailpassword, session
 from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
+from goodbi_agent.MetadataAgent import MetadataAgent
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict, Any
 import os
 from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
-
+from supertokens_python.recipe.emailpassword.interfaces import (
+    APIInterface,
+    APIOptions,
+    SignUpPostOkResult,
+)
+from supertokens_python.recipe.emailpassword.types import FormField
+from supertokens_python.recipe.emailpassword import InputFormField
 from goodbi_agent.agent import GoodBIAgent
 
+
+def override_email_password_apis(original_implementation: APIInterface):
+    original_sign_up_post = original_implementation.sign_up_post
+
+    async def sign_up_post(
+        form_fields: List[FormField],
+        tenant_id: str,
+        api_options: APIOptions,
+        user_context: Dict[str, Any],
+    ):
+        # First we call the original implementation of sign_up_post.
+        response = await original_sign_up_post(
+            form_fields, tenant_id, api_options, user_context
+        )
+
+        # Post sign up response, we check if it was successful
+        if isinstance(response, SignUpPostOkResult):
+            user_id = response.user.user_id
+            __ = response.user.email
+
+            name = ""
+
+            for field in form_fields:
+                if field.id == "name":
+                    name = field.value
+
+            async for db_session in get_db():
+                async with db_session as session:
+                    await session.execute(
+                        text(
+                            f"CREATE TABLE IF NOT EXISTS users (user_id UUID PRIMARY KEY, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)"
+                        )
+                    )
+                    await session.commit()
+
+                    await session.execute(
+                        text(
+                            f"""
+                        INSERT INTO users
+                        (user_id, name)
+                        VALUES (:user_id, :name)
+                    """
+                        ),
+                        {"user_id": user_id, "name": name},
+                    )
+
+                    await session.commit()
+
+        return response
+
+    original_implementation.sign_up_post = sign_up_post
+    return original_implementation
+
+
 load_dotenv()
+agent = GoodBIAgent()
+print(os.getenv("NEXT_PUBLIC_FRONTEND_URL"))
 
 init(
     app_info=InputAppInfo(
@@ -37,12 +101,21 @@ init(
         api_key="FNvAao5-YkZKaRMPzgOhiVOek8",
     ),
     framework="fastapi",
-    recipe_list=[session.init(), emailpassword.init()],  # initializes session features
+    recipe_list=[
+        session.init(),  # initializes session features
+        emailpassword.init(
+            sign_up_feature=emailpassword.InputSignUpFeature(
+                form_fields=[InputFormField(id="name")]
+            ),
+            override=emailpassword.InputOverrideConfig(
+                apis=override_email_password_apis
+            ),
+        ),
+    ],
     mode="asgi",  # use wsgi if you are running using gunicorn
 )
 
 app = FastAPI()
-agent = GoodBIAgent()
 app.add_middleware(get_middleware())
 
 app.add_middleware(
@@ -121,9 +194,11 @@ async def get_datasets(
 
     datasets = []
 
+    print(f"Tables: {tables}")
+
     for table_name in tables:
         # Query to get the first three rows from the table
-        if table_name == "user_tables_metadata":
+        if table_name == "user_tables_metadata" or table_name == "projects":
             continue
         result = await db.execute(
             text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3')
@@ -134,7 +209,7 @@ async def get_datasets(
         columns = [col for col in result.keys()]
         json_rows = [dict(zip(columns, [str(value) for value in row])) for row in rows]
         description = await db.execute(
-            text(f'SELECT description FROM "{user_id}"."{table_name}" LIMIT 1')
+            text(f'SELECT gb_description FROM "{user_id}"."{table_name}" LIMIT 1')
         )
         description = description.fetchone()[0]
 
@@ -168,30 +243,62 @@ async def create_dataset(
     metadata_agent = agent
     metadata = metadata_agent.get_table_metadata(df)
     print(f"Metadata: {metadata}")
+    column_types = metadata["column_types"]
+    valid_postgres_column_types = [
+        "TEXT",
+        "INTEGER",
+        "BOOLEAN",
+        "TIMESTAMP",
+        "FLOAT",
+        "DOUBLE PRECISION",
+        "NUMERIC",
+        "GEOGRAPHY",
+        "GEOMETRY",
+        "JSONB",
+    ]
+    # If the column type is not in the valid_postgres_column_types, set it to 'TEXT'
+    for column, col_type in column_types.items():
+        if col_type not in valid_postgres_column_types:
+            column_types[column] = "TEXT"
+
+    for column, col_type in column_types.items():
+        if col_type == "INTEGER":
+            df[column] = df[column].astype("Int64")  # Use 'Int64' to handle NaNs
+        elif col_type == "FLOAT" or col_type == "DOUBLE PRECISION":
+            df[column] = df[column].astype("float64")
+        elif col_type == "BOOLEAN":
+            df[column] = df[column].astype("bool")
+        elif col_type == "TIMESTAMP":
+            df[column] = pd.to_datetime(df[column])
+        else:
+            df[column] = df[column].astype("str")
+
     user_id = auth_session.get_user_id()
     await metadata_agent.save_metadata(metadata, db, user_id)
-    print(f"User ID: {user_id}")
 
     # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
     columns = ", ".join(
-        [f'"{col}" TEXT' for col in df.columns]
-        + ["user_id TEXT"]
-        + [f'"file_id" TEXT']
-        + ["gb_description TEXT"]
-        + ["created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
+        [f'"{col}" {col_type}' for col, col_type in column_types.items()]
+        + [
+            "user_id TEXT",
+            "file_id TEXT",
+            "gb_description TEXT",
+            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+        ]
     )
+
+    # Create schema if it doesn't exist for storing the table/datas
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(
         text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})')
     )
-    await db.commit()
 
     await db.execute(
         text(
             f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'
         )
     )
-    await db.commit()
+
     await db.execute(
         text(
             f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'
@@ -202,7 +309,6 @@ async def create_dataset(
             "table_description": datasetDescription,
         },
     )
-    await db.commit()
 
     print(f"Columns: {columns}")
     # Insert rows into the table
@@ -211,11 +317,10 @@ async def create_dataset(
         row = list(row)
         row += [user_id, file_id, datasetDescription]
         placeholders = ", ".join([":{}".format(i) for i in range(len(row))])
-        # Convert all values to strings
-        row_as_str = tuple(str(value) for value in row)
+        # Use the original data types
         await db.execute(
             text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'),
-            {str(i): value for i, value in enumerate(row_as_str)},
+            {str(i): value for i, value in enumerate(row)},
         )
 
     await db.commit()
@@ -1117,6 +1222,33 @@ async def update_insights_layout(
     await db.commit()
 
     return JSONResponse(content={"message": "Layout updated successfully"})
+
+
+@app.get("/api/user/data")
+async def get_datasets(
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    result = await db.execute(
+        text(
+            f"""
+        SELECT * 
+        FROM users 
+        WHERE user_id = :user_id 
+    """
+        ),
+        {"user_id": user_id},
+    )
+    user_data_list = result.fetchall()
+    user_data_list = [r._asdict() for r in user_data_list]
+
+    user_data = user_data_list[0]
+
+    # Return JSON response with user data
+    return JSONResponse(content={"name": user_data["name"]})
 
 
 @app.get("/health_check")

@@ -11,10 +11,7 @@ class MetadataAgent:
     # Agent that extracts metadata from a given SQL table
     def __init__(self, llm_manager=None):
         # Initialize LangChain or any other necessary components
-        if llm_manager is not None:
-            self.llm_manager = llm_manager
-        else:
-            self.llm_manager = LLMManager()
+        self.llm_manager = LLMManager()
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -93,7 +90,6 @@ class MetadataAgent:
             return
 
         # Serialize the JSON data
-
         serialized_metadata = {
             "table_name": metadata["table_name"],
             "column_names": json.dumps(metadata["column_names"]),
