@@ -691,20 +691,42 @@ async def visualize_query(
             "visualization": "",
             "visualization_reason": "",
             "formatted_data_for_visualization": {},
-            "kpi_suggested": {},
         }
 
         metadata = await db.execute(
             text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
         )
-
+        
         agent.core_sql_pipeline(user_id, query, metadata)
+
+        if not agent.state["sql_valid"] and not agent.state["corrected_query"]:
+            return JSONResponse(
+                content={
+                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                }
+            )
+
         result = await db.execute(text(agent.state["sql_query"]))
         result = result.fetchall()
         result = [r._asdict() for r in result]
+
+        if len(result) == 0:
+            return JSONResponse(
+                content={
+                    "error": "Query result is empty. Please check your KPI description and try again."
+                }
+            )
         agent.state["results"] = result
 
     agent.core_visualization_pipeline()
+
+    if agent.state["error"] != "":
+        return JSONResponse(
+            content={
+                "error": agent.state["error"] + " Please refine your KPI description and try again."
+            }
+        )
+
     return JSONResponse(
         content={
             "visualization": agent.state["visualization"],
