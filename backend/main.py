@@ -8,7 +8,6 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
 from fastapi import Depends
 from utils.db_utils import get_db
-from models.org_tables import OrgTables
 from sqlalchemy import text
 from supertokens_python import init, InputAppInfo, SupertokensConfig
 from supertokens_python.recipe import emailpassword, session
@@ -17,8 +16,11 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List
-import os
+import os   
+from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
+
+load_dotenv()
 
 init(
     app_info=InputAppInfo(
@@ -93,6 +95,8 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
 
     for table_name in tables:
         # Query to get the first three rows from the table
+        if table_name == "user_tables_metadata":
+            continue
         result = await db.execute(text(f'SELECT * FROM "{user_id}"."{table_name}"'))
         rows = result.fetchall()
 
@@ -135,8 +139,10 @@ async def create_dataset(
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
     await db.commit()
-    orgtable = OrgTables(user_id=user_id, table_name=datasetName, table_description=datasetDescription)
-    db.add(orgtable)
+    
+    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
+    await db.commit()
+    await db.execute(text(f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription})
     await db.commit()
 
     print(f"Columns: {columns}")
