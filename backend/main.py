@@ -414,7 +414,7 @@ async def create_insight(
         )
     )
     await db.commit()
-    
+
     insight_id = str(uuid.uuid4())
 
     await db.execute(
@@ -506,6 +506,7 @@ async def user_query(
     auth_session: SessionContainer = Depends(verify_session()),
     db: AsyncSession = Depends(get_db),
 ):
+    # Get the user ID
     user_id = auth_session.get_user_id()
 
     # get metadata
@@ -523,6 +524,7 @@ async def user_query(
     return JSONResponse(content=result)
 
 
+# Get the suggested KPIs
 @app.post("/api/{user_id}/suggest_kpis")
 async def suggest_kpis(
     query: str = Form(...),

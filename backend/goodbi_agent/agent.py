@@ -10,6 +10,7 @@ from .State import State
 
 
 class GoodBIAgent:
+    # The GoodBIAgent class is the main class that orchestrates the different agents to perform the core functionality of the GoodBI system.
     def __init__(self, max_results: int = 25, user_id: str = None):
         self.llm_manager = LLMManager()
         self.sql_agent = SQLAgent(self.llm_manager, max_results)

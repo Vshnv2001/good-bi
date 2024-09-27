@@ -4,6 +4,7 @@ import json
 
 
 class DataFormatter:
+    # Class to format data for visualization
     def __init__(self, llm_manager=None):
         if llm_manager is not None:
             self.llm_manager = llm_manager

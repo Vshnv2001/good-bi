@@ -4,6 +4,7 @@ from typing_extensions import Annotated, TypedDict
 
 
 class State(TypedDict):
+    # State of the agent
     question: str  # User question
     user_id: str  # User ID
     parsed_question: Dict[str, Any]  # Parsed question, used in backend

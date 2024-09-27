@@ -4,6 +4,7 @@ from .LLMManager import LLMManager
 
 
 class KPISuggesterAgent:
+    # Agent that determines the appropriate graph type for a given SQL query and question
     def __init__(self, llm_manager=None):
         if llm_manager is not None:
             self.llm_manager = llm_manager
@@ -23,7 +24,7 @@ How each selected KPI contributes to actionable insights or decision-making.
 Dataset:
 {relevant_tables}
 
-Goal: Select the {k} most important KPIs based on the data and provide reasoning for your choices in the JSON format below.
+Goal: Select the {k} most important KPIs based on the data and provide reasoning for your choices in the JSON format below. 
 
 
     Sample JSON format:
