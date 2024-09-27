@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { doesSessionExist } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { EyeClosedIcon } from "@radix-ui/react-icons";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   email: z
@@ -61,16 +62,16 @@ export default function Login() {
         response.formFields.forEach(formField => {
           if (formField.id === "email") {
             // Email validation failed (for example incorrect email syntax).
-            window.alert(formField.error)
+            toast.error(formField.error)
           }
         })
       } else if (response.status === "WRONG_CREDENTIALS_ERROR") {
-        window.alert("Email password combination is incorrect.")
+        toast.error("Email password combination is incorrect.")
       } else if (response.status === "SIGN_IN_NOT_ALLOWED") {
         // the reason string is a user friendly message
         // about what went wrong. It can also contain a support code which users
         // can tell you so you know why their sign in was not allowed.
-        window.alert(response.reason)
+        toast.error(response.reason)
       } else {
         // sign in successful. The session tokens are automatically handled by
         // the frontend SDK.
@@ -79,9 +80,9 @@ export default function Login() {
     } catch (err: any) {
       if (err.isSuperTokensGeneralError === true) {
         // this may be a custom error message sent from the API by you.
-        window.alert(err.message);
+        toast.error(err.message);
       } else {
-        window.alert("Oops! Something went wrong.");
+        toast.error("Oops! Something went wrong.");
       }
     }
   }
