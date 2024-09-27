@@ -148,6 +148,11 @@ export function CustomCombobox({
                       </CommandItem>)}
                   </CommandList>
                 </CommandGroup>
+                <CommandEmpty>
+                  <div className="px-8 text-wrap">
+                    Create a dataset by entering a name.
+                  </div>
+                </CommandEmpty>
               </div>
             </ScrollArea>
           </Command>
