@@ -15,8 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List
-import os   
+from typing import List, Dict
+import os
 from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
 from supertokens_python.recipe.emailpassword.interfaces import APIInterface, APIOptions, SignUpPostOkResult
@@ -34,13 +34,13 @@ def override_email_password_apis(original_implementation: APIInterface):
         if isinstance(response, SignUpPostOkResult):
             user_id = response.user.user_id
             __ = response.user.email
-            
+
             name = ""
 
             for field in form_fields:
                 if field.id == "name":
                     name = field.value
-            
+
             async for db_session in get_db():
                 async with db_session as session:
                     await session.execute(text(f'CREATE TABLE IF NOT EXISTS users (user_id UUID PRIMARY KEY, name VARCHAR(255), created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'))
@@ -185,7 +185,7 @@ async def create_dataset(
     await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})'))
     await db.commit()
-    
+
     await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
     await db.commit()
     await db.execute(text(f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription})
@@ -753,7 +753,7 @@ async def update_insights_layout(
 async def get_datasets(auth_session: SessionContainer = Depends(verify_session()), db: AsyncSession = Depends(get_db)):
     user_id = auth_session.get_user_id()
     print(f"User ID: {user_id}")
-    
+
     result = await db.execute(text(f"""
         SELECT * 
         FROM users 
@@ -763,7 +763,7 @@ async def get_datasets(auth_session: SessionContainer = Depends(verify_session()
     user_data_list = [r._asdict() for r in user_data_list]
 
     user_data = user_data_list[0]
-    
+
     # Return JSON response with user data
     return JSONResponse(content={'name': user_data['name']})
 
