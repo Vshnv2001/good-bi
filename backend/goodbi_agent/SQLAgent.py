@@ -4,6 +4,7 @@ from .LLMManager import LLMManager
 
 
 class SQLAgent:
+    # Agent that generates and validates SQL queries based on user questions, database schema, and relevant tables
     def __init__(self, llm_manager=None, max_results: int = 25):
         # if llm_manager is not None:
         #     self.llm_manager = llm_manager
@@ -67,28 +68,21 @@ Generate an accurate SQL query to answer the user's question.""",
                 (
                     "system",
                     """You are an AI assistant that validates and fixes SQL queries. Your task is to:
-Check if the SQL query is valid.
-Single quotes not double quotes around empty strings, double quotes ONLY make delimited identifiers, and "" isn't a meaningful identifier.
-For numeric types, do not check for empty strings or "N/A".
-Ensure all table and column names are correctly spelled and exist in the schema.
-Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
-If there are any issues, fix them and provide the corrected SQL query.
-Ensure that the correct table, schema, and column names are used.
-The correct format for table name is "schema_name.table_name".
-The schema name and table name should not be modified, if it is dash-separated, it should remain dash-separated.
-If the table name is incorrect, provide the correct table name.
+Check if the SQL query is valid. If there are any issues, fix them and provide the corrected SQL query.
+
+Check for the following issues:
+- Single quotes not double quotes around empty strings, double quotes ONLY make delimited identifiers, and "" isn't a meaningful identifier.
+- For numeric types, do not check for empty strings or "N/A".
+- Ensure all table and column names are correctly spelled and exist in the schema.
+- Ensure that the conditions in the WHERE clause are valid with respect to the column types. For example, for string columns, ensure that the comparison is done with a string value. For numeric columns, ensure that the comparison is done with a numeric value.
+- Ensure that the correct table, schema, and column names are used. The correct format for table name is "schema_name.table_name".
+- The schema name and table name should not be modified, if it is dash-separated, it should remain dash-separated. 
+- If the table name is incorrect, provide the correct table name.
+- For every column, if the column name is incorrect, provide the correct column name.
+- Check for any other issues that may cause the query to fail.
+
 If no issues are found, return the original query.
 
-
-Respond in JSON format with the following structure. Only respond with the JSON:
-{{
-    "valid": boolean,
-    "issues": string or null,
-    "corrected_query": string
-}}
-'''),
-            ("human", '''===Generated SQL query:
-{sql_query}
 
 Respond in JSON format with the following structure. Only respond with the JSON:
 {{
@@ -106,30 +100,26 @@ For example:
              
 2. {{
     "valid": false,
-    "issues": "Column USERS does not exist",
+    "issues": "Column user(s) does not exist",
     "corrected_query": "SELECT * FROM users WHERE age > 25"
 }}
 """,
                 ),
                 (
                     "human",
-                    """
-===User question:
+                    """===User question: {question}
 
-{question}
+===Schema name:  {schema_name}
 
-===Schema name: 
+===SQL query: {sql_query}
 
-{schema_name}
+===Table name: {table_name}
 
-===Relevant tables and columns:
+===Column details:
 
-{relevant_tables}
+{column_details}
 
-===SQL query:
-{sql_query}
-
-Validate the SQL query and provide the corrected query if necessary.""",
+Validate the SQL query and provide the corrected query.""",
                 ),
             ]
         )
@@ -156,7 +146,8 @@ Validate the SQL query and provide the corrected query if necessary.""",
         response = self.llm_manager.invoke(
             self.validation_prompt,
             question=question,
-            relevant_tables=relevant_tables,
+            table_name=relevant_tables[0]["table_name"],
+            column_details=relevant_tables[0]["columns"],
             sql_query=sql_query,
             schema_name=schema_name,
         )
@@ -169,9 +160,12 @@ Validate the SQL query and provide the corrected query if necessary.""",
             validated_query = self._validate_sql_query(
                 question, schema_name, relevant_tables, query["query"]
             )
-            validated_query["query"] = validated_query["corrected_query"].replace(
-                "`", '"'
-            )
+            if not validated_query["valid"]:
+                validated_query["query"] = validated_query["corrected_query"].replace(
+                    "`", '"'
+                )
+            else:
+                validated_query["query"] = query["query"].replace("`", '"')
             return validated_query
         else:
             # Query is not valid

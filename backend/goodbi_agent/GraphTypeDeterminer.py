@@ -4,6 +4,7 @@ from .LLMManager import LLMManager
 
 
 class GraphTypeDeterminerAgent:
+    # Agent that determines the appropriate graph type for a given SQL query and question
     def __init__(self, llm_manager=None):
         if llm_manager is not None:
             self.llm_manager = llm_manager

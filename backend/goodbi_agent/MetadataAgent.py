@@ -8,12 +8,10 @@ from sqlalchemy import inspect, text
 
 
 class MetadataAgent:
+    # Agent that extracts metadata from a given SQL table
     def __init__(self, llm_manager=None):
         # Initialize LangChain or any other necessary components
-        if llm_manager is not None:
-            self.llm_manager = llm_manager
-        else:
-            self.llm_manager = LLMManager()
+        self.llm_manager = LLMManager()
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -26,7 +24,7 @@ class MetadataAgent:
             "table_name": string,
             "column_names": [string],
             "column_descriptors": dict[string, string],
-            "column_types": dict[string, string],
+            "column_types": dict[string, string], // This is the type of the POSTGRESQL column, for example, TEXT, INTEGER, etc.
             "data_sample": [string]
         }}
 
@@ -48,6 +46,10 @@ class MetadataAgent:
         column_names = df.columns.tolist()
 
         output_parser = JsonOutputParser()
+
+        response = self.llm_manager.invoke(
+            self.prompt, sample=first_three_rows_list, column_names=column_names
+        )
 
         response = self.llm_manager.invoke(
             self.prompt, sample=first_three_rows_list, column_names=column_names

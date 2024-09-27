@@ -5,16 +5,19 @@ from .MetadataAgent import MetadataAgent
 from .PruningAgent import PruningAgent
 from .InterpreterAgent import InterpreterAgent
 from .GraphTypeDeterminer import GraphTypeDeterminerAgent
+from .KPISuggesterAgent import KPISuggesterAgent
 from .State import State
 
 
 class GoodBIAgent:
+    # The GoodBIAgent class is the main class that orchestrates the different agents to perform the core functionality of the GoodBI system.
     def __init__(self, max_results: int = 25, user_id: str = None):
         self.llm_manager = LLMManager()
         self.sql_agent = SQLAgent(self.llm_manager, max_results)
         self.metadata_agent = MetadataAgent(self.llm_manager)
         self.pruning_agent = PruningAgent(self.llm_manager)
         self.interpreter_agent = InterpreterAgent(self.llm_manager)
+        self.kpi_suggester_agent = KPISuggesterAgent(self.llm_manager)
         self.data_formatter = DataFormatter()
         self.graph_type_agent = GraphTypeDeterminerAgent()
         self.state = State()
@@ -31,6 +34,7 @@ class GoodBIAgent:
             "visualization": "",
             "visualization_reason": "",
             "formatted_data_for_visualization": {},
+            "kpi_suggested": {},
         }
         self.state = state
         if user_id is not None:
@@ -50,10 +54,10 @@ class GoodBIAgent:
     def get_table_metadata(self, df):
         return self.metadata_agent.get_table_metadata(df)
 
-    def get_relevant_columns(self, query: str, column_names: list):
+    def get_relevant_columns(self, query: str, metadata: list):
         self.state["question"] = query
         self.state["parsed_question"] = self.pruning_agent.get_relevant_columns(
-            query, column_names
+            query, metadata
         )
 
     def save_metadata(self, metadata: dict, db, user_id: str):
@@ -77,8 +81,12 @@ class GoodBIAgent:
     def core_sql_pipeline(self, user_id: str, query: str, metadata):
         self.state["question"] = query
         self.state["user_id"] = user_id
+
+        metadata = [r._asdict() for r in metadata]
+
         self.get_relevant_columns(query, metadata)
         self.make_query()
+
         print(self.state["sql_issues"])
         print(self.state["sql_query"])
 
@@ -88,3 +96,9 @@ class GoodBIAgent:
 
     def core_interpretation_pipeline(self):
         self.interpret_results()
+
+    def suggest_kpis(self, table_data, k=5):
+        self.state["kpi_suggested"] = self.kpi_suggester_agent.suggest_kpis(
+            table_data, k
+        )
+        return self.state["kpi_suggested"]
