@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 
-import { Pencil, RotateCw, ThumbsDown, ThumbsUp, CalendarDays } from "lucide-react";
+import { Pencil, RotateCw, ThumbsDown, ThumbsUp, CalendarDays, Info } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,13 +27,14 @@ import {
   CardContent,
 } from "@/components/ui/card"
 
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -83,6 +84,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
   const [visualizationType, setVisualizationType] = useState<string | null>(null);
   const [visualizationData, setVisualizationData] = useState<ChartData | null>(null);
   const [insightFormData, setInsightFormData] = useState<FormData>();
+  const [explanation, setExplanation] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchDatasetNames() {
@@ -137,6 +139,10 @@ export default function NewDashboard({ params }: { params: { projectid: string }
       if (returnedVisualizationType != "none") {
         const formattedVisualizationData = responseData['formatted_data_for_visualization']['formatted_data_for_visualization'];
 
+        if ("explanation" in responseData) {
+          setExplanation(responseData["explanation"])
+        }
+        
         if (returnedVisualizationType == "bar") {
           const formattedBarData = formattedVisualizationData as {
             labels: string[],
@@ -224,7 +230,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
           setVisualizationType(ChartType.Line);
           setVisualizationData(lineChartData);
         } else if (returnedVisualizationType == "pie") {
-          const formattedPieData = formattedVisualizationData as{
+          const formattedPieData = formattedVisualizationData as {
             id: number
             value: number
             label: string
@@ -273,9 +279,9 @@ export default function NewDashboard({ params }: { params: { projectid: string }
     }
   }
 
-  async function regenerateInsight(chartType: string) : Promise<boolean> {
+  async function regenerateInsight(chartType: string): Promise<boolean> {
     const visualizeFormData = new FormData();
-    
+
     if (!insightFormData) {
       toast("Please reload the page and try again.");
       return false;
@@ -296,11 +302,15 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         toast.error(responseData["error"]);
         return false;
       }
-      
+
       const returnedVisualizationType = responseData["visualization"];
 
       if (returnedVisualizationType != "none") {
         const formattedVisualizationData = responseData['formatted_data_for_visualization']['formatted_data_for_visualization'];
+
+        if ("explanation" in responseData) {
+          setExplanation(responseData["explanation"])
+        }
 
         if (returnedVisualizationType == "bar") {
           const formattedBarData = formattedVisualizationData as {
@@ -401,7 +411,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
 
           return true;
         } else if (returnedVisualizationType == "pie") {
-          const formattedPieData = formattedVisualizationData as{
+          const formattedPieData = formattedVisualizationData as {
             id: number
             value: number
             label: string
@@ -451,7 +461,7 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         } else {
           setVisualizationType(null);
           setVisualizationData(null);
-  
+
           return false;
         }
       } else {
@@ -510,9 +520,24 @@ export default function NewDashboard({ params }: { params: { projectid: string }
                           : <div></div>
                   }
                   <div className="absolute flex flex-col gap-1.5 top-3 right-3">
-                    <Button variant="outline" size="icon">
-                      <Pencil className="h-5 w-5" />
-                    </Button>
+                    {explanation && <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <Info className="h-5 w-5" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle className="text-xl">Explanation</DialogTitle>
+                          <DialogDescription>
+                            {
+                              explanation
+                            }
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                    }
                     <Button variant="outline" size="icon" onClick={() => toast('Thanks for the feedback!')}>
                       <ThumbsUp className="h-5 w-5" />
                     </Button>

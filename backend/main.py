@@ -646,6 +646,7 @@ async def suggest_kpis(
     metadata = await db.execute(
         text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
     )
+
     agent.suggest_kpis(query, metadata, k=5)
     return JSONResponse(content=agent.state["kpi_suggested"])
 
@@ -732,6 +733,7 @@ async def visualize_query(
 
     return JSONResponse(
         content={
+            "explanation": agent.state["interpreted_answer"]["answer"],
             "visualization": agent.state["visualization"],
             "visualization_reason": agent.state["visualization_reason"],
             "formatted_data_for_visualization": agent.state[
@@ -802,6 +804,7 @@ async def regenerate_visualize_query(
 
     return JSONResponse(
         content={
+            "explanation": agent.state["interpreted_answer"]["answer"],
             "visualization": agent.state["visualization"],
             "visualization_reason": agent.state["visualization_reason"],
             "formatted_data_for_visualization": agent.state[
