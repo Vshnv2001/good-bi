@@ -111,13 +111,12 @@ export function DatasetCard({dataset, datasets, setDatasets}: DatasetCardProps) 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Trash className="size-4 mr-1.5" onClick={deleteFile}/>
+            <DropdownMenuItem className="cursor-pointer" onClick={deleteFile}>
+              <Trash className="size-4 mr-1.5"/>
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
       </CardHeader>
       <CardContent>
         {dataset.datasetDescription && <p className="mb-4 italic">{dataset.datasetDescription}</p>}
