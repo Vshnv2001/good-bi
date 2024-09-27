@@ -499,10 +499,7 @@ async def delete_project(
 
 @app.post("/api/insights/new")
 async def create_insight(
-    dataset_id: str = Form(...),
     chart_type: str = Form(...),
-    start_date: str = Form(...),
-    end_date: str = Form(...),
     title: str = Form(...),
     kpi_description: str = Form(...),
     project_id: str = Form(...),
@@ -519,31 +516,26 @@ async def create_insight(
 
     await db.execute(
         text(
-            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, dataset_id VARCHAR(255), title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), start_date TIMESTAMPTZ, end_date TIMESTAMPTZ, visualization_data JSONB, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
+            f'CREATE TABLE IF NOT EXISTS "{user_id}.user_data".insights (insight_id UUID, user_id UUID, project_id UUID, title VARCHAR(255), kpi_description TEXT, chart_type VARCHAR(255), visualization_data JSONB, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)'
         )
     )
     await db.commit()
-
-    insight_id = str(uuid.uuid4())
 
     await db.execute(
         text(
             f"""
         INSERT INTO "{user_id}.user_data".insights
-        (insight_id, user_id, project_id, dataset_id, title, kpi_description, chart_type, start_date, end_date, visualization_data)
-        VALUES (:insight_id, :user_id, :project_id, :dataset_id, :title, :kpi_description, :chart_type, :start_date, :end_date, :visualization_data)
+        (insight_id, user_id, project_id, title, kpi_description, chart_type, visualization_data)
+        VALUES (:insight_id, :user_id, :project_id, :title, :kpi_description, :chart_type, :visualization_data)
     """
         ),
         {
             "insight_id": insight_id,
             "user_id": user_id,
             "project_id": project_id,
-            "dataset_id": dataset_id,
             "title": title,
             "kpi_description": kpi_description,
             "chart_type": chart_type,
-            "start_date": datetime.strptime(start_date, "%m-%d-%Y"),
-            "end_date": datetime.strptime(end_date, "%m-%d-%Y"),
             "visualization_data": visualization_data
         },
     )
