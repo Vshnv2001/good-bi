@@ -13,6 +13,7 @@ import { signUp } from "supertokens-web-js/recipe/emailpassword";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { doesSessionExist } from "@/lib/utils";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Please enter a name." }),
@@ -50,6 +51,9 @@ export default function Signup() {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast.loading("Signing you up...", {
+      id: 'signup-toast'
+    })
     try {
       const response = await signUp({
           formFields: [{
@@ -63,25 +67,25 @@ export default function Signup() {
               value: data.name
           }]
       })
-
+      toast.dismiss('signup-toast')
       if (response.status === "FIELD_ERROR") {
           // one of the input formFields failed validation
           response.formFields.forEach(formField => {
               if (formField.id === "email") {
                   // Email validation failed (for example incorrect email syntax),
                   // or the email is not unique.
-                  window.alert(formField.error)
+                  toast.error(formField.error)
               } else if (formField.id === "password") {
                   // Password validation failed.
                   // Maybe it didn't match the password strength
-                  window.alert(formField.error)
+                  toast.error(formField.error)
               }
           })
       } else if (response.status === "SIGN_UP_NOT_ALLOWED") {
           // the reason string is a user friendly message
           // about what went wrong. It can also contain a support code which users
           // can tell you so you know why their sign up was not allowed.
-          window.alert(response.reason)
+          toast.error(response.reason)
       } else {
           // sign up successful. The session tokens are automatically handled by
           // the frontend SDK.
@@ -90,9 +94,9 @@ export default function Signup() {
   } catch (err: any) {
       if (err.isSuperTokensGeneralError === true) {
           // this may be a custom error message sent from the API by you.
-          window.alert(err.message);
+          toast.error(err.message);
       } else {
-          window.alert("Oops! Something went wrong.");
+          toast.error("Oops! Something went wrong.");
       }
   }
   }
