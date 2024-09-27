@@ -1,27 +1,27 @@
 "use client"
 
 import Link from "next/link";
-import {Form, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {LucideChevronLeft} from "lucide-react";
-import {signIn} from "supertokens-web-js/recipe/emailpassword";
-import {useEffect} from "react";
-import {doesSessionExist} from "@/lib/utils";
-import {useRouter} from "next/navigation";
+import { LucideChevronLeft } from "lucide-react";
+import { signIn } from "supertokens-web-js/recipe/emailpassword";
+import { useEffect } from "react";
+import { doesSessionExist } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   email: z
     .string()
-    .min(1, {message: "Please enter an email."})
-    .email({message: "Invalid email."}),
+    .min(1, { message: "Please enter an email." })
+    .email({ message: "Invalid email." }),
   password: z
     .string()
-    .min(1, {message: "Please enter a password."}),
+    .min(1, { message: "Please enter a password." }),
 })
 
 export default function Login() {
@@ -98,7 +98,7 @@ export default function Login() {
       <div className="max-w-lg px-4 w-full place-self-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold w-fit mx-auto -mt-8"
+          className="flex items-center gap-2 text-4xl text-primary-500 font-extrabold font-logo w-fit mx-auto -mt-8"
         >
           <Image src={`/icons/goodbi-logo.svg`} alt="GoodBI" className="h-12 w-10" width="28" height="28"/>
           GoodBI

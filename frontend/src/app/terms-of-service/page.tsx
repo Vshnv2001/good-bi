@@ -2,9 +2,9 @@
 
 import LandingNavBar from "@/app/components/Landing/LandingNavBar";
 import LandingFooter from "@/app/components/Landing/LandingFooter";
-import {useRouter} from "next/navigation";
-import {useEffect} from "react";
-import {doesSessionExist} from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { doesSessionExist } from "@/lib/utils";
 
 export default function TermsOfService() {
   const router = useRouter();

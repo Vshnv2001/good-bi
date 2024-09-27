@@ -19,12 +19,9 @@ from pydantic import BaseModel
 from typing import Dict, Any, List
 import os
 from supertokens_python import get_all_cors_headers
-from dotenv import load_dotenv
 from supertokens_python.recipe.emailpassword.interfaces import APIInterface, APIOptions, SignUpPostOkResult
 from supertokens_python.recipe.emailpassword.types import FormField
 from supertokens_python.recipe.emailpassword import InputFormField
-
-load_dotenv()
 
 def override_email_password_apis(original_implementation: APIInterface):
     original_sign_up_post = original_implementation.sign_up_post
@@ -94,7 +91,7 @@ app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app/"],  # Add your frontend URLs
+    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app"],  # Add your frontend URLs
     allow_credentials=True,
     allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Content-Type"] + get_all_cors_headers(),

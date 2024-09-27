@@ -1,5 +1,4 @@
-import {cn} from '@/lib/utils'
-import {AnimatePresence, motion} from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   LucideBrainCog,
   LucideCheck,
@@ -8,9 +7,8 @@ import {
   LucideMail, LucideServer,
   LucideSparkles,
 } from 'lucide-react'
-import {useState} from 'react'
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 const pricingPlans = [
   {
@@ -74,7 +72,7 @@ const pricingPlans = [
 ]
 
 const Pricing = () => {
-  const [billingCycle, setBillingCycle] = useState<'M' | 'A'>('M')
+  const billingCycle = 'M'
 
   const Heading = () => (
     <div className="relative z-10 my-12 flex flex-col items-center justify-center gap-4">
@@ -87,34 +85,6 @@ const Pricing = () => {
           Get started with GoodBI and take your business intelligence to the next level.
         </p>
       </div>
-      {/*
-      <div className="flex items-center justify-center gap-3">
-        <button
-          onClick={() => setBillingCycle('M')}
-          className={cn(
-            `rounded-lg px-4 py-2 text-sm font-medium `,
-            billingCycle === 'M'
-              ? 'relative bg-red-500 text-white '
-              : 'text-gray-700 hover:bg-red-100 dark:text-gray-300 dark:hover:text-black',
-          )}
-        >
-          Monthly
-          {billingCycle === 'M' && <BackgroundShift shiftKey="monthly" />}
-        </button>
-        <button
-          onClick={() => setBillingCycle('A')}
-          className={cn(
-            `rounded-lg px-4 py-2 text-sm font-medium `,
-            billingCycle === 'A'
-              ? 'relative bg-red-500 text-white '
-              : 'text-gray-700 hover:bg-red-100 dark:text-gray-300 dark:hover:text-black',
-          )}
-        >
-          Annual
-          {billingCycle === 'A' && <BackgroundShift shiftKey="annual" />}
-        </button>
-      </div>
-      */}
     </div>
   )
 
@@ -187,18 +157,6 @@ const Pricing = () => {
     </section>
   )
 }
-
-const BackgroundShift = ({shiftKey}: { shiftKey: string }) => (
-  <motion.span
-    key={shiftKey}
-    layoutId="bg-shift"
-    className="absolute inset-0 -z-10 rounded-lg bg-primary-600"
-    initial={{opacity: 0, scale: 0.8}}
-    animate={{opacity: 1, scale: 1}}
-    exit={{opacity: 0, scale: 0.8}}
-    transition={{type: 'spring', stiffness: 200, damping: 20}}
-  />
-)
 
 export default function PricingSection() {
   return <Pricing/>
