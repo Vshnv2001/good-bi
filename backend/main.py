@@ -16,11 +16,12 @@ from supertokens_python.framework.fastapi import get_middleware
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List
-import os   
+import os
 from dotenv import load_dotenv
 from supertokens_python import get_all_cors_headers
 
 from goodbi_agent.agent import GoodBIAgent
+
 load_dotenv()
 
 init(
@@ -46,7 +47,10 @@ app.add_middleware(get_middleware())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://good-bi.vercel.app"],  # Add your frontend URLs
+    allow_origins=[
+        "http://localhost:3000",
+        "https://good-bi.vercel.app",
+    ],  # Add your frontend URLs
     allow_credentials=True,
     allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Content-Type"] + get_all_cors_headers(),
@@ -69,6 +73,7 @@ async def delete_dataset(
     # Delete the file from the database
     await db.execute(text(f'DROP TABLE IF EXISTS "{user_id}"."{datasetName}"'))
     await db.commit()
+
 
 @app.get("/api/datasetnames")
 async def get_dataset_names(
@@ -180,12 +185,23 @@ async def create_dataset(
         text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})')
     )
     await db.commit()
-    
-    await db.execute(text(f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'))
+
+    await db.execute(
+        text(
+            f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'
+        )
+    )
     await db.commit()
-    await db.execute(text(f'INSERT INTO "org_tables" (
-        user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'), {'user_id': user_id, 'table_name': datasetName, 'table_description': datasetDescription
-    })
+    await db.execute(
+        text(
+            f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'
+        ),
+        {
+            "user_id": user_id,
+            "table_name": datasetName,
+            "table_description": datasetDescription,
+        },
+    )
     await db.commit()
 
     print(f"Columns: {columns}")
@@ -505,6 +521,22 @@ async def user_query(
     return JSONResponse(content=result)
 
 
+@app.post("/api/{user_id}/suggest_kpis")
+async def suggest_kpis(
+    query: str = Form(...),
+    auth_session: SessionContainer = Depends(verify_session()),
+    db: AsyncSession = Depends(get_db),
+):
+    user_id = auth_session.get_user_id()
+    print(f"User ID: {user_id}")
+
+    metadata = await db.execute(
+        text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+    )
+    agent.suggest_kpis(query, metadata, k=5)
+    return JSONResponse(content=agent.state["kpi_suggested"])
+
+
 @app.post("/api/{user_id}/interpret")
 async def interpret_results(
     auth_session: SessionContainer = Depends(verify_session()),
@@ -545,6 +577,7 @@ async def visualize_query(
             "visualization": "",
             "visualization_reason": "",
             "formatted_data_for_visualization": {},
+            "kpi_suggested": {},
         }
         agent.core_sql_pipeline(user_id, query)
         result = await db.execute(text(agent.state["sql_query"]))
