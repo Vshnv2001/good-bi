@@ -30,6 +30,7 @@ from supertokens_python.recipe.emailpassword.interfaces import (
 from supertokens_python.recipe.emailpassword.types import FormField
 from supertokens_python.recipe.emailpassword import InputFormField
 from utils.goodbi_utils import get_goodbi_agent
+from sqlalchemy.exc import SQLAlchemyError
 
 def override_email_password_apis(original_implementation: APIInterface):
     original_sign_up_post = original_implementation.sign_up_post
@@ -710,7 +711,16 @@ async def visualize_query(
                 }
             )
 
-        result = await db.execute(text(agent.state["sql_query"]))
+        try:
+            result = await db.execute(text(agent.state["sql_query"]))
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return JSONResponse(
+                content={
+                    "error": error + ". Please check your KPI description and try again."
+                }
+            )
+        
         result = result.fetchall()
         result = [r._asdict() for r in result]
 
