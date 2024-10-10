@@ -145,6 +145,8 @@ async def delete_dataset(
 
     # Delete the file from the database
     await db.execute(text(f'DROP TABLE IF EXISTS "{user_id}"."{datasetName}"'))
+    await db.execute(text(f'DELETE FROM "org_tables" WHERE user_id = :user_id AND table_name = :table_name'), {"user_id": user_id, "table_name": datasetName})
+    await db.execute(text(f'DELETE FROM "{user_id}"."user_tables_metadata" WHERE table_name = :table_name'), {"user_id": user_id, "table_name": datasetName})
     await db.commit()
 
 
