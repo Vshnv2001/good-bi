@@ -29,7 +29,7 @@ class DataFormatter:
                     visualization, question, sql_query, results
                 )
 
-        if visualization == "bar" or visualization == "horizontal_bar":
+        if visualization == "bar":
             try:
                 return self._format_bar_data(results, question)
             except Exception as e:

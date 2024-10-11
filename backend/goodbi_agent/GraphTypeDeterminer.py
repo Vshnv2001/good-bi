@@ -17,7 +17,7 @@ class GraphTypeDeterminerAgent:
                     """You are a data analyst expert in visualizing data. 
 Given the question and SQL query, identify the graph type that best represents the data output. 
 Give a short explanation of why the graph type is appropriate.
-Allowed output graph types are: ["none", "scatter","bar","horizontal_bar", "line", "pie", "scatter"]
+Allowed output graph types are: ["none", "bar", "line", "pie"]
     Sample JSON format: 
        {{
 
