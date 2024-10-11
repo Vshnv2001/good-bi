@@ -279,6 +279,8 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         setVisualizationType(null);
         setVisualizationData(null);
       }
+    } else {
+      toast.error("Something went wrong. Please try again.");
     }
   }
 
