@@ -31,7 +31,7 @@ from supertokens_python.recipe.emailpassword.interfaces import (
 from supertokens_python.recipe.emailpassword.types import FormField
 from supertokens_python.recipe.emailpassword import InputFormField
 from utils.goodbi_utils import get_goodbi_agent
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, ProgrammingError
 
 def override_email_password_apis(original_implementation: APIInterface):
     original_sign_up_post = original_implementation.sign_up_post
@@ -710,14 +710,38 @@ async def visualize_query(
             "formatted_data_for_visualization": {},
         }
 
-        metadata = await db.execute(
-            text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
-        )
+        try:
+            metadata = await db.execute(
+                text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+            )
+        except ProgrammingError as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Please upload a dataset first and try again."
+                }
+            )
+        except asyncpg.exceptions.UndefinedTableError as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Please upload a dataset first and try again."
+                }
+            )
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Error encountered while fetching database metadata. Please check your KPI description, add more descriptions and try again."
+                }
+            )
         
         agent.core_sql_pipeline(user_id, query, metadata)
 
         if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
             return JSONResponse(
+                status_code=500,
                 content={
                     "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
                 }
@@ -725,11 +749,19 @@ async def visualize_query(
 
         try:
             result = await db.execute(text(agent.state["sql_query"]))
+        except asyncpg.exceptions.UndefinedTableError as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Error in generating SQL Query - Table not found. Please check your KPI description, add more descriptions and try again."
+                }
+            )
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             return JSONResponse(
+                status_code=500,
                 content={
-                    "error": error + ". Please check your KPI description and try again."
+                    "error": "Error in generating SQL Query. Please check your KPI description, add more descriptions and try again."
                 }
             )
         
@@ -737,64 +769,24 @@ async def visualize_query(
         result = [r._asdict() for r in result]
 
         if len(result) == 0:
-            
-            agent.core_sql_pipeline(user_id, query, metadata)
-
-            if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
-                print("Error", agent.state["sql_issues"])
-                return JSONResponse(
-                    status_code=500,
-                    content={
-                        "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
-                    }
-                )
-
-            try:
-                result = await db.execute(text(agent.state["sql_query"]))
-            except asyncpg.exceptions.UndefinedTableError as e:
-                return JSONResponse(
-                    status_code=500,
-                    content={
-                        "error": "Error in generating SQL Query - Table not found. Please check your KPI description, add more descriptions and try again."
-                    }
-                )
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
-                print("Error", error)
-                return JSONResponse(
-                    status_code=500,
-                    content={
-                        "error": "Error in generating SQL Query. Please check your KPI description, add more descriptions and try again."
-                    }
-                )
-            
-            result = result.fetchall()
-            result = [r._asdict() for r in result]
-            
-            print("Fetched Result")
-
-            if len(result) == 0:
-                print("Empty Result")
-                print("Empty Result")
-                return JSONResponse(
-                    status_code=500,
-                    content={
-                        "error": "Query result is empty. Please check your KPI description and try again."
-                    }
-                )
-            agent.state["results"] = result
-
-        agent.core_visualization_pipeline()
-
-        if agent.state["error"] != "":
-            print("Error", agent.state["error"])
-            print("Error", agent.state["error"])
             return JSONResponse(
                 status_code=500,
                 content={
-                    "error": agent.state["error"] + ". Please refine your KPI description and try again."
+                    "error": "Query result is empty. Please check your KPI description and try again."
                 }
             )
+        agent.state["results"] = result
+
+    agent.core_visualization_pipeline()
+
+    if agent.state["error"] != "":
+        print("Error", agent.state["error"])
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": agent.state["error"] + ". Please refine your KPI description and try again."
+            }
+        )
 
     return JSONResponse(
         content={
@@ -833,9 +825,32 @@ async def regenerate_visualize_query(
             "formatted_data_for_visualization": {},
         }
 
-        metadata = await db.execute(
-            text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
-        )
+        try:
+            metadata = await db.execute(
+                text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+            )
+        except ProgrammingError as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Please upload a dataset first and try again."
+                }
+            )
+        except asyncpg.exceptions.UndefinedTableError as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Please upload a dataset first and try again."
+                }
+            )
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Error encountered while fetching database metadata. Please check your KPI description, add more descriptions and try again."
+                }
+            )
         
         agent.core_sql_pipeline(user_id, query, metadata)
 
