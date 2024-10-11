@@ -1,0 +1,51 @@
+commit 6c6de3c57d9ab879b4a2c267fbcd3445f2eb3c4d
+Author: Vshnv2001 <mvaishnav.sg@gmail.com>
+Date:   Fri Oct 11 22:02:16 2024 +0800
+
+    Check 2
+
+commit 43ab7da664260215997cd26ef6a27701baf9d632
+Author: Vshnv2001 <mvaishnav.sg@gmail.com>
+Date:   Fri Oct 11 22:00:52 2024 +0800
+
+    Check
+
+commit 570be9cbe5d2d8b88fb8ea9c1fca16615e19e9ea
+Merge: 24f61862 1d364888
+Author: Jian Ming Lok <jianminglok@hotmail.com>
+Date:   Fri Oct 11 21:56:34 2024 +0800
+
+    Merge branch 'main' into fix-errs
+
+commit 24f618627224d5d1f43b9032f2c73a5dff1ad9a3
+Author: Jian Ming Lok <jianminglok@hotmail.com>
+Date:   Fri Oct 11 21:50:50 2024 +0800
+
+    Add full stop to error messages
+
+commit 212ce7bf58daf0682473db6d44210fa177632ea7
+Author: Jian Ming Lok <jianminglok@hotmail.com>
+Date:   Fri Oct 11 21:32:50 2024 +0800
+
+    Add error handling for 500 in frontend
+
+commit b0c32bc20f8c52cb99c670318e436ba54fca1b68
+Author: Vshnv2001 <mvaishnav.sg@gmail.com>
+Date:   Fri Oct 11 21:21:45 2024 +0800
+
+    Somewhat of a fix
+
+commit 1d3648883e14a6d0771db7129f570afde6750f93
+Merge: fb666ba1 3c946f26
+Author: Lok Jian Ming <jianminglok@hotmail.com>
+Date:   Fri Oct 11 20:06:37 2024 +0800
+
+    Merge pull request #61 from Vshnv2001/dataset-error-handling
+    
+    Typecasting error handling
+
+commit 3c946f265d73e681f787481cbcf95dca83fc34c0
+Author: Jian Ming Lok <jianminglok@hotmail.com>
+Date:   Fri Oct 11 20:04:45 2024 +0800
+
+    Remove row number limit

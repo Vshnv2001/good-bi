@@ -1,5 +1,6 @@
 import json
 import uuid
+import asyncpg
 from fastapi import FastAPI, File, UploadFile, Form, File, UploadFile, Form
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.responses import FileResponse, JSONResponse
@@ -723,18 +724,26 @@ async def visualize_query(
                 return JSONResponse(
                     status_code=500,
                     content={
-                        "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                        "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
                     }
                 )
 
             try:
                 result = await db.execute(text(agent.state["sql_query"]))
-            except SQLAlchemyError as e:
-                error = str(e.__dict__['orig'])
+            except asyncpg.exceptions.UndefinedTableError as e:
                 return JSONResponse(
                     status_code=500,
                     content={
-                        "error": error + ". Please check your KPI description and try again."
+                        "error": "Error in generating SQL Query - Table not found. Please check your KPI description, add more descriptions and try again."
+                    }
+                )
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                print("Error", error)
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": "Error in generating SQL Query. Please check your KPI description, add more descriptions and try again."
                     }
                 )
             
@@ -744,6 +753,7 @@ async def visualize_query(
             print("Fetched Result")
 
             if len(result) == 0:
+                print("Empty Result")
                 return JSONResponse(
                     status_code=500,
                     content={
@@ -755,10 +765,11 @@ async def visualize_query(
         agent.core_visualization_pipeline()
 
         if agent.state["error"] != "":
+            print("Error", agent.state["error"])
             return JSONResponse(
                 status_code=500,
                 content={
-                    "error": agent.state["error"] + " Please refine your KPI description and try again."
+                    "error": agent.state["error"] + ". Please refine your KPI description and try again."
                 }
             )
 
@@ -815,7 +826,7 @@ async def regenerate_visualize_query(
         if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
             return JSONResponse(
                 content={
-                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                    "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
                 }
             )
 
