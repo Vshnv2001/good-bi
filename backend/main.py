@@ -740,6 +740,8 @@ async def visualize_query(
         agent.core_sql_pipeline(user_id, query, metadata)
 
         if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+            if agent.state["sql_issues"][-1] != ".":
+                agent.state["sql_issues"] += "."
             return JSONResponse(
                 status_code=500,
                 content={
@@ -781,10 +783,12 @@ async def visualize_query(
 
     if agent.state["error"] != "":
         print("Error", agent.state["error"])
+        if agent.state["error"][-1] != ".":
+            agent.state["error"] += "."
         return JSONResponse(
             status_code=500,
             content={
-                "error": agent.state["error"] + ". Please refine your KPI description and try again."
+                "error": agent.state["error"] + " Please refine your KPI description and try again."
             }
         )
 
@@ -855,9 +859,12 @@ async def regenerate_visualize_query(
         agent.core_sql_pipeline(user_id, query, metadata)
 
         if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+            if agent.state["sql_issues"][-1] != ".":
+                agent.state["sql_issues"] += "."
             return JSONResponse(
+                status_code=500,
                 content={
-                    "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
+                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
                 }
             )
 
@@ -867,6 +874,7 @@ async def regenerate_visualize_query(
 
         if len(result) == 0:
             return JSONResponse(
+                status_code=500,
                 content={
                     "error": "Query result is empty. Please check your KPI description and try again."
                 }
@@ -876,7 +884,10 @@ async def regenerate_visualize_query(
     agent.core_regeneration_pipeline(chart_type)
 
     if agent.state["error"] != "":
+        if agent.state["error"][-1] != ".":
+            agent.state["error"] += "."
         return JSONResponse(
+            status_code=500,
             content={
                 "error": agent.state["error"] + " Please refine your KPI description and try again."
             }
