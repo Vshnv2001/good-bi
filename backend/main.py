@@ -203,7 +203,7 @@ async def get_datasets(
         if table_name == "user_tables_metadata" or table_name == "projects":
             continue
         result = await db.execute(
-            text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3')
+            text(f'SELECT * FROM "{user_id}"."{table_name}"')
         )
         rows = result.fetchall()
 
