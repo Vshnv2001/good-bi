@@ -328,7 +328,8 @@ async def create_dataset(
                 text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'),
                 {str(i): value for i, value in enumerate(row)},
             )
-            await db.commit()
+        
+        await db.commit()
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         return JSONResponse(
