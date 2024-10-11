@@ -204,7 +204,7 @@ async def get_datasets(
         if table_name == "user_tables_metadata" or table_name == "projects":
             continue
         result = await db.execute(
-            text(f'SELECT * FROM "{user_id}"."{table_name}" LIMIT 3')
+            text(f'SELECT * FROM "{user_id}"."{table_name}"')
         )
         rows = result.fetchall()
 
@@ -241,9 +241,9 @@ async def create_dataset(
     print(f"Dataset Name: {datasetName}")
     print(f"Dataset Description: {datasetDescription}")
     
-    try:
-        agent.set_user_id(auth_session.get_user_id())
+    agent.set_user_id(auth_session.get_user_id())
 
+    try:
         # Read the CSV file
         df = pd.read_csv(datasetFile.file)
 
@@ -285,7 +285,6 @@ async def create_dataset(
             else:
                 df[column] = df[column].astype("str")
 
-        print(f"DataFrame: {df.head()}")
         user_id = auth_session.get_user_id()
         await metadata_agent.save_metadata(datasetName, metadata, db, user_id)
 
@@ -693,29 +692,51 @@ async def visualize_query(
     db: AsyncSession = Depends(get_db),
     agent: GoodBIAgent = Depends(get_goodbi_agent),
 ):
-    print("Visualize Query")
-    try:
-        user_id = auth_session.get_user_id()
-        # Check to ensure same user
-        if user_id != agent.state["user_id"] or agent.state["question"] != query:
-            agent.state = {
-                "question": "",
-                "user_id": user_id,
-                "parsed_question": {},
-                "sql_query": "",
-                "sql_valid": False,
-                "sql_issues": "",
-                "results": [],
-                "answer": "",
-                "error": "",
-                "visualization": "",
-                "visualization_reason": "",
-                "formatted_data_for_visualization": {},
-            }
+    user_id = auth_session.get_user_id()
+    # Check to ensure same user
+    if user_id != agent.state["user_id"] or agent.state["question"] != query:
+        agent.state = {
+            "question": "",
+            "user_id": user_id,
+            "parsed_question": {},
+            "sql_query": "",
+            "sql_valid": False,
+            "sql_issues": "",
+            "results": [],
+            "answer": "",
+            "error": "",
+            "visualization": "",
+            "visualization_reason": "",
+            "formatted_data_for_visualization": {},
+        }
 
-            metadata = await db.execute(
-                text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+        metadata = await db.execute(
+            text(f'SELECT * FROM "{user_id}"."user_tables_metadata"')
+        )
+        
+        agent.core_sql_pipeline(user_id, query, metadata)
+
+        if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+            return JSONResponse(
+                content={
+                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                }
             )
+
+        try:
+            result = await db.execute(text(agent.state["sql_query"]))
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            return JSONResponse(
+                content={
+                    "error": error + ". Please check your KPI description and try again."
+                }
+            )
+        
+        result = result.fetchall()
+        result = [r._asdict() for r in result]
+
+        if len(result) == 0:
             
             agent.core_sql_pipeline(user_id, query, metadata)
 
@@ -754,6 +775,7 @@ async def visualize_query(
 
             if len(result) == 0:
                 print("Empty Result")
+                print("Empty Result")
                 return JSONResponse(
                     status_code=500,
                     content={
@@ -766,6 +788,7 @@ async def visualize_query(
 
         if agent.state["error"] != "":
             print("Error", agent.state["error"])
+            print("Error", agent.state["error"])
             return JSONResponse(
                 status_code=500,
                 content={
@@ -773,23 +796,16 @@ async def visualize_query(
                 }
             )
 
-        response = JSONResponse(
-            status_code=200,
-            content={
-                "explanation": agent.state["interpreted_answer"]["answer"],
-                "visualization": agent.state["visualization"],
-                "visualization_reason": agent.state["visualization_reason"],
-                "formatted_data_for_visualization": agent.state[
-                    "formatted_data_for_visualization"
-                ],
-            }
-        )
-        print("response", response.body)
-
-        return response
-    except Exception as e:
-        print("Error", e)
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return JSONResponse(
+        content={
+            "explanation": agent.state["interpreted_answer"]["answer"],
+            "visualization": agent.state["visualization"],
+            "visualization_reason": agent.state["visualization_reason"],
+            "formatted_data_for_visualization": agent.state[
+                "formatted_data_for_visualization"
+            ],
+        }
+    )
 
 @app.post("/api/visualize/regenerate")
 async def regenerate_visualize_query(
