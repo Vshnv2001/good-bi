@@ -280,7 +280,16 @@ export default function NewDashboard({ params }: { params: { projectid: string }
         setVisualizationData(null);
       }
     } else {
-      toast.error("Something went wrong. Please try again.");
+      try {
+        const responseData = await res.json();
+
+        if ("error" in responseData) {
+          toast.error(responseData["error"]);
+          return;
+        }
+      } catch {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   }
 

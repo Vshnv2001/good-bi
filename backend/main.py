@@ -1,5 +1,6 @@
 import json
 import uuid
+import asyncpg
 from fastapi import FastAPI, File, UploadFile, Form, File, UploadFile, Form
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.responses import FileResponse, JSONResponse
@@ -242,34 +243,39 @@ async def create_dataset(
     
     agent.set_user_id(auth_session.get_user_id())
 
-    # Read the CSV file
-    df = pd.read_csv(datasetFile.file)
-
-    metadata_agent = agent
-    metadata = metadata_agent.get_table_metadata(df)
-    print(f"Metadata: {metadata}")
-    column_types = metadata["column_types"]
-    valid_postgres_column_types = [
-        "TEXT",
-        "INTEGER",
-        "BOOLEAN",
-        "TIMESTAMP",
-        "FLOAT",
-        "DOUBLE PRECISION",
-        "NUMERIC",
-        "GEOGRAPHY",
-        "GEOMETRY",
-        "JSONB",
-    ]
-    # If the column type is not in the valid_postgres_column_types, set it to 'TEXT'
-    for column, col_type in column_types.items():
-        if col_type not in valid_postgres_column_types:
-            column_types[column] = "TEXT"
-
     try:
+        # Read the CSV file
+        df = pd.read_csv(datasetFile.file)
+
+        metadata_agent = agent
+        metadata = metadata_agent.get_table_metadata(df)
+        print(f"Metadata: {metadata}")
+        column_types = metadata["column_types"]
+        valid_postgres_column_types = [
+            "TEXT",
+            "INTEGER",
+            "BOOLEAN",
+            "TIMESTAMP",
+            "FLOAT",
+            "DOUBLE PRECISION",
+            "NUMERIC",
+            "GEOGRAPHY",
+            "GEOMETRY",
+            "JSONB",
+            "BIGINT",
+        ]
+        # If the column type is not in the valid_postgres_column_types, set it to 'TEXT'
         for column, col_type in column_types.items():
-            if col_type == "INTEGER":
-                df[column] = df[column].astype("Int64")  # Use 'Int64' to handle NaNs
+            if col_type not in valid_postgres_column_types:
+                column_types[column] = "TEXT"
+        
+        print(f"Column Types: {column_types}")
+        for column, col_type in column_types.items():
+            if col_type == "INTEGER" or col_type == "BIGINT":
+                df[column] = df[column].astype(str)  # Convert all values to strings
+                df[column] = df[column].str.replace(',', '')  # Remove commas
+                df[column] = pd.to_numeric(df[column], errors='coerce').astype('Int64') 
+                df[column] = df[column].fillna(value=pd.NA)
             elif col_type == "FLOAT" or col_type == "DOUBLE PRECISION":
                 df[column] = df[column].astype("float64")
             elif col_type == "BOOLEAN":
@@ -278,56 +284,49 @@ async def create_dataset(
                 df[column] = pd.to_datetime(df[column])
             else:
                 df[column] = df[column].astype("str")
-    except Exception as e:
-         return JSONResponse(
-            content={
-                "error": str(e) + ". Please check your dataset and try again."
-            }
+
+        user_id = auth_session.get_user_id()
+        await metadata_agent.save_metadata(datasetName, metadata, db, user_id)
+
+        # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
+        columns = ", ".join(
+            [f'"{col}" {col_type}' for col, col_type in column_types.items()]
+            + [
+                "user_id TEXT",
+                "file_id TEXT",
+                "gb_description TEXT",
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            ]
         )
 
-    user_id = auth_session.get_user_id()
-    await metadata_agent.save_metadata(datasetName, metadata, db, user_id)
-
-    # Create table with columns from CSV and user_id. Format for schema is user_id.datasetName
-    columns = ", ".join(
-        [f'"{col}" {col_type}' for col, col_type in column_types.items()]
-        + [
-            "user_id TEXT",
-            "file_id TEXT",
-            "gb_description TEXT",
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-        ]
-    )
-
-    # Create schema if it doesn't exist for storing the table/datas
-    await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
-    await db.execute(
-        text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})')
-    )
-
-    await db.execute(
-        text(
-            f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'
+        # Create schema if it doesn't exist for storing the table/datas
+        await db.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{user_id}";'))
+        await db.execute(
+            text(f'CREATE TABLE IF NOT EXISTS "{user_id}"."{datasetName}" ({columns})')
         )
-    )
 
-    await db.execute(
-        text(
-            f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'
-        ),
-        {
-            "user_id": user_id,
-            "table_name": datasetName,
-            "table_description": datasetDescription,
-        },
-    )
+        await db.execute(
+            text(
+                f'CREATE TABLE IF NOT EXISTS "org_tables" (user_id TEXT, table_name TEXT, table_description TEXT)'
+            )
+        )
 
-    print(f"Columns: {columns}")
-    # Insert rows into the table
-    try:
+        await db.execute(
+            text(
+                f'INSERT INTO "org_tables" (user_id, table_name, table_description) VALUES (:user_id, :table_name, :table_description)'
+            ),
+            {
+                "user_id": user_id,
+                "table_name": datasetName,
+                "table_description": datasetDescription,
+            },
+        )
+
+        print(f"Columns: {columns}")
+        # Insert rows into the table
         for row in df.itertuples(index=False, name=None):
-            print(row)
             row = list(row)
+            row = [None if pd.isna(value) else value for value in row]
             row += [user_id, file_id, datasetDescription]
             placeholders = ", ".join([":{}".format(i) for i in range(len(row))])
             # Use the original data types
@@ -335,17 +334,13 @@ async def create_dataset(
                 text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'),
                 {str(i): value for i, value in enumerate(row)},
             )
-        
-        await db.commit()
-    except SQLAlchemyError as e:
-        error = str(e.__dict__['orig'])
-        return JSONResponse(
-            content={
-                "error": error + ". Please check your dataset and try again."
-            }
-        )
 
-    return {"message": "Dataset created successfully"}
+        await db.commit()
+
+        return {"message": "Dataset created successfully"}
+    except Exception as e:
+        print(f"Error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @app.post("/api/projects/new")
@@ -742,21 +737,64 @@ async def visualize_query(
         result = [r._asdict() for r in result]
 
         if len(result) == 0:
+            
+            agent.core_sql_pipeline(user_id, query, metadata)
+
+            if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+                print("Error", agent.state["sql_issues"])
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
+                    }
+                )
+
+            try:
+                result = await db.execute(text(agent.state["sql_query"]))
+            except asyncpg.exceptions.UndefinedTableError as e:
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": "Error in generating SQL Query - Table not found. Please check your KPI description, add more descriptions and try again."
+                    }
+                )
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                print("Error", error)
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": "Error in generating SQL Query. Please check your KPI description, add more descriptions and try again."
+                    }
+                )
+            
+            result = result.fetchall()
+            result = [r._asdict() for r in result]
+            
+            print("Fetched Result")
+
+            if len(result) == 0:
+                print("Empty Result")
+                print("Empty Result")
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": "Query result is empty. Please check your KPI description and try again."
+                    }
+                )
+            agent.state["results"] = result
+
+        agent.core_visualization_pipeline()
+
+        if agent.state["error"] != "":
+            print("Error", agent.state["error"])
+            print("Error", agent.state["error"])
             return JSONResponse(
+                status_code=500,
                 content={
-                    "error": "Query result is empty. Please check your KPI description and try again."
+                    "error": agent.state["error"] + ". Please refine your KPI description and try again."
                 }
             )
-        agent.state["results"] = result
-
-    agent.core_visualization_pipeline()
-
-    if agent.state["error"] != "":
-        return JSONResponse(
-            content={
-                "error": agent.state["error"] + " Please refine your KPI description and try again."
-            }
-        )
 
     return JSONResponse(
         content={
@@ -804,7 +842,7 @@ async def regenerate_visualize_query(
         if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
             return JSONResponse(
                 content={
-                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                    "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
                 }
             )
 
