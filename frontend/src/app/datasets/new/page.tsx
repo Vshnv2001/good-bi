@@ -65,14 +65,19 @@ export default function NewDataset() {
       }).then((response) => {
         toast.dismiss('data-upload');
         if (response.status === 200) {
+          if ("error" in response.data) {
+            toast.error(response.data["error"]);
+            return;
+          }
+
           toast('Added new data.')
           location.reload()
         } else {
-          toast.error('Failed to submit dataset');
+          toast.error('Error encountered while inserting data from your dataset. Please check your dataset and try again later.');
         }
       }).catch((error) => {
         toast.dismiss('data-upload');
-        toast.error('Error submitting dataset');
+        toast.error('Error encountered while inserting data from your dataset. Please check your dataset and try again later.');
       });
     } catch (error) {
       toast.dismiss('data-upload');
