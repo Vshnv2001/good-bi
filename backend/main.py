@@ -723,7 +723,7 @@ async def visualize_query(
                 return JSONResponse(
                     status_code=500,
                     content={
-                        "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                        "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
                     }
                 )
 
@@ -758,7 +758,7 @@ async def visualize_query(
             return JSONResponse(
                 status_code=500,
                 content={
-                    "error": agent.state["error"] + " Please refine your KPI description and try again."
+                    "error": agent.state["error"] + ". Please refine your KPI description and try again."
                 }
             )
 
@@ -816,7 +816,7 @@ async def regenerate_visualize_query(
             return JSONResponse(
                 status_code=500,
                 content={
-                    "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                    "error": agent.state["sql_issues"] + ". Please refine your KPI description and try again."
                 }
             )
 
@@ -839,7 +839,7 @@ async def regenerate_visualize_query(
         return JSONResponse(
             status_code=500,
             content={
-                "error": agent.state["error"] + " Please refine your KPI description and try again."
+                "error": agent.state["error"] + ". Please refine your KPI description and try again."
             }
         )
 
