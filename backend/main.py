@@ -814,6 +814,7 @@ async def regenerate_visualize_query(
 
         if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
             return JSONResponse(
+                status_code=500,
                 content={
                     "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
                 }
@@ -825,6 +826,7 @@ async def regenerate_visualize_query(
 
         if len(result) == 0:
             return JSONResponse(
+                status_code=500,
                 content={
                     "error": "Query result is empty. Please check your KPI description and try again."
                 }
@@ -835,6 +837,7 @@ async def regenerate_visualize_query(
 
     if agent.state["error"] != "":
         return JSONResponse(
+            status_code=500,
             content={
                 "error": agent.state["error"] + " Please refine your KPI description and try again."
             }
