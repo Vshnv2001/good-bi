@@ -70,6 +70,9 @@ export default function NewDataset() {
         } else {
           toast.error('Failed to submit dataset');
         }
+      }).catch((error) => {
+        toast.dismiss('data-upload');
+        toast.error('Error submitting dataset');
       });
     } catch (error) {
       toast.dismiss('data-upload');

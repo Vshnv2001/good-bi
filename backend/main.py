@@ -317,15 +317,23 @@ async def create_dataset(
 
     print(f"Columns: {columns}")
     # Insert rows into the table
-    for row in df.itertuples(index=False, name=None):
-        print(row)
-        row = list(row)
-        row += [user_id, file_id, datasetDescription]
-        placeholders = ", ".join([":{}".format(i) for i in range(len(row))])
-        # Use the original data types
-        await db.execute(
-            text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'),
-            {str(i): value for i, value in enumerate(row)},
+    try:
+        for row in df.itertuples(index=False, name=None):
+            print(row)
+            row = list(row)
+            row += [user_id, file_id, datasetDescription]
+            placeholders = ", ".join([":{}".format(i) for i in range(len(row))])
+            # Use the original data types
+            await db.execute(
+                text(f'INSERT INTO "{user_id}"."{datasetName}" VALUES ({placeholders})'),
+                {str(i): value for i, value in enumerate(row)},
+            )
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        return JSONResponse(
+            content={
+                "error": error + ". Please check your dataset and try again."
+            }
         )
 
     await db.commit()
