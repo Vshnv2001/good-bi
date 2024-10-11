@@ -731,13 +731,11 @@ async def visualize_query(
                     "error": error + ". Please check your KPI description and try again."
                 }
             )
-<<<<<<< Updated upstream
         
         result = result.fetchall()
         result = [r._asdict() for r in result]
 
         if len(result) == 0:
-=======
             
             agent.core_sql_pipeline(user_id, query, metadata)
 
@@ -780,7 +778,6 @@ async def visualize_query(
 
         if agent.state["error"] != "":
             print("Error", agent.state["error"])
->>>>>>> Stashed changes
             return JSONResponse(
                 content={
                     "error": "Query result is empty. Please check your KPI description and try again."
