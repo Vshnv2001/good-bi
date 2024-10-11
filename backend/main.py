@@ -266,17 +266,24 @@ async def create_dataset(
         if col_type not in valid_postgres_column_types:
             column_types[column] = "TEXT"
 
-    for column, col_type in column_types.items():
-        if col_type == "INTEGER":
-            df[column] = df[column].astype("Int64")  # Use 'Int64' to handle NaNs
-        elif col_type == "FLOAT" or col_type == "DOUBLE PRECISION":
-            df[column] = df[column].astype("float64")
-        elif col_type == "BOOLEAN":
-            df[column] = df[column].astype("bool")
-        elif col_type == "TIMESTAMP":
-            df[column] = pd.to_datetime(df[column])
-        else:
-            df[column] = df[column].astype("str")
+    try:
+        for column, col_type in column_types.items():
+            if col_type == "INTEGER":
+                df[column] = df[column].astype("Int64")  # Use 'Int64' to handle NaNs
+            elif col_type == "FLOAT" or col_type == "DOUBLE PRECISION":
+                df[column] = df[column].astype("float64")
+            elif col_type == "BOOLEAN":
+                df[column] = df[column].astype("bool")
+            elif col_type == "TIMESTAMP":
+                df[column] = pd.to_datetime(df[column])
+            else:
+                df[column] = df[column].astype("str")
+    except Exception as e:
+         return JSONResponse(
+            content={
+                "error": str(e) + ". Please check your dataset and try again."
+            }
+        )
 
     user_id = auth_session.get_user_id()
     await metadata_agent.save_metadata(datasetName, metadata, db, user_id)
