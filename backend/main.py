@@ -731,11 +731,56 @@ async def visualize_query(
                     "error": error + ". Please check your KPI description and try again."
                 }
             )
+<<<<<<< Updated upstream
         
         result = result.fetchall()
         result = [r._asdict() for r in result]
 
         if len(result) == 0:
+=======
+            
+            agent.core_sql_pipeline(user_id, query, metadata)
+
+            if not agent.state["sql_valid"] and "corrected_query" not in agent.state:
+                print("Error", agent.state["sql_issues"])
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": agent.state["sql_issues"] + " Please refine your KPI description and try again."
+                    }
+                )
+
+            try:
+                result = await db.execute(text(agent.state["sql_query"]))
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": error + ". Please check your KPI description and try again."
+                    }
+                )
+            
+            result = result.fetchall()
+            result = [r._asdict() for r in result]
+            
+            print("Fetched Result")
+
+            if len(result) == 0:
+                print("Empty Result")
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "error": "Query result is empty. Please check your KPI description and try again."
+                    }
+                )
+            agent.state["results"] = result
+
+        agent.core_visualization_pipeline()
+
+        if agent.state["error"] != "":
+            print("Error", agent.state["error"])
+>>>>>>> Stashed changes
             return JSONResponse(
                 content={
                     "error": "Query result is empty. Please check your KPI description and try again."
